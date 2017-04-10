@@ -4,6 +4,7 @@
 */
 var fs = require('fs');
 var ConcatSource = require("webpack-sources").ConcatSource;
+var CachedSource = require("webpack-sources").CachedSource;
 var async = require("async");
 var ExtractedModule = require("./ExtractedModule");
 var Chunk = require("webpack/lib/Chunk");
@@ -14,39 +15,39 @@ var loaderSchema = require('./schema/loader-schema');
 var pluginSchema = require('./schema/plugin-schema.json');
 
 var NS = fs.realpathSync(__dirname);
-
+var DEV = process.env.NODE_ENV === 'development';
 var nextId = 0;
 
 function ExtractTextPluginCompilation() {
 	this.modulesByIdentifier = {};
 }
 
-ExtractTextPlugin.prototype.mergeNonInitialChunks = function(chunk, intoChunk, checkedChunks) {
-	if (chunk.chunks) {
-		// Fix error when hot module replacement used with CommonsChunkPlugin
-		chunk.chunks = chunk.chunks.filter(function(c) {
-			return typeof c !== 'undefined';
-		})
-	}
+// ExtractTextPlugin.prototype.mergeNonInitialChunks = function(chunk, intoChunk, checkedChunks) {
+// 	if (chunk.chunks) {
+// 		// Fix error when hot module replacement used with CommonsChunkPlugin
+// 		chunk.chunks = chunk.chunks.filter(function(c) {
+// 			return typeof c !== 'undefined';
+// 		})
+// 	}
 
-	if(!intoChunk) {
-		checkedChunks = [];
-		chunk.chunks.forEach(function(c) {
-			if(c.isInitial()) return;
-			this.mergeNonInitialChunks(c, chunk, checkedChunks);
-		}, this);
-	} else if(checkedChunks.indexOf(chunk) < 0) {
-		checkedChunks.push(chunk);
-		chunk.modules.slice().forEach(function(module) {
-			intoChunk.addModule(module);
-			module.addChunk(intoChunk);
-		});
-		chunk.chunks.forEach(function(c) {
-			if(c.isInitial()) return;
-			this.mergeNonInitialChunks(c, intoChunk, checkedChunks);
-		}, this);
-	}
-};
+// 	if(!intoChunk) {
+// 		checkedChunks = [];
+// 		chunk.chunks.forEach(function(c) {
+// 			if(c.isInitial()) return;
+// 			this.mergeNonInitialChunks(c, chunk, checkedChunks);
+// 		}, this);
+// 	} else if(checkedChunks.indexOf(chunk) < 0) {
+// 		checkedChunks.push(chunk);
+// 		chunk.modules.slice().forEach(function(module) {
+// 			intoChunk.addModule(module);
+// 			module.addChunk(intoChunk);
+// 		});
+// 		chunk.chunks.forEach(function(c) {
+// 			if(c.isInitial()) return;
+// 			this.mergeNonInitialChunks(c, intoChunk, checkedChunks);
+// 		}, this);
+// 	}
+// };
 
 ExtractTextPluginCompilation.prototype.addModule = function(identifier, originalModule, source, additionalInformation, sourceMap, prevModules) {
 	var m;
@@ -114,6 +115,8 @@ function getOrder(a, b) {
 }
 
 function ExtractTextPlugin(options) {
+	options = options || {}
+	
 	if(arguments.length > 1) {
 		throw new Error("Breaking change: ExtractTextPlugin now only takes a single argument. Either an options " +
 						"object *or* the name of the result file.\n" +
@@ -131,7 +134,7 @@ function ExtractTextPlugin(options) {
 	} else {
 		schemaTester(pluginSchema, options);
 	}
-	this.filename = options.filename;
+	this.filename = options.filename || (DEV ? '[name].css' : '[name].[contenthash].css');
 	this.id = options.id != null ? options.id : ++nextId;
 	this.options = {};
 	mergeOptions(this.options, options);
@@ -271,7 +274,10 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 			});
 			async.forEach(chunks, function(chunk, callback) {
 				var extractedChunk = extractedChunks[chunks.indexOf(chunk)];
-				var shouldExtract = !!(options.allChunks || chunk.isInitial());
+
+				// SETTING THIS TO TRUE INSURES ALL CHUNKS ARE HANDLED:
+				var shouldExtract = true; //!!(options.allChunks || chunk.isInitial());
+
 				async.forEach(chunk.modules.slice(), function(module, callback) {
 					var meta = module[NS];
 					if(meta && (!meta.options.id || meta.options.id === id)) {
@@ -305,23 +311,24 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 				});
 			}, function(err) {
 				if(err) return callback(err);
-				extractedChunks.forEach(function(extractedChunk) {
-					if(extractedChunk.isInitial())
-						this.mergeNonInitialChunks(extractedChunk);
-				}, this);
-				extractedChunks.forEach(function(extractedChunk) {
-					if(!extractedChunk.isInitial()) {
-						extractedChunk.modules.slice().forEach(function(module) {
-							extractedChunk.removeModule(module);
-						});
-					}
-				});
+				// REMOVING THIS CODE IS ALL THAT'S NEEDED TO CREATE CSS FILES PER CHUNK:
+				// extractedChunks.forEach(function(extractedChunk) {
+				// 	if(extractedChunk.isInitial())
+				// 		this.mergeNonInitialChunks(extractedChunk);
+				// }, this);
+				// extractedChunks.forEach(function(extractedChunk) {
+				// 	if(!extractedChunk.isInitial()) {
+				// 		extractedChunk.modules.slice().forEach(function(module) {
+				// 			extractedChunk.removeModule(module);
+				// 		});
+				// 	}
+				// });
 				compilation.applyPlugins("optimize-extracted-chunks", extractedChunks);
 				callback();
 			}.bind(this));
 		}.bind(this));
-		compilation.plugin("before-chunk-assets", function() {
-			// This appears to be the latest hook where the %%extracted-file%% and hash replacements work on initial load. Any later and the contents of modules appears to be sealed and changes don't have any effect until the next hot update.
+
+		compilation.plugin("additional-assets", function(callback) {
 			extractedChunks.forEach(function(extractedChunk) {
 				if(extractedChunk.modules.length) {
 					extractedChunk.modules.sort(function(a, b) {
@@ -341,18 +348,48 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 					});
 
 					var file = (isFunction(filename)) ? filename(getPath) : getPath(filename);
-					
+
+					// add the css files to assets and the files array corresponding to its chunk
 					compilation.assets[file] = source;
 					chunk.files.push(file);
 
-					// Hot module replacement
+					// HMR: inject file name into corresponding javascript modules in order to trigger
+					// appropriate hot module reloading of CSS
 					extractedChunk.modules.forEach(function(module){
 						var originalModule = module.getOriginalModule();
 						originalModule._source._value = originalModule._source._value.replace('%%extracted-file%%', file);
-						originalModule._source._value = originalModule._source._value.replace('%%extracted-hash%%', compilation.hash);
 					});
 				}
 			}, this);
+
+			// duplicate js chunks into secondary files that don't have css injection,
+			// giving the additional js files the extension: `.no_css.js`
+			Object.keys(compilation.assets).forEach(function(name) {
+				var asset = compilation.assets[name];
+
+				if (/\.js$/.test(name) && asset._source) {
+					var newName = name.replace(/\.js/, '.no_css.js');
+					var newAsset = new CachedSource(asset._source);
+					var regex = /\/\*__START_CSS__\*\/[\s\S]*?\/\*__END_CSS__\*\//g
+
+					// remove js that adds css to DOM via style-loader, so that React Loadable
+					// can serve smaller files (without css) in initial request.
+					newAsset._cachedSource = asset.source().replace(regex, '');
+
+					compilation.assets[newName] = newAsset;
+
+					// add no_css file to files associated with chunk so that they are minified,
+					// and receive source maps, and can be found by React Loadable
+					extractedChunks.forEach(function(extractedChunk) {
+						var chunk = extractedChunk.originalChunk;
+						if (chunk.files.indexOf(name) > -1) {
+							chunk.files.push(newName);
+						}
+					})
+				}
+			})
+			callback()
 		}.bind(this));
+		
 	}.bind(this));
 };

@@ -1,227 +1,71 @@
 [![npm][npm]][npm-url]
-[![node][node]][node-url]
-[![deps][deps]][deps-url]
-[![tests][tests]][tests-url]
-[![coverage][cover]][cover-url]
 [![chat][chat]][chat-url]
 
-<div align="center">
-  <img width="200" height="200"
-    src="https://cdn.rawgit.com/webpack-contrib/extract-text-webpack-plugin/574e3200/logo.svg">
-  <a href="https://github.com/webpack/webpack">
-    <img width="200" height="200"
-      src="https://webpack.js.org/assets/icon-square-big.svg">
-  </a>
-  <h1>Extract Text Plugin</h1>
-</div>
+# Extract CSS Chunk
 
-<h2 align="center">Install</h2>
+Like the Extract Text Webpack Plugin, but creates multiple css files (one per chunk). Then, as part of server side rendering, you can deliver just the css chunks needed by the current request. 
 
+In addition, for each javascript chunk created  another js chunk is created with the styles injected via style-loader
+so that when the client asynchronously loads more chunks the styles will be available as well. This is as opposed to to the chunks you 
+initially serve embedded in the page, which are post-fixed with `no_css.js`, which do not inject styles since it's expected that
+the corresponding extracted CSS files are embedded in the page as well. This obviously serves the purpose of reducing the size of your initially
+served javascript chunks. As much as possible has been thought of to make this a complete solution.
+
+BONUS: It also has first-class support for Hot Module Replacement across those css files/chunks. 
+
+NOTE: most the code comes from the original Extract Text Webpack Plugin--the goal is to merge this functionality back into that package at some point. That might be a while. Until then I'd feel totally comfortable just using this package. It's meant specifically for use with *React Loadable*. For complete usage, see the [React Loadable Example](https://github.com/thejameskyle/react-loadable-example).
+
+## Install
 ```bash
-# for webpack 2
-npm install --save-dev extract-text-webpack-plugin
-# for webpack 1
-npm install --save-dev extract-text-webpack-plugin@1.0.1
+yarn add --dev extract-css-chunk
 ```
 
-<h2 align="center">Usage</h2>
-
-> :warning: For webpack v1, see [the README in the webpack-1 branch](https://github.com/webpack/extract-text-webpack-plugin/blob/webpack-1/README.md).
-
+## Usage
 ```js
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const ExtractCssChunk = require("extract-css-chunk")
 
 module.exports = {
   module: {
     rules: [
       {
         test: /\.css$/,
-        use: ExtractTextPlugin.extract({
-          fallback: "style-loader",
-          use: "css-loader"
+        use: ExtractCssChunk.extract({
+          use: 'css-loader?modules&localIdentName=[name]__[local]--[hash:base64:5]',
         })
       }
     ]
   },
   plugins: [
-    new ExtractTextPlugin("styles.css"),
+    new ExtractCssChunk,
   ]
 }
 ```
 
-It moves all the `require("style.css")`s in entry chunks into a separate single CSS file. So your styles are no longer inlined into the JS bundle, but separate in a CSS bundle file (`styles.css`). If your total stylesheet volume is big, it will be faster because the CSS bundle is loaded in parallel to the JS bundle.
 
-|Advantages|Caveats|
-|:---------|:------|
-| Fewer style tags (older IE has a limit) | Additional HTTP request |
-| CSS SourceMap (with `devtool: "source-map"` and `extract-text-webpack-plugin?sourceMap`) | Longer compilation time |
-| CSS requested in parallel | No runtime public path modification |
-| CSS cached separate | No Hot Module Replacement |
-| Faster runtime (less code and DOM operations) | ... |
+## Info
 
-<h2 align="center">Options</h2>
+It moves all the `require("style.css")`s in entry chunks ***AND DYNAMIC CODE SPLIT CHUNKS*** into a separate ***multiple*** CSS files. So your styles are no longer inlined into the JS bundle, but separate in CSS bundle files (e.g named entry points: `main.12345.css` and dynamic split chunks: `0.123456.css`, `1.123456.css`, etc).
 
-```js
-new ExtractTextPlugin(options: filename | object)
-```
+If you effectively use code-splitting this can be a far better option than using emerging solutions like *StyleStron*, *StyledComponents*,and slightly older tools like *Aphrodite*, *Glamor*, etc. We don't like either rounds of tools because they all have a runtime overhead. Every time your React component is rendered with those, CSS is generated and updated within the DOM. The reason *Extract CSS Chunk* can be a better option is because *we also generate multiple sets of CSS* based on what is actually "used", but without the runtime overhead. The difference is our definition of "used" is modules determined statically (which may not in fact be rendered) vs. what is actually rendered (as is the case with the other tools). 
 
-|Name|Type|Description|
-|:--:|:--:|:----------|
-|**`id`**|`{String}`|Unique ident for this plugin instance. (For advanced usage only, by default automatically generated)|
-|**`filename`**|`{String|Function}`|Name of the result file. May contain `[name]`, `[id]` and `[contenthash]`|
-|**`allChunks`**|`{Boolean}`|Extract from all additional chunks too (by default it extracts only from the initial chunk(s))|
-|**`disable`**|`{Boolean}`|Disables the plugin|
-|**`ignoreOrder`**|`{Boolean}`|Disables order check (useful for CSS Modules!), `false` by default|
+So yes, our CSS files may be mildly larger and include unnecessary css, but it's CSS that is likely to be used, i.e. if an "if/else" statement reaches another branch, *but not CSS from a different section of your app.*
 
-* `[name]` name of the chunk
-* `[id]` number of the chunk
-* `[contenthash]` hash of the content of the extracted file
+In short, by putting code splitting appropriate places you have a lot of control over the css files that are created. **It's our perspective that you have achieved 80-99% of the performance gains (i.e. the creation of small relevant css files) at this static stage. Offloading this work to the runtime stage is ultimately nit-picking and results in diminishing returns.** 
 
-> :warning: `ExtractTextPlugin` generates a file **per entry**, so you must use `[name]`, `[id]` or `[contenthash]` when using multiple entries.
+ADDITIONAL BENEFIT: **This also means you DO NOT need to clutter your component code with a specialized way of applying CSS!** A final cherry on top is that the way you import module-based styles is exactly how you would import styles in React Native that exist in a separate file, which allows for extremely interchangeable code between React Native and regular React. Hurray! 
 
-#### `#extract`
+**We love CSS modules; no less, no more.**
 
-```js
-ExtractTextPlugin.extract(options: loader | object)
-```
+## NOTE
 
-Creates an extracting loader from an existing loader. Supports loaders of type `{ loader: [name]-loader -> {String}, options: {} -> {Object} }`.
-
-|Name|Type|Description|
-|:--:|:--:|:----------|
-|**`options.use`**|`{String}`/`{Array}`/`{Object}`|Loader(s) that should be used for converting the resource to a CSS exporting module _(required)_|
-|**`options.fallback`**|`{String}`/`{Array}`/`{Object}`|loader(e.g `'style-loader'`) that should be used when the CSS is not extracted (i.e. in an additional chunk when `allChunks: false`)|
-|**`options.publicPath`**|`{String}`|Override the `publicPath` setting for this loader|
+The file name structure is currently hard-coded to be `[name].[contenthash].css`. It was first created to be used with *React Loadable* which will discover your CSS files for you (from webpack stats) no matter what you name them--so it's not something you need to worry about. If you want to fix that and therefore allow for a user-specified `filename` like in the original *Extract Text Plugin*, feel free to make a PR. The current filename structure is required for HMR so that new files are created on each change--so that is the problem you're trying to solve. For whatever reason, if the file name is the same (i.e. doesn't contain a hash) the original file is not updated. There are some notes in the code. Check the `hotModuleReplacement.js` file.
 
 
-#### Multiple Instances
+[npm]: https://img.shields.io/npm/v/extract-css-chunk.svg
+[npm-url]: https://npmjs.com/package/extract-css-chunk
 
-There is also an `extract` function on the instance. You should use this if you have more than one instance of  `ExtractTextPlugin`.
+[tests]: http://img.shields.io/travis/faceyspacey/extract-css-chunk.svg
+[tests-url]: https://travis-ci.org/faceyspacey/extract-css-chunk
 
-```js
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-
-// Create multiple instances
-const extractCSS = new ExtractTextPlugin('stylesheets/[name]-one.css');
-const extractLESS = new ExtractTextPlugin('stylesheets/[name]-two.css');
-
-module.exports = {
-  module: {
-    rules: [
-      {
-        test: /\.css$/,
-        use: extractCSS.extract([ 'css-loader', 'postcss-loader' ])
-      },
-      {
-        test: /\.less$/i,
-        use: extractLESS.extract([ 'css-loader', 'less-loader' ])
-      },
-    ]
-  },
-  plugins: [
-    extractCSS,
-    extractLESS
-  ]
-};
-```
-
-### Extracting Sass or LESS
-
-The configuration is the same, switch out `sass-loader` for `less-loader` when necessary.
-
-```js
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-
-module.exports = {
-  module: {
-    rules: [
-      {
-        test: /\.scss$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          //resolve-url-loader may be chained before sass-loader if necessary
-          use: ['css-loader', 'sass-loader']
-        })
-      }
-    ]
-  },
-  plugins: [
-    new ExtractTextPlugin('style.css')
-    //if you want to pass in options, you can do so:
-    //new ExtractTextPlugin({
-    //  filename: 'style.css'
-    //})
-  ]
-}
-```
-
-### Modify filename
-
-`filename` parameter could be `Function`. It passes `getPath` to process the format like `css/[name].css` and returns the real file name, `css/js/a.css`. You can replace `css/js` with `css` then you will get the new path `css/a.css`.
-
-
-```js
-entry: {
-  'js/a': "./a"
-},
-plugins: [
-  new ExtractTextPlugin({
-    filename:  (getPath) => {
-      return getPath('css/[name].css').replace('css/js', 'css');
-    },
-    allChunks: true
-  })
-]
-```
-
-<h2 align="center">Maintainers</h2>
-
-<table>
-  <tbody>
-    <tr>
-      <td align="center">
-        <img width="150" height="150"
-        src="https://avatars3.githubusercontent.com/u/166921?v=3&s=150">
-        </br>
-        <a href="https://github.com/bebraw">Juho Vepsäläinen</a>
-      </td>
-      <td align="center">
-        <img width="150" height="150"
-        src="https://avatars2.githubusercontent.com/u/8420490?v=3&s=150">
-        </br>
-        <a href="https://github.com/d3viant0ne">Joshua Wiens</a>
-      </td>
-      <td align="center">
-        <img width="150" height="150"
-        src="https://avatars3.githubusercontent.com/u/533616?v=3&s=150">
-        </br>
-        <a href="https://github.com/SpaceK33z">Kees Kluskens</a>
-      </td>
-      <td align="center">
-        <img width="150" height="150"
-        src="https://avatars3.githubusercontent.com/u/3408176?v=3&s=150">
-        </br>
-        <a href="https://github.com/TheLarkInn">Sean Larkin</a>
-      </td>
-    </tr>
-  <tbody>
-</table>
-
-
-[npm]: https://img.shields.io/npm/v/extract-text-webpack-plugin.svg
-[npm-url]: https://npmjs.com/package/extract-text-webpack-plugin
-
-[node]: https://img.shields.io/node/v/extract-text-webpack-plugin.svg
-[node-url]: https://nodejs.org
-
-[deps]: https://david-dm.org/webpack-contrib/extract-text-webpack-plugin.svg
-[deps-url]: https://david-dm.org/webpack-contrib/extract-text-webpack-plugin
-
-[tests]: http://img.shields.io/travis/webpack-contrib/extract-text-webpack-plugin.svg
-[tests-url]: https://travis-ci.org/webpack-contrib/extract-text-webpack-plugin
-
-[cover]: https://coveralls.io/repos/github/webpack-contrib/extract-text-webpack-plugin/badge.svg
-[cover-url]: https://coveralls.io/github/webpack-contrib/extract-text-webpack-plugin
-
-[chat]: https://badges.gitter.im/webpack/webpack.svg
-[chat-url]: https://gitter.im/webpack/webpack
+[chat]: https://badges.gitter.im/extract-css-chunk.svg
+[chat-url]: https://gitter.im/extract-css-chunk
