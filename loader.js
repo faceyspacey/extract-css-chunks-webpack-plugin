@@ -2,6 +2,7 @@
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Tobias Koppers @sokra
 */
+var path = require("path");
 var fs = require("fs");
 var loaderUtils = require("loader-utils");
 var NodeTemplatePlugin = require("webpack/lib/node/NodeTemplatePlugin");
@@ -10,16 +11,19 @@ var LibraryTemplatePlugin = require("webpack/lib/LibraryTemplatePlugin");
 var SingleEntryPlugin = require("webpack/lib/SingleEntryPlugin");
 var LimitChunkCountPlugin = require("webpack/lib/optimize/LimitChunkCountPlugin");
 
-var extractTextPluginHmrRuntime = require.resolve("./hotModuleReplacement.js");
 var NS = fs.realpathSync(__dirname);
 
 module.exports = function(source) {
 	if(this.cacheable) this.cacheable();
 	// Even though this gets overwritten if extract+remove are true, without it, the runtime doesn't get added to the chunk
-	return `if (module.hot) { require('${extractTextPluginHmrRuntime}'); }\n${source}`;
+	return `require("style-loader/addStyles.js");
+	if (module.hot) { require('${require.resolve("./hotModuleReplacement.js")}'); }
+	${source}`;
 };
 
 module.exports.pitch = function(request) {
+	var self = this;
+	var remainingRequest = request;
 	if(this.cacheable) this.cacheable();
 	var query = loaderUtils.getOptions(this) || {};
 	var loaders = this.loaders.slice(this.loaderIndex + 1);
@@ -128,16 +132,24 @@ module.exports.pitch = function(request) {
 					}
 					// module.hot.data is undefined on initial load, and an object in hot updates
 					resultSource += `
+/*__START_CSS__*/		
+var moduleId = "${text[0][0]}";
+var css = "${text[0][1].split("\n").join("")}";	
+var addStyles = require("style-loader/addStyles.js");				
+addStyles([[moduleId, css]], "");
+/*__END_CSS__*/
+
 if (module.hot) {
 	module.hot.accept();
 	if (module.hot.data) {
-		require('${extractTextPluginHmrRuntime}')('%%extracted-hash%%','${publicPath}','%%extracted-file%%');
+		require("${require.resolve('./hotModuleReplacement.js')}")("${publicPath}", "%%extracted-file%%");
 	}
 }`;
 				}
 			} catch(e) {
 				return callback(e);
 			}
+
 			if(resultSource)
 				callback(null, resultSource);
 			else

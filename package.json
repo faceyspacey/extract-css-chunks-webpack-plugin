@@ -1,10 +1,19 @@
 {
-  "name": "extract-text-webpack-plugin",
-  "version": "2.1.0",
-  "author": "Tobias Koppers @sokra",
-  "description": "Extract text from bundle into a file.",
+  "name": "extract-css-chunks-webpack-plugin",
+  "version": "1.0.3",
+  "author": "James Gillmore <james@faceyspacey.com>",
+  "description": "Extract CSS from chunks into stylesheets + HMR",
   "engines": {
     "node": ">=4.3.0 < 5.0.0 || >= 5.10"
+  },
+  "license": "MIT",
+  "scripts": {
+    "test": "mocha",
+    "travis": "npm run cover -- --report lcovonly",
+    "cover": "istanbul cover _mocha",
+    "release": "standard-version",
+    "build:example": "(cd example && webpack)",
+    "commit": "git-cz"
   },
   "peerDependencies": {
     "webpack": "^2.2.0"
@@ -27,19 +36,18 @@
     "should": "^11.1.2",
     "standard-version": "^4.0.0",
     "style-loader": "^0.13.0",
-    "webpack": "^2.2.0"
+    "webpack": "^2.2.0",
+    "commitizen": "^2.9.6",
+    "cz-conventional-changelog": "^2.0.0"
   },
   "homepage": "http://github.com/webpack/extract-text-webpack-plugin",
   "repository": {
     "type": "git",
     "url": "http://github.com/webpack/extract-text-webpack-plugin.git"
   },
-  "license": "MIT",
-  "scripts": {
-    "test": "mocha",
-    "travis": "npm run cover -- --report lcovonly",
-    "cover": "istanbul cover _mocha",
-    "release": "standard-version",
-    "build:example": "(cd example && webpack)"
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
