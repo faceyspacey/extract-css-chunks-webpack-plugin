@@ -1,6 +1,5 @@
 {
   "name": "extract-css-chunks-webpack-plugin",
-  "version": "1.0.3",
   "author": "James Gillmore <james@faceyspacey.com>",
   "description": "Extract CSS from chunks into stylesheets + HMR",
   "engines": {
@@ -13,7 +12,8 @@
     "cover": "istanbul cover _mocha",
     "release": "standard-version",
     "build:example": "(cd example && webpack)",
-    "commit": "git-cz"
+    "commit": "git-cz",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "peerDependencies": {
     "webpack": "^2.2.0"
@@ -38,12 +38,13 @@
     "style-loader": "^0.13.0",
     "webpack": "^2.2.0",
     "commitizen": "^2.9.6",
-    "cz-conventional-changelog": "^2.0.0"
+    "cz-conventional-changelog": "^2.0.0",
+    "semantic-release": "^6.3.2"
   },
-  "homepage": "http://github.com/webpack/extract-text-webpack-plugin",
+  "homepage": "http://github.com/faceyspacey/extract-css-chunks-webpack-plugin",
   "repository": {
     "type": "git",
-    "url": "http://github.com/webpack/extract-text-webpack-plugin.git"
+    "url": "http://github.com/faceyspacey/extract-css-chunks-webpack-plugin.git"
   },
   "config": {
     "commitizen": {
