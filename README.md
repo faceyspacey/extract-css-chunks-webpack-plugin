@@ -1,4 +1,3 @@
-# extract-css-chunks-webpack-plugin
 <p align="center">
   <a href="https://www.npmjs.com/package/extract-css-chunks-webpack-plugin">
     <img src="https://img.shields.io/npm/v/extract-css-chunks-webpack-plugin.svg" alt="Version" />
@@ -21,6 +20,7 @@
   </a>
 </p>
 
+# extract-css-chunks-webpack-plugin
 
 Like `extract-text-webpack-plugin`, but creates multiple css files (one per chunk). Then, as part of server side rendering, you can deliver just the css chunks needed by the current request. The result is the most minimal CSS initially served compared to emerging JS-in-CSS solutions.
 
