@@ -20,7 +20,7 @@
     "webpack": "^2.2.0"
   },
   "dependencies": {
-    "ajv": "^5.0.0",
+    "ajv": "^4.11.2",
     "async": "^2.1.2",
     "loader-utils": "^1.0.2",
     "webpack-sources": "^0.2.3"
