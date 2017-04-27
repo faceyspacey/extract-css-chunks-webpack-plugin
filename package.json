@@ -1,5 +1,6 @@
 {
   "name": "extract-css-chunks-webpack-plugin",
+  "version": "0.0.0-placeholder",
   "author": "James Gillmore <james@faceyspacey.com>",
   "description": "Extract CSS from chunks into stylesheets + HMR",
   "engines": {
