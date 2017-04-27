@@ -44,11 +44,12 @@
   "homepage": "http://github.com/faceyspacey/extract-css-chunks-webpack-plugin",
   "repository": {
     "type": "git",
-    "url": "http://github.com/faceyspacey/extract-css-chunks-webpack-plugin.git"
+    "url": "https://github.com/faceyspacey/extract-css-chunks-webpack-plugin.git"
   },
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
-  }
+  },
+  "version": "0.0.0-development"
 }
