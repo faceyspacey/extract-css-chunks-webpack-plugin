@@ -3,6 +3,8 @@
 
 # Extract CSS Chunk
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/faceyspacey/extract-css-chunks-webpack-plugin.svg)](https://greenkeeper.io/)
+
 Like the Extract Text Webpack Plugin, but creates multiple css files (one per chunk). Then, as part of server side rendering, you can deliver just the css chunks needed by the current request. 
 
 In addition, for each javascript chunk created  another js chunk is created with the styles injected via style-loader
