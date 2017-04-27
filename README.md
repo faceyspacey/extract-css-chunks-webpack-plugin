@@ -1,7 +1,59 @@
-[![npm][npm]][npm-url]
-[![chat][chat]][chat-url]
-
 # extract-css-chunks-webpack-plugin
+<p align="center">
+  <a href="https://www.npmjs.com/package/extract-css-chunks-webpack-plugin">
+    <img src="https://img.shields.io/npm/v/extract-css-chunks-webpack-plugin.svg" alt="Version" />
+  </a>
+
+  <a href="https://travis-ci.org/faceyspacey/extract-css-chunks-webpack-plugin">
+    <img src="https://travis-ci.org/faceyspacey/extract-css-chunks-webpack-plugin.svg?branch=master" alt="Build Status" />
+  </a>
+
+  <a href="https://greenkeeper.io">
+    <img src="https://badges.greenkeeper.io/faceyspacey/extract-css-chunks-webpack-plugin.svg" alt="Green Keeper" />
+  </a>
+
+  <a href="https://www.npmjs.com/package/extract-css-chunks-webpack-plugin">
+    <img src="https://img.shields.io/npm/dt/extract-css-chunks-webpack-plugin.svg" alt="Downloads" />
+  </a>
+
+  <a href="https://gitter.im/extract-css-chunks">
+    <img src="https://img.shields.io/gitter/room/nwjs/nw.js.svg" alt="Downloads" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/travis-github-status">
+    <img src="https://img.shields.io/npm/v/travis-github-status.svg" alt="Version" />
+  </a>
+
+  <a href="https://travis-ci.org/faceyspacey/travis-github-status">
+    <img src="https://travis-ci.org/faceyspacey/travis-github-status.svg?branch=master" alt="Build Status" />
+  </a>
+
+  <a href="https://lima.codeclimate.com/github/faceyspacey/travis-github-status/coverage">
+    <img src="https://lima.codeclimate.com/github/faceyspacey/travis-github-status/badges/coverage.svg" alt="Coverage Status"/>
+  </a>
+
+  <a href="https://greenkeeper.io">
+    <img src="https://badges.greenkeeper.io/faceyspacey/travis-github-status.svg" alt="Green Keeper" />
+  </a>
+
+  <a href="https://lima.codeclimate.com/github/faceyspacey/travis-github-status">
+    <img src="https://lima.codeclimate.com/github/faceyspacey/travis-github-status/badges/gpa.svg" alt="GPA" />
+  </a>
+
+  <a href="https://www.npmjs.com/package/travis-github-status">
+    <img src="https://img.shields.io/npm/dt/travis-github-status.svg" alt="Downloads" />
+  </a>
+  
+  <a href="https://snyk.io/test/github/faceyspacey/travis-github-status">
+    <img src="https://snyk.io/test/github/faceyspacey/travis-github-status/badge.svg" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/faceyspacey/travis-github-status">
+  </a>
+
+  <a href="https://www.npmjs.com/package/travis-github-status">
+    <img src="https://img.shields.io/npm/l/travis-github-status.svg" alt="License" />
+  </a>
+</p>
 
 Like `extract-text-webpack-plugin`, but creates multiple css files (one per chunk). Then, as part of server side rendering, you can deliver just the css chunks needed by the current request. The result is the most minimal CSS initially served compared to emerging JS-in-CSS solutions.
 
@@ -152,13 +204,7 @@ As an aside, so many apps share code between web and React Native--so the answer
 Most the code comes from the original Extract Text Webpack Plugin--the goal is to merge this functionality back into that package at some point, though that process is not looking good. So that might be a while. Until then I'd feel totally comfortable just using this package. Though it took a while to make (and figure out how the original package worked), very little code has changed, and it won't be hard to keep in sync with upstream changes. 
 
 
-## Contribution
+## Contributing
 We use [commitizen](https://github.com/commitizen/cz-cli), so run `npm run commit` to make commits. A command-line form will appear, requiring you answer a few questions to automatically produce a nicely formatted commit. Releases, semantic version numbers, tags and changelogs will automatically be generated based on these commits thanks to [semantic-release](https://github.com/semantic-release/semantic-release).
 
 
-
-[npm]: https://img.shields.io/npm/v/extract-css-chunks-webpack-plugin.svg
-[npm-url]: https://npmjs.com/package/extract-css-chunks-webpack-plugin
-
-[chat]: https://badges.gitter.im/extract-css-chunks-webpack-plugin.svg
-[chat-url]: https://gitter.im/extract-css-chunks-webpack-plugin
