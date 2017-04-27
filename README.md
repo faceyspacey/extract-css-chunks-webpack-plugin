@@ -98,6 +98,7 @@ Keep in mind we've added sensible defaults, specifically: `[name].css` is used w
 The 2 exceptions are: `allChunks` will no longer do anything, and `fallback` will no longer do anything when passed to to `extract`. Basically just worry about passing your `css-loader` string and `localIdentName` 🤓
 
 
+
 ## How It Works
 
 Just like your JS, it moves all the the required CSS into corresponding css chunk files. So entry chunks might be named: `main.12345.css` and dynamic split chunks would be named: `0.123456.css`, `1.123456.css`, etc. You will however now have 2 files for each javascript chunk: `0.no_css.js` and `0.js`. The former is what you should serve in the initial request (and what [webpack-flush-chunks](https://github.com/faceyspacey/webpack-flush-chunks) in conjunction with [react-loadable](https://github.com/thejameskyle/react-loadable) will automatically serve). The latter, *which DOES contain css injection via style-loader*, is what will asyncronously be loaded in future async requests. This solves the fact that they otherwise would be missing CSS, since the webpack async loading mechanism isn't built to serve both a JS and CSS file. In total, 3 files are created for each named entry chunk and 3 files for each dynamically split chunk, e.g: 
