@@ -22,6 +22,7 @@
   "dependencies": {
     "ajv": "^4.11.2",
     "async": "^2.1.2",
+    "jsesc": "^2.5.1",
     "loader-utils": "^1.0.2",
     "style-loader": "^0.16.1",
     "webpack-sources": "^0.2.3"

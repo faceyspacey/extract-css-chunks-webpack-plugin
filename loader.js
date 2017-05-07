@@ -5,6 +5,7 @@
 var path = require("path");
 var fs = require("fs");
 var loaderUtils = require("loader-utils");
+var jsesc = require("jsesc");
 var NodeTemplatePlugin = require("webpack/lib/node/NodeTemplatePlugin");
 var NodeTargetPlugin = require("webpack/lib/node/NodeTargetPlugin");
 var LibraryTemplatePlugin = require("webpack/lib/LibraryTemplatePlugin");
@@ -130,12 +131,14 @@ module.exports.pitch = function(request) {
 					if (text.locals) {
 						resultSource += "\nmodule.exports = " + JSON.stringify(text.locals) + ";";
 					}
+
 					// module.hot.data is undefined on initial load, and an object in hot updates
+					var jsescOpts = { wrap: true, quotes: "double" };
 					resultSource += `
-/*__START_CSS__*/		
-var moduleId = "${text[0][0]}";
-var css = "${text[0][1].split("\n").join("")}";	
-var addStyles = require("style-loader/addStyles.js");				
+/*__START_CSS__*/
+var moduleId = ${jsesc(text[0][0], jsescOpts)};
+var css = ${jsesc(text[0][1], jsescOpts)};
+var addStyles = require("style-loader/addStyles.js");
 addStyles([[moduleId, css]], "");
 /*__END_CSS__*/
 
