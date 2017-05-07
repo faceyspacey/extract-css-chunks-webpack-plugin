@@ -22,6 +22,8 @@
 
 # extract-css-chunks-webpack-plugin
 
+[![Join the chat at https://gitter.im/extract-css-chunks/Lobby](https://badges.gitter.im/extract-css-chunks/Lobby.svg)](https://gitter.im/extract-css-chunks/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Like `extract-text-webpack-plugin`, but creates multiple css files (one per chunk). Then, as part of server side rendering, you can deliver just the css chunks needed by the current request. The result is the most minimal CSS initially served compared to emerging JS-in-CSS solutions.
 
 *Note: this is a companion package to:*
