@@ -116,7 +116,7 @@ function getOrder(a, b) {
 
 function ExtractTextPlugin(options) {
 	options = options || {}
-	
+
 	if(arguments.length > 1) {
 		throw new Error("Breaking change: ExtractTextPlugin now only takes a single argument. Either an options " +
 						"object *or* the name of the result file.\n" +
@@ -390,6 +390,5 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 			})
 			callback()
 		}.bind(this));
-		
 	}.bind(this));
 };
