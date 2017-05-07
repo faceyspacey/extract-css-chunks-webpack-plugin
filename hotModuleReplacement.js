@@ -12,7 +12,7 @@ module.exports = function(publicPath, outputFilename) {
 
         if (oldChunk === newChunk) {
           // date insures sheets update when [contenthash] is not used in file names
-          var url = newHref + '?' + (+new Date); 
+          var url = newHref + '?' + (+new Date);
           styleSheets[i].href = url;
           console.log('[HMR]', 'Reload css: ', url);
           break;
