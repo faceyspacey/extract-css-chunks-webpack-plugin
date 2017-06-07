@@ -6,6 +6,15 @@
   "engines": {
     "node": ">=4.3.0 < 5.0.0 || >= 5.10"
   },
+  "main": "index.js",
+  "files": [
+    "schema",
+    "ExtractedModule.js",
+    "index.js",
+    "loader.js",
+    "OrderUndefinedError.js",
+    "hotModuleReplacement.js"
+  ],
   "license": "MIT",
   "scripts": {
     "test": "mocha",
@@ -26,7 +35,7 @@
     "loader-utils": "^1.0.2",
     "schema-utils": "^0.3.0",
     "style-loader": "^0.16.1",
-    "webpack-sources": "^0.2.3"
+    "webpack-sources": "^1.0.1"
   },
   "devDependencies": {
     "codecov.io": "^0.1.2",
