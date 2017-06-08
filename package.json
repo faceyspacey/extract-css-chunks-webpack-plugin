@@ -34,7 +34,7 @@
     "jsesc": "^2.5.1",
     "loader-utils": "^1.0.2",
     "schema-utils": "^0.3.0",
-    "style-loader": "^0.16.1",
+    "style-loader": "^0.18.2",
     "webpack-sources": "^1.0.1"
   },
   "devDependencies": {

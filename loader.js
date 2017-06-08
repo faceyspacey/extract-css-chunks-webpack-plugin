@@ -17,7 +17,7 @@ var NS = fs.realpathSync(__dirname);
 module.exports = function(source) {
 	if(this.cacheable) this.cacheable();
 	// Even though this gets overwritten if extract+remove are true, without it, the runtime doesn't get added to the chunk
-	return `require("style-loader/addStyles.js");
+	return `require("style-loader/lib/addStyles.js");
 	if (module.hot) { require('${require.resolve("./hotModuleReplacement.js")}'); }
 	${source}`;
 };
@@ -138,7 +138,7 @@ module.exports.pitch = function(request) {
 /*__START_CSS__*/
 var moduleId = ${jsesc(text[0][0], jsescOpts)};
 var css = ${jsesc(text[0][1], jsescOpts)};
-var addStyles = require("style-loader/addStyles.js");
+var addStyles = require("style-loader/lib/addStyles.js");
 addStyles([[moduleId, css]], "");
 /*__END_CSS__*/
 
