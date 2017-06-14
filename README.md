@@ -7,10 +7,6 @@
     <img src="https://travis-ci.org/faceyspacey/extract-css-chunks-webpack-plugin.svg?branch=master" alt="Build Status" />
   </a>
 
-  <a href="https://greenkeeper.io">
-    <img src="https://badges.greenkeeper.io/faceyspacey/extract-css-chunks-webpack-plugin.svg" alt="Green Keeper" />
-  </a>
-
   <a href="https://www.npmjs.com/package/extract-css-chunks-webpack-plugin">
     <img src="https://img.shields.io/npm/dt/extract-css-chunks-webpack-plugin.svg" alt="Downloads" />
   </a>
@@ -27,9 +23,9 @@ Like `extract-text-webpack-plugin`, but creates multiple css files (one per chun
 
 *Note: this is a companion package to:*
 - [webpack-flush-chunks](https://github.com/faceyspacey/webpack-flush-chunks) 
-- [react-loadable](https://github.com/thejameskyle/react-loadable)
+- [react-universal-component](https://github.com/faceyspacey/react-universal-component)
 
-For a complete usage example, see the [Flush Chunks Boilerplate](https://github.com/faceyspacey/flush-chunks-boilerplate).
+For a complete usage example, see the [Flush Chunks Boilerplates](https://github.com/faceyspacey/webpack-flush-chunks#boilerplates).
 
 Here's the sort of CSS you can expect to serve:
 
@@ -74,7 +70,13 @@ module.exports = {
       {
         test: /\.css$/,
         use: ExtractCssChunks.extract({
-          use: 'css-loader?modules&localIdentName=[name]__[local]--[hash:base64:5]',
+          use: {
+            loader: 'css-loader',
+            options: {
+              modules: true,
+              localIdentName: '[name]__[local]--[hash:base64:5]'
+            }
+          }
         })
       }
     ]
@@ -102,7 +104,7 @@ The 2 exceptions are: `allChunks` will no longer do anything, and `fallback` wil
 
 ## How It Works
 
-Just like your JS, it moves all the the required CSS into corresponding css chunk files. So entry chunks might be named: `main.12345.css` and dynamic split chunks would be named: `0.123456.css`, `1.123456.css`, etc. You will however now have 2 files for each javascript chunk: `0.no_css.js` and `0.js`. The former is what you should serve in the initial request (and what [webpack-flush-chunks](https://github.com/faceyspacey/webpack-flush-chunks) in conjunction with [react-loadable](https://github.com/thejameskyle/react-loadable) will automatically serve). The latter, *which DOES contain css injection via style-loader*, is what will asyncronously be loaded in future async requests. This solves the fact that they otherwise would be missing CSS, since the webpack async loading mechanism isn't built to serve both a JS and CSS file. In total, 3 files are created for each named entry chunk and 3 files for each dynamically split chunk, e.g: 
+Just like your JS, it moves all the the required CSS into corresponding css chunk files. So entry chunks might be named: `main.12345.css` and dynamic split chunks would be named: `0.123456.css`, `1.123456.css`, etc. You will however now have 2 files for each javascript chunk: `0.no_css.js` and `0.js`. The former is what you should serve in the initial request (and what [webpack-flush-chunks](https://github.com/faceyspacey/webpack-flush-chunks) in conjunction with [react-universal-component](https://github.com/faceyspacey/react-universal-component) will automatically serve). The latter, *which DOES contain css injection via style-loader*, is what will asyncronously be loaded in future async requests. This solves the fact that they otherwise would be missing CSS, since the webpack async loading mechanism isn't built to serve both a JS and CSS file. In total, 3 files are created for each named entry chunk and 3 files for each dynamically split chunk, e.g: 
 
 **entry chunk:**
 - `main.js`
@@ -139,6 +141,10 @@ So yes, our CSS may be mildly larger and include unnecessary css, but our `no_cs
 
 On top of that, those are extra packages all with a huge number of issues in their Github repos corresponding to various limitations in the CSS they generate--something that is prevented when your definition for "CSS-in-JS" is simply importing CSS files compiled as normal by powerful proven CSS-specific processors.
 
+Lastly, those solutions don't provide cacheable stylesheets. They do a lot of work--but they will *continue* doing it for you when you could have been done in one go long ago. Cloudflare is free--serve them through their CDN and you're winning. I love true javascript in css--don't get me wrong--but first I'd have to see they generate cacheable stylesheets. In my opinion, for now, it's best for environments that natively support it such as React Native.
+
+#### Next:
+
 Now with that out of the way, for completeness let's compare what bytes of just the CSS are sent over the wire. The difference basically is minimal. Whereas solutions that flush from the critical render path will capture no more than the precise bits of CSS from the `if/else` branches followed, **Extract Css Chunks** is all about you effectively using code-splitting to insure, for example, you don't serve your Administration Panel's CSS in your public-facing site, etc. *In other words, it's all about avoiding serving large swaths of CSS from completely different sections of your app.* ***I.e. the biggest gains available to you.*** 
 
 This is where the real problem lies--where the real amount of unnecessary CSS comes from. If you effectively code-split your app, you may end up with 10 chunks. Now you can serve just the corresonding CSS for that chunk. If you try to go even farther and remove the css not used in the render path, you're likely acheiving somewhere between 1-20% of the gains you achieved by thorough code-splitting. In other words, code splitting fulfills the 80/20 rule and attains the simple sweetspot of 80% optimization you--*as a balanced, level-headed, non-neurotic and professional developer*--are looking to achieve.
@@ -149,7 +155,7 @@ It's our perspective that you have achieved 80-99% of the performance gains (i.e
 
 There may be other reasons to use those tools (e.g. you don't like setting up webpack configs, or somehow you're really fond of pre-creating many `<div />` elements with their styles), but we prefer a simple standards-based way (without HoCs or specialized style components) to import styles just as you would in React Native. However to give the other tools credit, many of them likely started out with a different problem motivating them: avoiding webpack configs so you can include packages and their contained CSS without client apps being required to setup something like CSS loaders in Webpack. Having your CSS completely contained in true JS has its use cases, but at the application level--especially when you're already using something like Webpack--we fail to see its benefits. About all they share is a solution to avoiding *flashes of unstyled content* (FOUC), except one can save you a lot more bytes in what you send over the wire and save you from a continual runtime overhead where it's not needed. ***Honorable Mention:*** *StyleTron's concept of "atomic declaration-level deduplication" where it will make a class out of, say, `color: blue` so you don't need to send redundant styles certainly is a novel innovation, but again if the code still exists in your JS and you're building an application using Webpack (instead of a package), what's the point. In fact, it just makes editing the stylesheets in your browser developer tools more complicated. One benefit of critical render path solutions is the browser can spend less time matching the smaller number of styles to new DOM nodes as they appear, but then again it also has to spend the time injecting and parsing the new styles constantly, which is likely costlier.*
 
-As an aside, so many apps share code between web and React Native--so the answer to the styles problem must be one that is identical for both. From that perspective importing a styles object *still* makes a lot of sense. **You're not missing out on the fundamental aspect of CSS-in-JSS:** ***isolated component-level styles and the ability to import them just like any other javascript code.*** Put them in other files, and use tools like `extract-css-chunks-webpack-plugin` and your pre-processors of choice that innately get styles right for the browser. As long as you're using *CSS Modules*, you're still at the cutting edge of CSS-in-JSS. Let's just say the other tools took one wrong turn and took it too far, when we already were at our destination.
+As an aside, so many apps share code between web and React Native--so the answer to the styles problem must be one that is identical for both. From that perspective importing a styles object *still* makes a lot of sense. **You're not missing out on the fundamental aspect of CSS-in-JSS:** ***isolated component-level styles and the ability to import them just like any other javascript code.*** Put them in other files, and use tools like `extract-css-chunks-webpack-plugin` and your pre-processors of choice that innately get styles right for the browser. As long as you're using *CSS Modules*, you're still at the cutting edge of CSS-in-JSS. Let's just say the other tools took one wrong turn and took it too far, when we already were at our destination. 
 
 
 
@@ -174,5 +180,5 @@ Most the code comes from the original Extract Text Webpack Plugin--the goal is t
 
 
 ## Contributing
-We use [commitizen](https://github.com/commitizen/cz-cli), so run `npm run commit` to make commits. A command-line form will appear, requiring you answer a few questions to automatically produce a nicely formatted commit. Releases, semantic version numbers, tags and changelogs will automatically be generated based on these commits thanks to [semantic-release](https://github.com/semantic-release/semantic-release).
+We use [commitizen](https://github.com/commitizen/cz-cli), so run `npm run cm` to make commits. A command-line form will appear, requiring you answer a few questions to automatically produce a nicely formatted commit. Releases, semantic version numbers, tags and changelogs will automatically be generated based on these commits thanks to [semantic-release](https://github.com/semantic-release/semantic-release). Be good.
 
