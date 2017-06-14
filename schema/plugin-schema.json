@@ -41,6 +41,10 @@
     "publicPath": {
       "description": "",
       "type": "string"
-    }
+    },
+	"fullChunksOnly": {
+	  "description": "Allow only full chunks with CSS inside (do not create .no_css.js chunks)",
+	  "type": "boolean"
+	}
   }
 }

@@ -100,6 +100,7 @@ Keep in mind we've added sensible defaults, specifically: `[name].css` is used w
 
 The 2 exceptions are: `allChunks` will no longer do anything, and `fallback` will no longer do anything when passed to to `extract`. Basically just worry about passing your `css-loader` string and `localIdentName` 🤓
 
+You can also specify `fullChunksOnly: true` to skip creation of .no_css.js chunks.
 
 
 ## How It Works
