@@ -361,33 +361,34 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 					});
 				}
 			}, this);
+			if (!options.fullChunksOnly) {
+				// duplicate js chunks into secondary files that don't have css injection,
+				// giving the additional js files the extension: `.no_css.js`
+				Object.keys(compilation.assets).forEach(function (name) {
+					var asset = compilation.assets[name];
 
-			// duplicate js chunks into secondary files that don't have css injection,
-			// giving the additional js files the extension: `.no_css.js`
-			Object.keys(compilation.assets).forEach(function(name) {
-				var asset = compilation.assets[name];
+					if (/\.js$/.test(name) && asset._source) {
+						var newName = name.replace(/\.js/, '.no_css.js');
+						var newAsset = new CachedSource(asset._source);
+						var regex = /\/\*__START_CSS__\*\/[\s\S]*?\/\*__END_CSS__\*\//g
 
-				if (/\.js$/.test(name) && asset._source) {
-					var newName = name.replace(/\.js/, '.no_css.js');
-					var newAsset = new CachedSource(asset._source);
-					var regex = /\/\*__START_CSS__\*\/[\s\S]*?\/\*__END_CSS__\*\//g
+						// remove js that adds css to DOM via style-loader, so that React Loadable
+						// can serve smaller files (without css) in initial request.
+						newAsset._cachedSource = asset.source().replace(regex, '');
 
-					// remove js that adds css to DOM via style-loader, so that React Loadable
-					// can serve smaller files (without css) in initial request.
-					newAsset._cachedSource = asset.source().replace(regex, '');
+						compilation.assets[newName] = newAsset;
 
-					compilation.assets[newName] = newAsset;
-
-					// add no_css file to files associated with chunk so that they are minified,
-					// and receive source maps, and can be found by React Loadable
-					extractedChunks.forEach(function(extractedChunk) {
-						var chunk = extractedChunk.originalChunk;
-						if (chunk.files.indexOf(name) > -1) {
-							chunk.files.push(newName);
-						}
-					})
-				}
-			})
+						// add no_css file to files associated with chunk so that they are minified,
+						// and receive source maps, and can be found by React Loadable
+						extractedChunks.forEach(function (extractedChunk) {
+							var chunk = extractedChunk.originalChunk;
+							if (chunk.files.indexOf(name) > -1) {
+								chunk.files.push(newName);
+							}
+						})
+					}
+				})
+			}
 			callback()
 		}.bind(this));
 	}.bind(this));
