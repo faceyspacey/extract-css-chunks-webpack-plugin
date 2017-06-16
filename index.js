@@ -371,10 +371,14 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 					var newName = name.replace(/\.js/, '.no_css.js');
 					var newAsset = new CachedSource(asset._source);
 					var regex = /\/\*__START_CSS__\*\/[\s\S]*?\/\*__END_CSS__\*\//g
+					var source = asset.source();
 
+					if (!source.match(regex)) {
+						return;
+					}
 					// remove js that adds css to DOM via style-loader, so that React Loadable
 					// can serve smaller files (without css) in initial request.
-					newAsset._cachedSource = asset.source().replace(regex, '');
+					newAsset._cachedSource = source.replace(regex, '');
 
 					compilation.assets[newName] = newAsset;
 
