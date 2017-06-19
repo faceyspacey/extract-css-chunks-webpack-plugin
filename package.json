@@ -29,7 +29,6 @@
     "webpack": "^2.2.0"
   },
   "dependencies": {
-    "ajv": "^4.11.2",
     "async": "^2.1.2",
     "jsesc": "^2.5.1",
     "loader-utils": "^1.0.2",
@@ -52,7 +51,7 @@
     "semantic-release": "^6.3.2",
     "should": "^11.1.2",
     "standard-version": "^4.0.0",
-    "webpack": "2.6.0"
+    "webpack": "~2.6.0"
   },
   "homepage": "http://github.com/faceyspacey/extract-css-chunks-webpack-plugin",
   "repository": {
