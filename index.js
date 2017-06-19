@@ -45,18 +45,20 @@ ExtractTextPlugin.prototype.mergeNonInitialChunks = function(chunk, intoChunk, c
 	}
 };
 
-ExtractTextPluginCompilation.prototype.addModule = function(identifier, originalModule, source, additionalInformation, sourceMap, prevModules) {
-	var m;
-	if(!this.modulesByIdentifier[identifier]) {
-		m = this.modulesByIdentifier[identifier] = new ExtractedModule(identifier, originalModule, source, sourceMap, additionalInformation, prevModules);
-	} else {
-		m = this.modulesByIdentifier[identifier];
-		m.addPrevModules(prevModules);
-		if(originalModule.index2 < m.getOriginalModule().index2) {
-			m.setOriginalModule(originalModule);
+ExtractTextPluginCompilation.prototype.addModule =
+	function(identifier, originalModule, source, additionalInformation, sourceMap, prevModules) {
+		var m;
+		if(!this.modulesByIdentifier[identifier]) {
+			m = this.modulesByIdentifier[identifier] =
+				new ExtractedModule(identifier, originalModule, source, sourceMap, additionalInformation, prevModules);
+		} else {
+			m = this.modulesByIdentifier[identifier];
+			m.addPrevModules(prevModules);
+			if(originalModule.index2 < m.getOriginalModule().index2) {
+				m.setOriginalModule(originalModule);
+			}
 		}
-	}
-	return m;
+		return m;
 };
 
 ExtractTextPluginCompilation.prototype.addResultToChunk = function(identifier, result, originalModule, extractedChunk) {
@@ -203,7 +205,8 @@ ExtractTextPlugin.prototype.extract = function(options) {
 	if(options.loader) {
 		console.warn('loader option has been deprecated - replace with "use"');
 	}
-	if(Array.isArray(options) || isString(options) || typeof options.options === "object" || typeof options.query === 'object') {
+	if(Array.isArray(options) ||
+		isString(options) || typeof options.options === "object" || typeof options.query === 'object') {
 		options = { loader: options };
 	} else {
 		validateOptions(path.resolve(__dirname, './schema/loader.json'), options, 'Extract Text Plugin (Loader)');
@@ -317,7 +320,9 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 							});
 						} else {
 							if(meta.content)
-								extractCompilation.addResultToChunk(module.identifier(), meta.content, module, extractedChunk);
+								extractCompilation.addResultToChunk(
+									module.identifier(), meta.content, module, extractedChunk
+								);
 							callback();
 						}
 					} else callback();
@@ -359,8 +364,7 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 					newModule._source = data.module._source;
 					data.chunks.forEach(function (chunk) {
 						chunk.removeModule(data.moduleToRemove);
-						var deps = data.moduleToRemove.dependencies.slice();
-						deps.forEach(d => {
+						data.moduleToRemove.dependencies.forEach(d => {
 							chunk.removeModule(d.module);
 						});
 						chunk.addModule(newModule);
