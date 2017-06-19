@@ -1,53 +1,49 @@
 /*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
+ MIT License http://www.opensource.org/licenses/mit-license.php
+ Author Tobias Koppers @sokra
+ */
 var fs = require('fs');
 var ConcatSource = require("webpack-sources").ConcatSource;
-var CachedSource = require("webpack-sources").CachedSource;
 var async = require("async");
 var ExtractedModule = require("./ExtractedModule");
 var Chunk = require("webpack/lib/Chunk");
+var NormalModule = require("webpack/lib/NormalModule");
 var OrderUndefinedError = require("./OrderUndefinedError");
 var loaderUtils = require("loader-utils");
-var schemaTester = require('./schema/validator');
-var loaderSchema = require('./schema/loader-schema');
-var pluginSchema = require('./schema/plugin-schema.json');
+var validateOptions = require('schema-utils');
+var path = require('path');
 
 var NS = fs.realpathSync(__dirname);
-var DEV = process.env.NODE_ENV === 'development';
+
 var nextId = 0;
 
 function ExtractTextPluginCompilation() {
 	this.modulesByIdentifier = {};
 }
 
-// ExtractTextPlugin.prototype.mergeNonInitialChunks = function(chunk, intoChunk, checkedChunks) {
-// 	if (chunk.chunks) {
-// 		// Fix error when hot module replacement used with CommonsChunkPlugin
-// 		chunk.chunks = chunk.chunks.filter(function(c) {
-// 			return typeof c !== 'undefined';
-// 		})
-// 	}
+function isInitialOrHasNoParents(chunk) {
+	return chunk.isInitial() || chunk.parents.length === 0;
+}
 
-// 	if(!intoChunk) {
-// 		checkedChunks = [];
-// 		chunk.chunks.forEach(function(c) {
-// 			if(c.isInitial()) return;
-// 			this.mergeNonInitialChunks(c, chunk, checkedChunks);
-// 		}, this);
-// 	} else if(checkedChunks.indexOf(chunk) < 0) {
-// 		checkedChunks.push(chunk);
-// 		chunk.modules.slice().forEach(function(module) {
-// 			intoChunk.addModule(module);
-// 			module.addChunk(intoChunk);
-// 		});
-// 		chunk.chunks.forEach(function(c) {
-// 			if(c.isInitial()) return;
-// 			this.mergeNonInitialChunks(c, intoChunk, checkedChunks);
-// 		}, this);
-// 	}
-// };
+ExtractTextPlugin.prototype.mergeNonInitialChunks = function(chunk, intoChunk, checkedChunks) {
+	if(!intoChunk) {
+		checkedChunks = [];
+		chunk.chunks.forEach(function(c) {
+			if(isInitialOrHasNoParents(c)) return;
+			this.mergeNonInitialChunks(c, chunk, checkedChunks);
+		}, this);
+	} else if(checkedChunks.indexOf(chunk) < 0) {
+		checkedChunks.push(chunk);
+		chunk.modules.slice().forEach(function(module) {
+			intoChunk.addModule(module);
+			module.addChunk(intoChunk);
+		});
+		chunk.chunks.forEach(function(c) {
+			if(isInitialOrHasNoParents(c)) return;
+			this.mergeNonInitialChunks(c, intoChunk, checkedChunks);
+		}, this);
+	}
+};
 
 ExtractTextPluginCompilation.prototype.addModule = function(identifier, originalModule, source, additionalInformation, sourceMap, prevModules) {
 	var m;
@@ -115,26 +111,25 @@ function getOrder(a, b) {
 }
 
 function ExtractTextPlugin(options) {
-	options = options || {}
-
 	if(arguments.length > 1) {
 		throw new Error("Breaking change: ExtractTextPlugin now only takes a single argument. Either an options " +
-						"object *or* the name of the result file.\n" +
-						"Example: if your old code looked like this:\n" +
-						"    new ExtractTextPlugin('css/[name].css', { disable: false, allChunks: true })\n\n" +
-						"You would change it to:\n" +
-						"    new ExtractTextPlugin({ filename: 'css/[name].css', disable: false, allChunks: true })\n\n" +
-						"The available options are:\n" +
-						"    filename: string\n" +
-						"    allChunks: boolean\n" +
-						"    disable: boolean\n");
+			"object *or* the name of the result file.\n" +
+			"Example: if your old code looked like this:\n" +
+			"    new ExtractTextPlugin('css/[name].css', { disable: false, allChunks: true })\n\n" +
+			"You would change it to:\n" +
+			"    new ExtractTextPlugin({ filename: 'css/[name].css', disable: false, allChunks: true })\n\n" +
+			"The available options are:\n" +
+			"    filename: string\n" +
+			"    allChunks: boolean\n" +
+			"    disable: boolean\n" +
+			"    ignoreOrder: boolean\n");
 	}
 	if(isString(options)) {
 		options = { filename: options };
 	} else {
-		schemaTester(pluginSchema, options);
+		validateOptions(path.resolve(__dirname, './schema/plugin.json'), options, 'Extract Text Plugin');
 	}
-	this.filename = options.filename || (DEV ? '[name].css' : '[name].[contenthash].css');
+	this.filename = options.filename;
 	this.id = options.id != null ? options.id : ++nextId;
 	this.options = {};
 	mergeOptions(this.options, options);
@@ -192,15 +187,15 @@ ExtractTextPlugin.prototype.loader = function(options) {
 ExtractTextPlugin.prototype.extract = function(options) {
 	if(arguments.length > 1) {
 		throw new Error("Breaking change: extract now only takes a single argument. Either an options " +
-						"object *or* the loader(s).\n" +
-						"Example: if your old code looked like this:\n" +
-						"    ExtractTextPlugin.extract('style-loader', 'css-loader')\n\n" +
-						"You would change it to:\n" +
-						"    ExtractTextPlugin.extract({ fallback: 'style-loader', use: 'css-loader' })\n\n" +
-						"The available options are:\n" +
-						"    use: string | object | loader[]\n" +
-						"    fallback: string | object | loader[]\n" +
-						"    publicPath: string\n");
+			"object *or* the loader(s).\n" +
+			"Example: if your old code looked like this:\n" +
+			"    ExtractTextPlugin.extract('style-loader', 'css-loader')\n\n" +
+			"You would change it to:\n" +
+			"    ExtractTextPlugin.extract({ fallback: 'style-loader', use: 'css-loader' })\n\n" +
+			"The available options are:\n" +
+			"    use: string | object | loader[]\n" +
+			"    fallback: string | object | loader[]\n" +
+			"    publicPath: string\n");
 	}
 	if(options.fallbackLoader) {
 		console.warn('fallbackLoader option has been deprecated - replace with "fallback"');
@@ -211,7 +206,7 @@ ExtractTextPlugin.prototype.extract = function(options) {
 	if(Array.isArray(options) || isString(options) || typeof options.options === "object" || typeof options.query === 'object') {
 		options = { loader: options };
 	} else {
-		schemaTester(loaderSchema, options);
+		validateOptions(path.resolve(__dirname, './schema/loader.json'), options, 'Extract Text Plugin (Loader)');
 	}
 	var loader = options.use ||  options.loader;
 	var before = options.fallback || options.fallbackLoader || [];
@@ -231,7 +226,7 @@ ExtractTextPlugin.prototype.extract = function(options) {
 	return [this.loader(options)]
 		.concat(before, loader)
 		.map(getLoaderObject);
-}
+};
 
 ExtractTextPlugin.extract = ExtractTextPlugin.prototype.extract.bind(ExtractTextPlugin);
 
@@ -239,6 +234,7 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 	var options = this.options;
 	compiler.plugin("this-compilation", function(compilation) {
 		var extractCompilation = new ExtractTextPluginCompilation();
+		var toRemoveModules = {};
 		compilation.plugin("normal-module-loader", function(loaderContext, module) {
 			loaderContext[NS] = function(content, opt) {
 				if(options.disable)
@@ -274,29 +270,49 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 			});
 			async.forEach(chunks, function(chunk, callback) {
 				var extractedChunk = extractedChunks[chunks.indexOf(chunk)];
-
-				// SETTING THIS TO TRUE INSURES ALL CHUNKS ARE HANDLED:
-				var shouldExtract = true; //!!(options.allChunks || chunk.isInitial());
-
+				var shouldExtract = !!(options.allChunks || isInitialOrHasNoParents(chunk));
 				async.forEach(chunk.modules.slice(), function(module, callback) {
 					var meta = module[NS];
 					if(meta && (!meta.options.id || meta.options.id === id)) {
 						var wasExtracted = Array.isArray(meta.content);
 						if(shouldExtract !== wasExtracted) {
-							module[NS + "/extract"] = shouldExtract; // eslint-disable-line no-path-concat
-							compilation.rebuildModule(module, function(err) {
+							var newModule = new NormalModule(
+								module.request,
+								module.userRequest,
+								module.rawRequest,
+								module.loaders,
+								module.resource,
+								module.parser
+							);
+							newModule[NS + "/extract"] = shouldExtract; // eslint-disable-line no-path-concat
+							// build a new module and save result to extracted compilations
+							compilation.buildModule(newModule, false, newModule, null, function(err) {
 								if(err) {
 									compilation.errors.push(err);
 									return callback();
 								}
-								meta = module[NS];
+								meta = newModule[NS];
+								// Error out if content is not an array and is not null
 								if(!Array.isArray(meta.content) && meta.content != null) {
-									err = new Error(module.identifier() + " doesn't export content");
+									err = new Error(newModule.identifier() + " doesn't export content");
 									compilation.errors.push(err);
 									return callback();
 								}
-								if(meta.content)
-									extractCompilation.addResultToChunk(module.identifier(), meta.content, module, extractedChunk);
+								if(meta.content) {
+									var ident = module.identifier();
+									extractCompilation.addResultToChunk(ident, meta.content, newModule, extractedChunk);
+									// remove generated result from chunk
+									if(toRemoveModules[ident]) {
+										toRemoveModules[ident].chunks.push(chunk)
+									} else {
+										toRemoveModules[ident] = {
+											module: newModule,
+											moduleToRemove: module,
+											chunks: [chunk]
+										};
+									}
+
+								}
 								callback();
 							});
 						} else {
@@ -311,23 +327,47 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 				});
 			}, function(err) {
 				if(err) return callback(err);
-				// REMOVING THIS CODE IS ALL THAT'S NEEDED TO CREATE CSS FILES PER CHUNK:
-				// extractedChunks.forEach(function(extractedChunk) {
-				// 	if(extractedChunk.isInitial())
-				// 		this.mergeNonInitialChunks(extractedChunk);
-				// }, this);
-				// extractedChunks.forEach(function(extractedChunk) {
-				// 	if(!extractedChunk.isInitial()) {
-				// 		extractedChunk.modules.slice().forEach(function(module) {
-				// 			extractedChunk.removeModule(module);
-				// 		});
-				// 	}
-				// });
+				extractedChunks.forEach(function(extractedChunk) {
+					if(isInitialOrHasNoParents(extractedChunk))
+						this.mergeNonInitialChunks(extractedChunk);
+				}, this);
+				extractedChunks.forEach(function(extractedChunk) {
+					if(!isInitialOrHasNoParents(extractedChunk)) {
+						extractedChunk.modules.slice().forEach(function(module) {
+							extractedChunk.removeModule(module);
+						});
+					}
+				});
 				compilation.applyPlugins("optimize-extracted-chunks", extractedChunks);
 				callback();
 			}.bind(this));
 		}.bind(this));
-
+		compilation.plugin("optimize-module-ids", function(modules){
+			modules.forEach(function (module) {
+				var data = toRemoveModules[module.identifier()];
+				if (data) {
+					var id = module.id;
+					var newModule = new NormalModule(
+						module.request,
+						module.userRequest,
+						module.rawRequest,
+						module.loaders,
+						module.resource,
+						module.parser
+					);
+					newModule.id = id;
+					newModule._source = data.module._source;
+					data.chunks.forEach(function (chunk) {
+						chunk.removeModule(data.moduleToRemove);
+						var deps = data.moduleToRemove.dependencies.slice();
+						deps.forEach(d => {
+							chunk.removeModule(d.module);
+						});
+						chunk.addModule(newModule);
+					});
+				}
+			});
+		});
 		compilation.plugin("additional-assets", function(callback) {
 			extractedChunks.forEach(function(extractedChunk) {
 				if(extractedChunk.modules.length) {
@@ -361,38 +401,7 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 					});
 				}
 			}, this);
-
-			// duplicate js chunks into secondary files that don't have css injection,
-			// giving the additional js files the extension: `.no_css.js`
-			Object.keys(compilation.assets).forEach(function(name) {
-				var asset = compilation.assets[name];
-
-				if (/\.js$/.test(name) && asset._source) {
-					var regex = /\/\*__START_CSS__\*\/[\s\S]*?\/\*__END_CSS__\*\//g
-					var source = asset.source();
-
-					if (!source.match(regex)) {
-						return;
-					}
-					var newName = name.replace(/\.js/, '.no_css.js');
-					var newAsset = new CachedSource(asset._source);
-					// remove js that adds css to DOM via style-loader, so that React Loadable
-					// can serve smaller files (without css) in initial request.
-					newAsset._cachedSource = source.replace(regex, '');
-
-					compilation.assets[newName] = newAsset;
-
-					// add no_css file to files associated with chunk so that they are minified,
-					// and receive source maps, and can be found by React Loadable
-					extractedChunks.forEach(function(extractedChunk) {
-						var chunk = extractedChunk.originalChunk;
-						if (chunk.files.indexOf(name) > -1) {
-							chunk.files.push(newName);
-						}
-					})
-				}
-			})
-			callback()
+			callback();
 		}.bind(this));
 	}.bind(this));
 };

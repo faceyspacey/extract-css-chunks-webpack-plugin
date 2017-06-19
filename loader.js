@@ -2,10 +2,8 @@
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Tobias Koppers @sokra
 */
-var path = require("path");
 var fs = require("fs");
 var loaderUtils = require("loader-utils");
-var jsesc = require("jsesc");
 var NodeTemplatePlugin = require("webpack/lib/node/NodeTemplatePlugin");
 var NodeTargetPlugin = require("webpack/lib/node/NodeTargetPlugin");
 var LibraryTemplatePlugin = require("webpack/lib/LibraryTemplatePlugin");
@@ -15,17 +13,10 @@ var LimitChunkCountPlugin = require("webpack/lib/optimize/LimitChunkCountPlugin"
 var NS = fs.realpathSync(__dirname);
 
 module.exports = function(source) {
-	if(this.cacheable) this.cacheable();
-	// Even though this gets overwritten if extract+remove are true, without it, the runtime doesn't get added to the chunk
-	return `require("style-loader/lib/addStyles.js");
-	if (module.hot) { require('${require.resolve("./hotModuleReplacement.js")}'); }
-	${source}`;
+	return source;
 };
 
 module.exports.pitch = function(request) {
-	var self = this;
-	var remainingRequest = request;
-	if(this.cacheable) this.cacheable();
 	var query = loaderUtils.getOptions(this) || {};
 	var loaders = this.loaders.slice(this.loaderIndex + 1);
 	this.addDependency(this.resourcePath);
@@ -127,21 +118,12 @@ module.exports.pitch = function(request) {
 					});
 				});
 				this[NS](text, query);
+
 				if(typeof resultSource !== "undefined") {
 					if (text.locals) {
 						resultSource += "\nmodule.exports = " + JSON.stringify(text.locals) + ";";
 					}
-
-					// module.hot.data is undefined on initial load, and an object in hot updates
-					var jsescOpts = { wrap: true, quotes: "double" };
 					resultSource += `
-/*__START_CSS__*/
-var moduleId = ${jsesc(text[0][0], jsescOpts)};
-var css = ${jsesc(text[0][1], jsescOpts)};
-var addStyles = require("style-loader/lib/addStyles.js");
-addStyles([[moduleId, css]], "");
-/*__END_CSS__*/
-
 if (module.hot) {
 	module.hot.accept();
 	if (module.hot.data) {
@@ -152,7 +134,6 @@ if (module.hot) {
 			} catch(e) {
 				return callback(e);
 			}
-
 			if(resultSource)
 				callback(null, resultSource);
 			else
