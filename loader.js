@@ -128,7 +128,7 @@ module.exports.pitch = function (request) {
 if (module.hot) {
 	module.hot.accept();
 	if (module.hot.data) {
-		require(${loaderUtils.stringifyRequest(this, path.resolve('./hotModuleReplacement.js'))})("${publicPath}", "%%extracted-file%%");
+		require(${loaderUtils.stringifyRequest(this, path.join(__dirname, "hotModuleReplacement.js"))})("${publicPath}", "%%extracted-file%%");
 	}
 }`;
 				}
@@ -136,9 +136,10 @@ if (module.hot) {
 				return callback(e);
 			}
 			if (resultSource) {
-				return callback(null, resultSource);
+				callback(null, resultSource);
+			} else {
+				callback();
 			}
-			callback();
 		}.bind(this));
 	}
 };

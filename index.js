@@ -320,7 +320,7 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 								}
 								if(meta.content) {
 									var ident = module.identifier();
-									extractCompilation.addResultToChunk(ident, meta.content, newModule, extractedChunk);
+									extractCompilation.addResultToChunk(ident, meta.content, module, extractedChunk);
 									// remove generated result from chunk
 									if(toRemoveModules[ident]) {
 										toRemoveModules[ident].chunks.push(chunk)
