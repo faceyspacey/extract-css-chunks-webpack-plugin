@@ -18,6 +18,7 @@ module.exports = function (source) {
 };
 
 module.exports.pitch = function (request) {
+	if(this.cacheable) this.cacheable();
 	var query = loaderUtils.getOptions(this) || {};
 	var loaders = this.loaders.slice(this.loaderIndex + 1);
 	this.addDependency(this.resourcePath);
