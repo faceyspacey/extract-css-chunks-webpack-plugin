@@ -19,7 +19,7 @@ modules.export = function() {
 if (false) {
 	module.hot.accept();
 	if (module.hot.data) {
-		require("/home/david/Projekte/extract-css-chunks-webpack-plugin/hotModuleReplacement.js")("undefined", "homepage.css");
+		require("../../../../../hotModuleReplacement.js")("undefined", "homepage.css");
 	}
 }
 

@@ -254,6 +254,17 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 		var filename = this.filename;
 		var id = this.id;
 		var extractedChunks, entryChunks, initialChunks;
+
+		const getPath = (source, chunk) => (format) => compilation.getPath(format, {
+			chunk: chunk
+		}).replace(/\[(?:(\w+):)?contenthash(?::([a-z]+\d*))?(?::(\d+))?\]/ig, function() {
+			return loaderUtils.getHashDigest(source, arguments[1], arguments[2], parseInt(arguments[3], 10));
+		});
+
+		var getFile =(module, chunk) => (isFunction(filename)) ?
+			filename(getPath(module.source(), chunk)) :
+			getPath(module.source(), chunk)(filename);
+
 		compilation.plugin("optimize-tree", function(chunks, modules, callback) {
 			extractedChunks = chunks.map(function() {
 				return new Chunk();
@@ -319,10 +330,11 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 								callback();
 							});
 						} else {
-							if(meta.content)
+							if(meta.content) {
 								extractCompilation.addResultToChunk(
 									module.identifier(), meta.content, module, extractedChunk
 								);
+							}
 							callback();
 						}
 					} else callback();
@@ -371,7 +383,22 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 					});
 				}
 			});
+
+			// HMR: inject file name into corresponding javascript modules in order to trigger
+			// appropriate hot module reloading of CSS
+			extractedChunks.forEach(function(extractedChunk) {
+				extractedChunk.modules.forEach(function (module) {
+					if(module.__fileInjected) {
+						return;
+					}
+					module.__fileInjected = true;
+					var file = getFile(module, extractedChunk);
+					var originalModule = module.getOriginalModule();
+					originalModule._source._value = originalModule._source._value.replace("%%extracted-file%%", file);
+				});
+			})
 		});
+
 		compilation.plugin("additional-assets", function(callback) {
 			extractedChunks.forEach(function(extractedChunk) {
 				if(extractedChunk.modules.length) {
@@ -383,26 +410,11 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 						return getOrder(a, b);
 					});
 					var chunk = extractedChunk.originalChunk;
-					var source = this.renderExtractedChunk(extractedChunk);
-
-					var getPath = (format) => compilation.getPath(format, {
-						chunk: chunk
-					}).replace(/\[(?:(\w+):)?contenthash(?::([a-z]+\d*))?(?::(\d+))?\]/ig, function() {
-						return loaderUtils.getHashDigest(source.source(), arguments[1], arguments[2], parseInt(arguments[3], 10));
-					});
-
-					var file = (isFunction(filename)) ? filename(getPath) : getPath(filename);
-
+					var module = this.renderExtractedChunk(extractedChunk);
+					var file = getFile(module, extractedChunk);
 					// add the css files to assets and the files array corresponding to its chunk
-					compilation.assets[file] = source;
+					compilation.assets[file] = module;
 					chunk.files.push(file);
-
-					// HMR: inject file name into corresponding javascript modules in order to trigger
-					// appropriate hot module reloading of CSS
-					extractedChunk.modules.forEach(function(module){
-						var originalModule = module.getOriginalModule();
-						originalModule._source._value = originalModule._source._value.replace('%%extracted-file%%', file);
-					});
 				}
 			}, this);
 			callback();
