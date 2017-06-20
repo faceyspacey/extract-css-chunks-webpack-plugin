@@ -186,6 +186,7 @@ ExtractTextPlugin.prototype.loader = function(options) {
 	return ExtractTextPlugin.loader(mergeOptions({id: this.id}, options));
 };
 
+
 ExtractTextPlugin.prototype.extract = function(options) {
 	if(arguments.length > 1) {
 		throw new Error("Breaking change: extract now only takes a single argument. Either an options " +
@@ -264,6 +265,11 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 		var getFile =(module, chunk) => (isFunction(filename)) ?
 			filename(getPath(module.source(), chunk)) :
 			getPath(module.source(), chunk)(filename);
+
+		var replaceTemplate = (module, chunk, toModifyModule) => {
+			var file = getFile(module, chunk);
+			toModifyModule._source._value = toModifyModule._source._value.replace("%%extracted-file%%", file);
+		};
 
 		compilation.plugin("optimize-tree", function(chunks, modules, callback) {
 			extractedChunks = chunks.map(function() {
@@ -360,6 +366,19 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 			}.bind(this));
 		}.bind(this));
 		compilation.plugin("optimize-module-ids", function(modules){
+
+			// HMR: inject file name into corresponding javascript modules in order to trigger
+			// appropriate hot module reloading of CSS
+			extractedChunks.forEach(function(extractedChunk) {
+				extractedChunk.modules.forEach(function (module) {
+					if(module.__fileInjected) {
+						return;
+					}
+					module.__fileInjected = true;
+					var originalModule = module.getOriginalModule();
+					replaceTemplate(module, extractedChunk, originalModule);
+				});
+			});
 			modules.forEach(function (module) {
 				var data = toRemoveModules[module.identifier()];
 				if (data) {
@@ -379,24 +398,12 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 						data.moduleToRemove.dependencies.forEach(d => {
 							chunk.removeModule(d.module);
 						});
+						replaceTemplate(newModule, chunk, newModule);
 						chunk.addModule(newModule);
 					});
 				}
 			});
 
-			// HMR: inject file name into corresponding javascript modules in order to trigger
-			// appropriate hot module reloading of CSS
-			extractedChunks.forEach(function(extractedChunk) {
-				extractedChunk.modules.forEach(function (module) {
-					if(module.__fileInjected) {
-						return;
-					}
-					module.__fileInjected = true;
-					var file = getFile(module, extractedChunk);
-					var originalModule = module.getOriginalModule();
-					originalModule._source._value = originalModule._source._value.replace("%%extracted-file%%", file);
-				});
-			})
 		});
 
 		compilation.plugin("additional-assets", function(callback) {
