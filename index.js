@@ -14,8 +14,8 @@ var validateOptions = require('schema-utils');
 var path = require('path');
 
 var NS = fs.realpathSync(__dirname);
-
 var nextId = 0;
+var DEV = process.env.NODE_ENV === 'development'
 
 function ExtractTextPluginCompilation() {
 	this.modulesByIdentifier = {};
@@ -113,6 +113,8 @@ function getOrder(a, b) {
 }
 
 function ExtractTextPlugin(options) {
+	options = options || {}
+
 	if(arguments.length > 1) {
 		throw new Error("Breaking change: ExtractTextPlugin now only takes a single argument. Either an options " +
 			"object *or* the name of the result file.\n" +
@@ -131,7 +133,8 @@ function ExtractTextPlugin(options) {
 	} else {
 		validateOptions(path.resolve(__dirname, './schema/plugin.json'), options, 'Extract Text Plugin');
 	}
-	this.filename = options.filename;
+	// this.filename = options.filename;
+	this.filename = options.filename || (DEV ? '[name].css' : '[name].[contenthash].css');
 	this.id = options.id != null ? options.id : ++nextId;
 	this.options = {};
 	mergeOptions(this.options, options);
@@ -290,7 +293,11 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 			});
 			async.forEach(chunks, function(chunk, callback) {
 				var extractedChunk = extractedChunks[chunks.indexOf(chunk)];
-				var shouldExtract = !!(options.allChunks || isInitialOrHasNoParents(chunk));
+				// var shouldExtract = !!(options.allChunks || isInitialOrHasNoParents(chunk));
+
+				// SETTING THIS TO TRUE INSURES ALL CHUNKS ARE HANDLED:
+				var shouldExtract = true; //!!(options.allChunks || chunk.isInitial());
+
 				async.forEach(chunk.modules.slice(), function(module, callback) {
 					var meta = module[NS];
 					if(meta && (!meta.options.id || meta.options.id === id)) {
@@ -350,17 +357,18 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 				});
 			}, function(err) {
 				if(err) return callback(err);
-				extractedChunks.forEach(function(extractedChunk) {
-					if(isInitialOrHasNoParents(extractedChunk))
-						this.mergeNonInitialChunks(extractedChunk);
-				}, this);
-				extractedChunks.forEach(function(extractedChunk) {
-					if(!isInitialOrHasNoParents(extractedChunk)) {
-						extractedChunk.modules.slice().forEach(function(module) {
-							extractedChunk.removeModule(module);
-						});
-					}
-				});
+				// REMOVING THIS CODE IS ALL THAT'S NEEDED TO CREATE CSS FILES PER CHUNK:
+				// extractedChunks.forEach(function(extractedChunk) {
+				// 	if(isInitialOrHasNoParents(extractedChunk))
+				// 		this.mergeNonInitialChunks(extractedChunk);
+				// }, this);
+				// extractedChunks.forEach(function(extractedChunk) {
+				// 	if(!isInitialOrHasNoParents(extractedChunk)) {
+				// 		extractedChunk.modules.slice().forEach(function(module) {
+				// 			extractedChunk.removeModule(module);
+				// 		});
+				// 	}
+				// });
 				compilation.applyPlugins("optimize-extracted-chunks", extractedChunks);
 				callback();
 			}.bind(this));

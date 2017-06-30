@@ -1,7 +1,6 @@
 module.exports = function(publicPath, outputFilename) {
   if (document) {
-    var origin = document.location.protocol +
-		'//' + document.location.hostname + (document.location.port ? ':' + document.location.port: '');
+    var origin = document.location.protocol + '//' + document.location.hostname + (document.location.port ? ':' + document.location.port: '');
     var newHref = origin + publicPath + outputFilename;
     var styleSheets = document.getElementsByTagName('link');
 
