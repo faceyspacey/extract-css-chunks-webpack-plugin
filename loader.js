@@ -147,3 +147,4 @@ if (module.hot) {
 		}.bind(this));
 	}
 };
+
