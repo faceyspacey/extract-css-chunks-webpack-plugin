@@ -15,7 +15,7 @@ var NS = fs.realpathSync(__dirname);
 module.exports = function (source) {
 	if(this.cacheable) this.cacheable();
 
-	return `require("style-loader/addStyles.js");
+	return `require("style-loader/lib/addStyles.js");
 	if (module.hot) { require(${loaderUtils.stringifyRequest(this, path.join(__dirname, "hotModuleReplacement.js"))}); }
 	${source}`;
 };
