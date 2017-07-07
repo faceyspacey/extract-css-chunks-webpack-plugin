@@ -100,7 +100,7 @@ new ExtractCssChunk({
 })
 ```
 
-Keep in mind we've added sensible defaults, specifically: `[name].css` is used when `process.env.NODE_ENV === 'deveopment'` and `[name].[contenthash].css` during production, so you can likely forget about having to pass anything.
+Keep in mind, by default `[name].css` is used when `process.env.NODE_ENV === 'deveopment'` and `[name].[contenthash].css` during production, so you can likely forget about having to pass anything.
 
 The 2 exceptions are: `allChunks` will no longer do anything, and `fallback` will no longer do anything when passed to to `extract`. Basically just worry about passing your `css-loader` string and `localIdentName` 🤓
 
