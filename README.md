@@ -17,13 +17,14 @@
 </p>
 
 # extract-css-chunks-webpack-plugin
-> TIP: remove `style-loader` from your dependencies. It's included in this package and must resolve to the correct *latest* version (June 2017). 
+> **UPDATE (July 7th):** [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import) is now required to asynchronously import both css + js. *Much Faster Builds!* 
 
 Like `extract-text-webpack-plugin`, but creates multiple css files (one per chunk). Then, as part of server side rendering, you can deliver just the css chunks needed by the current request. The result is the most minimal CSS initially served compared to emerging JS-in-CSS solutions.
 
 *Note: this is a companion package to:*
 - [webpack-flush-chunks](https://github.com/faceyspacey/webpack-flush-chunks) 
 - [react-universal-component](https://github.com/faceyspacey/react-universal-component)
+- [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import)
 
 For a complete usage example, see the [Flush Chunks Boilerplates](https://github.com/faceyspacey/webpack-flush-chunks#boilerplates).
 
@@ -31,27 +32,30 @@ Here's the sort of CSS you can expect to serve:
 
 ```
 <head>
-	<link rel='stylesheet' href='/static/0.css' />
 	<link rel='stylesheet' href='/static/main.css' />
+	<link rel='stylesheet' href='/static/0.css' />
+	<link rel='stylesheet' href='/static/7.css' />
 </head> 
 
 <body>
 	<div id="react-root"></div>
 	
 	<script type='text/javascript' src='/static/vendor.js'></script>
-	<script type='text/javascript' src='/static/0.no_css.js'></script>
-	<script type='text/javascript' src='/static/main.no_css.js'></script>
+	<script type='text/javascript' src='/static/0.js'></script>
+	<script type='text/javascript' src='/static/7.js'></script>
+	<script type='text/javascript' src='/static/main.js'></script>
 </body>
 ```
 
 If you use [webpack-flush-chunks](https://github.com/faceyspacey/webpack-flush-chunks), it will scoop up the exact stylesheets to embed in your response string for you.
 
+[babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import) is required for ascynchronous requests via `import()`. It requests both your js + your css. *Very Nice!* Read *Sokra's* (author of webpack) article on how [on how this is the future of CSS for webpack](https://medium.com/webpack/the-new-css-workflow-step-1-79583bd107d7).
 
 ## Perks:
 - **HMR:** It also has first-class support for **Hot Module Replacement** across ALL those css files/chunks!!!
-
-- **2 VERSIONS OF YOUR JS CHUNKS:** In addition to generating CSS chunks, this plugin in fact creates 2 javascript chunks instead of 1. It leaves untouched your typical chunk that injects styles via `style-loader` and creates another chunk named `name.no_css.js`, which has all CSS removed, thereby greatly reducing its file size. This allows for future asynchronously-loaded bundles (which will be loaded *without* a css file) to also have their corresponding styles, ***while reducing the size of your initially served javascript chunks as much as possible*** 🤓
-
+- cacheable stylesheets 
+- smallest total bytes sent compared to "render-path" css-in-js solutions that include your CSS definitions in JS
+- Faster than V1!
 
 
 ## Installation
@@ -101,36 +105,6 @@ Keep in mind we've added sensible defaults, specifically: `[name].css` is used w
 The 2 exceptions are: `allChunks` will no longer do anything, and `fallback` will no longer do anything when passed to to `extract`. Basically just worry about passing your `css-loader` string and `localIdentName` 🤓
 
 
-
-## How It Works
-
-Just like your JS, it moves all the the required CSS into corresponding css chunk files. So entry chunks might be named: `main.12345.css` and dynamic split chunks would be named: `0.123456.css`, `1.123456.css`, etc. You will however now have 2 files for each javascript chunk: `0.no_css.js` and `0.js`. The former is what you should serve in the initial request (and what [webpack-flush-chunks](https://github.com/faceyspacey/webpack-flush-chunks) in conjunction with [react-universal-component](https://github.com/faceyspacey/react-universal-component) will automatically serve). The latter, *which DOES contain css injection via style-loader*, is what will asyncronously be loaded in future async requests. This solves the fact that they otherwise would be missing CSS, since the webpack async loading mechanism isn't built to serve both a JS and CSS file. In total, 3 files are created for each named entry chunk and 3 files for each dynamically split chunk, e.g: 
-
-**entry chunk:**
-- `main.js`
-- `main.no.js`
-- `main.css`
-
-**dynamic chunks**:
-
-*chunk 0:*
-- `0.js`
-- `0.no_css.js`
-- `0.css`
-
-*chunk 1:*
-- `1.js`
-- `1.no_css.js`
-- `1.css`
-
-*chunk 2:*
-- `2.js`
-- `2.no_css.js`
-- `2.css`
-
-As part of server-side rendering, you obviously should embed within the page the js files with the `no_css.js` extension. The `.js` files will be loaded by default when Webpack asyncronously requests them, *and you won't have to worry about embedding them in any response strings.*
-
-
 ## What about Aphrodite, Glamor, StyleTron, Styled-Components, Styled-Jsx, etc?
 
 If you effectively use code-splitting, **Exract Css Chunks** can be a far better option than using emerging solutions like *StyleTron*, *StyledComponents*, and slightly older tools like *Aphrodite*, *Glamor*, etc. We aren't fans of either rounds of tools because of several issues, but particularly because they all have a runtime overhead. Every time your React component is rendered with those, CSS is generated and updated within the DOM. On the server, you're going to also see unnecessary cycles for flushing the CSS along the critical render path. *Next.js's* `styled-jsx`, by the way, doesn't even work on the server--*not so good when it comes to flash of unstyled content (FOUC).*
@@ -172,11 +146,6 @@ As an aside, so many apps share code between web and React Native--so the answer
 **We love CSS modules; no less, no more.**
 
 **Long live the dream of Code Splitting Everywhere!**
-
-
-## Notes on extract-text-webpack-plugin
-
-Most the code comes from the original Extract Text Webpack Plugin--the goal is to merge this functionality back into that package at some point, though that process is not looking good. So that might be a while. Until then I'd feel totally comfortable just using this package. Though it took a while to make (and figure out how the original package worked), very little code has changed, and it won't be hard to keep in sync with upstream changes. 
 
 
 ## Contributing

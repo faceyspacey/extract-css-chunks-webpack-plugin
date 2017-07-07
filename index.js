@@ -22,32 +22,6 @@ function ExtractTextPluginCompilation() {
 	this.modulesByIdentifier = {};
 }
 
-// ExtractTextPlugin.prototype.mergeNonInitialChunks = function(chunk, intoChunk, checkedChunks) {
-// 	if (chunk.chunks) {
-// 		// Fix error when hot module replacement used with CommonsChunkPlugin
-// 		chunk.chunks = chunk.chunks.filter(function(c) {
-// 			return typeof c !== 'undefined';
-// 		})
-// 	}
-
-// 	if(!intoChunk) {
-// 		checkedChunks = [];
-// 		chunk.chunks.forEach(function(c) {
-// 			if(c.isInitial()) return;
-// 			this.mergeNonInitialChunks(c, chunk, checkedChunks);
-// 		}, this);
-// 	} else if(checkedChunks.indexOf(chunk) < 0) {
-// 		checkedChunks.push(chunk);
-// 		chunk.modules.slice().forEach(function(module) {
-// 			intoChunk.addModule(module);
-// 			module.addChunk(intoChunk);
-// 		});
-// 		chunk.chunks.forEach(function(c) {
-// 			if(c.isInitial()) return;
-// 			this.mergeNonInitialChunks(c, intoChunk, checkedChunks);
-// 		}, this);
-// 	}
-// };
 
 ExtractTextPluginCompilation.prototype.addModule = function(identifier, originalModule, source, additionalInformation, sourceMap, prevModules) {
 	var m;
@@ -328,8 +302,28 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 			}.bind(this));
 		}.bind(this));
 
+		// HMR: inject file name into corresponding javascript modules in order to trigger
+		// appropriate hot module reloading of CSS
+		if (DEV) {
+			compilation.plugin("optimize-module-ids", function(modules){
+				extractedChunks.forEach(function(extractedChunk) {
+					extractedChunk.modules.forEach(function (module) {
+						if(module.__fileInjected) {
+							return;
+						}
+						module.__fileInjected = true;
+
+						extractedChunk.modules.forEach(function(module){
+							var originalModule = module.getOriginalModule();
+							var file = getFile(compilation, filename, module, extractedChunk);
+							originalModule._source._value = originalModule._source._value.replace('%%extracted-file%%', file);
+						});
+					});
+				});
+			});
+		}
 		compilation.plugin("additional-assets", function(callback) {
-			extractedChunks.forEach(function(extractedChunk) {
+			extractedChunks.forEach(function(extractedChunk) {	
 				if(extractedChunk.modules.length) {
 					extractedChunk.modules.sort(function(a, b) {
 						if(!options.ignoreOrder && isInvalidOrder(a, b)) {
@@ -338,57 +332,35 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 						}
 						return getOrder(a, b);
 					});
+
 					var chunk = extractedChunk.originalChunk;
-					var source = this.renderExtractedChunk(extractedChunk);
-
-					var getPath = (format) => compilation.getPath(format, {
-						chunk: chunk
-					}).replace(/\[(?:(\w+):)?contenthash(?::([a-z]+\d*))?(?::(\d+))?\]/ig, function() {
-						return loaderUtils.getHashDigest(source.source(), arguments[1], arguments[2], parseInt(arguments[3], 10));
-					});
-
-					var file = (isFunction(filename)) ? filename(getPath) : getPath(filename);
+					var module = this.renderExtractedChunk(extractedChunk);
+					var file = getFile(compilation, filename, module, extractedChunk)
 
 					// add the css files to assets and the files array corresponding to its chunk
-					compilation.assets[file] = source;
+					compilation.assets[file] = module;
 					chunk.files.push(file);
-
-					// HMR: inject file name into corresponding javascript modules in order to trigger
-					// appropriate hot module reloading of CSS
-					extractedChunk.modules.forEach(function(module){
-						var originalModule = module.getOriginalModule();
-						originalModule._source._value = originalModule._source._value.replace('%%extracted-file%%', file);
-					});
 				}
 			}, this);
-
-			// duplicate js chunks into secondary files that don't have css injection,
-			// giving the additional js files the extension: `.no_css.js`
-			Object.keys(compilation.assets).forEach(function(name) {
-				var asset = compilation.assets[name];
-
-				if (/\.js$/.test(name) && asset._source) {
-					var newName = name.replace(/\.js/, '.no_css.js');
-					var newAsset = new CachedSource(asset._source);
-					var regex = /\/\*__START_CSS__\*\/[\s\S]*?\/\*__END_CSS__\*\//g
-
-					// remove js that adds css to DOM via style-loader, so that React Loadable
-					// can serve smaller files (without css) in initial request.
-					newAsset._cachedSource = asset.source().replace(regex, '');
-
-					compilation.assets[newName] = newAsset;
-
-					// add no_css file to files associated with chunk so that they are minified,
-					// and receive source maps, and can be found by React Loadable
-					extractedChunks.forEach(function(extractedChunk) {
-						var chunk = extractedChunk.originalChunk;
-						if (chunk.files.indexOf(name) > -1) {
-							chunk.files.push(newName);
-						}
-					})
-				}
-			})
-			callback()
+			callback();
 		}.bind(this));
+
 	}.bind(this));
 };
+
+
+function getFile(compilation, filename, module, chunk) {
+	return typeof filename === 'function'
+		? filename(getPath(compilation, module.source(), chunk))
+		: getPath(compilation, module.source(), chunk)(filename)
+}
+
+function getPath(compilation, source, chunk) {
+	return function(format) {
+		return compilation.getPath(format, {
+			chunk: chunk
+		}).replace(/\[(?:(\w+):)?contenthash(?::([a-z]+\d*))?(?::(\d+))?\]/ig, function() {
+			return loaderUtils.getHashDigest(source, arguments[1], arguments[2], parseInt(arguments[3], 10));
+		});
+	}
+}

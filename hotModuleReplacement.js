@@ -11,13 +11,31 @@ module.exports = function(publicPath, outputFilename) {
         var newChunk = newHref.split('.')[0];
 
         if (oldChunk === newChunk) {
+          var oldSheet = styleSheets[i]
+          var url = newHref + '?' + (+new Date)
+          var head = document.getElementsByTagName('head')[0]
+          var link = document.createElement('link')
+
           // date insures sheets update when [contenthash] is not used in file names
-          var url = newHref + '?' + (+new Date);
-          styleSheets[i].href = url;
-          console.log('[HMR]', 'Reload css: ', url);
+          link.href = url
+          link.charset = 'utf-8'
+          link.type = 'text/css'
+          link.rel = 'stylesheet'
+
+          head.insertBefore(link, oldSheet.nextSibling)
+
+          // remove the old sheet only after the old one loads so it's seamless
+          // we gotta do it this way since link.onload basically doesn't work
+          var img = document.createElement('img')
+          img.onerror = function() {
+            oldSheet.remove()
+            console.log('[HMR]', 'Reload css: ', url);
+          }
+          img.src = url
           break;
         }
       }
     }
   }
 }
+

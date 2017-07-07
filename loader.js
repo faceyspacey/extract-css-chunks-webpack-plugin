@@ -13,13 +13,10 @@ var SingleEntryPlugin = require("webpack/lib/SingleEntryPlugin");
 var LimitChunkCountPlugin = require("webpack/lib/optimize/LimitChunkCountPlugin");
 
 var NS = fs.realpathSync(__dirname);
+var DEV = process.env.NODE_ENV === 'development'
 
 module.exports = function(source) {
-	if(this.cacheable) this.cacheable();
-	// Even though this gets overwritten if extract+remove are true, without it, the runtime doesn't get added to the chunk
-	return `require("style-loader/lib/addStyles.js");
-	if (module.hot) { require('${require.resolve("./hotModuleReplacement.js")}'); }
-	${source}`;
+	return source;
 };
 
 module.exports.pitch = function(request) {
@@ -132,22 +129,20 @@ module.exports.pitch = function(request) {
 						resultSource += "\nmodule.exports = " + JSON.stringify(text.locals) + ";";
 					}
 
-					// module.hot.data is undefined on initial load, and an object in hot updates
-					var jsescOpts = { wrap: true, quotes: "double" };
-					resultSource += `
-/*__START_CSS__*/
-var moduleId = ${jsesc(text[0][0], jsescOpts)};
-var css = ${jsesc(text[0][1], jsescOpts)};
-var addStyles = require("style-loader/lib/addStyles.js");
-addStyles([[moduleId, css]], "");
-/*__END_CSS__*/
-
+					// module.hot.data is undefined on initial load, and an object in hot updates.
+					//
+					// All we need is a date that changes during dev, to trigger a reload since
+					// hashes generated based on the file contents are what trigger HMR.
+					if (DEV) {
+						resultSource += `
 if (module.hot) {
 	module.hot.accept();
 	if (module.hot.data) {
-		require("${require.resolve('./hotModuleReplacement.js')}")("${publicPath}", "%%extracted-file%%");
+		var neverUsed = ${+new Date()}
+		require(${loaderUtils.stringifyRequest(this, path.join(__dirname, "hotModuleReplacement.js"))})("${publicPath}", "%%extracted-file%%");
 	}
 }`;
+					}
 				}
 			} catch(e) {
 				return callback(e);
