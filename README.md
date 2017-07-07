@@ -19,9 +19,9 @@
 # extract-css-chunks-webpack-plugin
 > **UPDATE (July 7th):** [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import) is now required to asynchronously import both css + js. *Much Faster Builds!* 
 
-Like `extract-text-webpack-plugin`, but creates multiple css files (one per chunk). Then, as part of server side rendering, you can deliver just the css chunks needed by the current request. The result is the most minimal CSS initially served compared to emerging JS-in-CSS solutions.
+Like `extract-text-webpack-plugin`, but creates multiple css files (one per chunk). Then, as part of server side rendering, you can deliver just the css chunks needed by the current request. The result is the most minimal CSS initially served compared to emerging "render path" solutions.
 
-For a demo, checkout: https://github.com/faceyspacey/flush-chunks-boilerplate-webpack-chunknames
+For a demo, `git clone` this: https://github.com/faceyspacey/flush-chunks-boilerplate-webpack-chunknames
 
 *Note: this is a companion package to:*
 - [webpack-flush-chunks](https://github.com/faceyspacey/webpack-flush-chunks) 
