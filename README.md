@@ -21,13 +21,34 @@
 
 Like `extract-text-webpack-plugin`, but creates multiple css files (one per chunk). Then, as part of server side rendering, you can deliver just the css chunks needed by the current request. The result is the most minimal CSS initially served compared to emerging JS-in-CSS solutions.
 
+For a demo, checkout: https://github.com/faceyspacey/flush-chunks-boilerplate-webpack-chunknames
+
 *Note: this is a companion package to:*
 - [webpack-flush-chunks](https://github.com/faceyspacey/webpack-flush-chunks) 
 - [react-universal-component](https://github.com/faceyspacey/react-universal-component)
 - [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import)
 
-For a complete usage example, see the [Flush Chunks Boilerplates](https://github.com/faceyspacey/webpack-flush-chunks#boilerplates).
+## Installation
+```
+yarn add --dev extract-css-chunks-webpack-plugin babel-plugin-dual-import
+```
 
+*.babelrc:*
+```js
+{
+  "presets": [whatever you usually have],
+  "plugins": ["dual-import"]
+}
+```
+
+*webpack.config.js:*
+```js
+plugins: [
+	new ExtractCssChunks,
+]
+```
+
+## Desired Output
 Here's the sort of CSS you can expect to serve:
 
 ```
@@ -49,19 +70,13 @@ Here's the sort of CSS you can expect to serve:
 
 If you use [webpack-flush-chunks](https://github.com/faceyspacey/webpack-flush-chunks), it will scoop up the exact stylesheets to embed in your response string for you.
 
-[babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import) is required for ascynchronous requests via `import()`. It requests both your js + your css. *Very Nice!* Read *Sokra's* (author of webpack) article on how [on how this is the future of CSS for webpack](https://medium.com/webpack/the-new-css-workflow-step-1-79583bd107d7).
+***As for asynchronous calls to `import()`,*** [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import) is required. It requests both your js + your css. *Very Nice!* This is the new feature of the 2.0. Read *Sokra's* (author of webpack) article on how [on how this is the future of CSS for webpack](https://medium.com/webpack/the-new-css-workflow-step-1-79583bd107d7). Use this and be in the future today.
 
-## Perks:
+## Perks
 - **HMR:** It also has first-class support for **Hot Module Replacement** across ALL those css files/chunks!!!
 - cacheable stylesheets 
 - smallest total bytes sent compared to "render-path" css-in-js solutions that include your CSS definitions in JS
-- Faster than V1!
-
-
-## Installation
-```
-yarn add --dev extract-css-chunks-webpack-plugin
-```
+- Faster than the V1!
 
 
 ## Usage
