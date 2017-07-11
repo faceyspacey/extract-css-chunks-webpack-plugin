@@ -17,7 +17,7 @@
 </p>
 
 # extract-css-chunks-webpack-plugin
-> **UPDATE (July 7th):** [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import) is now required to asynchronously import both css + js. *Much Faster Builds!* 
+> **UPDATE (July 7th):** [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import) is now required to asynchronously import both css + js. *Much Faster Builds!* You likely want to read its intro article: https://medium.com/@faceyspacey/webpacks-import-will-soon-fetch-js-css-here-s-how-you-do-it-today-4eb5b4929852
 
 Like `extract-text-webpack-plugin`, but creates multiple css files (one per chunk). Then, as part of server side rendering, you can deliver just the css chunks needed by the current request. The result is the most minimal CSS initially served compared to emerging "render path" solutions.
 
@@ -27,6 +27,10 @@ For a demo, `git clone` this: https://github.com/faceyspacey/flush-chunks-boiler
 - [webpack-flush-chunks](https://github.com/faceyspacey/webpack-flush-chunks) 
 - [react-universal-component](https://github.com/faceyspacey/react-universal-component)
 - [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import)
+
+Read the intro article to all the "Universal" familar of packages:
+https://medium.com/@faceyspacey/code-cracked-for-code-splitting-ssr-in-reactlandia-react-loadable-webpack-flush-chunks-and-1a6b0112a8b8
+
 
 ## Installation
 ```
