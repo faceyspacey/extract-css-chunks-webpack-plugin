@@ -1,6 +1,6 @@
 module.exports = function(publicPath, outputFilename) {
   if (document) {
-    var newHref = publicPath.match(/https?:/g) ? new URL(outputFilename, publicPath) : new URL(outputFilename, window.location);
+    var newHref = publicPath.match(/https?:/g) ? new URL(outputFilename, publicPath) : new URL(publicPath + outputFilename, window.location);
     var links = document.getElementsByTagName('link');
 
 	//update the stylesheet corresponding to `outputFilename`
