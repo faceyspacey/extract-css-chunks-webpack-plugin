@@ -29,10 +29,9 @@
     "webpack": "^2.2.0"
   },
   "dependencies": {
-    "ajv": "^4.11.2",
-    "async": "^2.1.2",
-    "jsesc": "^2.5.1",
-    "loader-utils": "^1.0.2",
+    "ajv": "4.11.2",
+    "async": "^2.5.0",
+    "loader-utils": "^1.1.0",
     "schema-utils": "^0.3.0",
     "style-loader": "^0.18.2",
     "webpack-sources": "^1.0.1"

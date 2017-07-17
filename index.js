@@ -285,18 +285,6 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 				});
 			}, function(err) {
 				if(err) return callback(err);
-				// REMOVING THIS CODE IS ALL THAT'S NEEDED TO CREATE CSS FILES PER CHUNK:
-				// extractedChunks.forEach(function(extractedChunk) {
-				// 	if(extractedChunk.isInitial())
-				// 		this.mergeNonInitialChunks(extractedChunk);
-				// }, this);
-				// extractedChunks.forEach(function(extractedChunk) {
-				// 	if(!extractedChunk.isInitial()) {
-				// 		extractedChunk.modules.slice().forEach(function(module) {
-				// 			extractedChunk.removeModule(module);
-				// 		});
-				// 	}
-				// });
 				compilation.applyPlugins("optimize-extracted-chunks", extractedChunks);
 				callback();
 			}.bind(this));
@@ -360,7 +348,8 @@ function getPath(compilation, source, chunk) {
 		return compilation.getPath(format, {
 			chunk: chunk
 		}).replace(/\[(?:(\w+):)?contenthash(?::([a-z]+\d*))?(?::(\d+))?\]/ig, function() {
-			return loaderUtils.getHashDigest(source, arguments[1], arguments[2], parseInt(arguments[3], 10));
+			var sourceValue = source && source._value || source; // catch a small bug during development when using [contenthash]
+			return loaderUtils.getHashDigest(sourceValue, arguments[1], arguments[2], parseInt(arguments[3], 10));
 		});
 	}
 }
