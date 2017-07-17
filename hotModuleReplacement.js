@@ -1,18 +1,16 @@
 module.exports = function(publicPath, outputFilename) {
   if (document) {
-    var origin = document.location.protocol + '//' + document.location.hostname + (document.location.port ? ':' + document.location.port: '');
-    var newHref = origin + publicPath + outputFilename
-    var styleSheets = document.getElementsByTagName('link');
+    var newHref = publicPath.match(/https?:/g) ? new URL(outputFilename, publicPath) : new URL(publicPath + outputFilename, window.location);
+    var links = document.getElementsByTagName('link');
 
 	//update the stylesheet corresponding to `outputFilename`
-    for (var i = 0; i < styleSheets.length; i++) {
-      if (styleSheets[i].href) {
-        var oldChunk = styleSheets[i].href.split('.')[0];
-        var newChunk = newHref.split('.')[0];
+    for (var i = 0; i < links.length; i++) {
+      if (links[i].href) {
+        var oldChunk = new URL(links[i].href);
 
-        if (oldChunk === newChunk) {
-          var oldSheet = styleSheets[i]
-          var url = newHref + '?' + (+new Date)
+        if (oldChunk.pathname === newHref.pathname) {
+          var oldSheet = links[i]
+          var url = newHref.href + '?' + (+new Date)
           var head = document.getElementsByTagName('head')[0]
           var link = document.createElement('link')
 
@@ -38,4 +36,3 @@ module.exports = function(publicPath, outputFilename) {
     }
   }
 }
-
