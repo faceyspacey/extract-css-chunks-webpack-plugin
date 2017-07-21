@@ -293,23 +293,21 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 		// HMR: inject file name into corresponding javascript modules in order to trigger
 		// appropriate hot module reloading of CSS
 		if (DEV) {
-			compilation.plugin("optimize-module-ids", function(modules){
+			compilation.plugin("before-chunk-assets", function() {
 				extractedChunks.forEach(function(extractedChunk) {
-					extractedChunk.modules.forEach(function (module) {
-						if(module.__fileInjected) {
-							return;
-						}
+					extractedChunk.modules.forEach(function(module) {
+						if(module.__fileInjected) return;
 						module.__fileInjected = true;
 
-						extractedChunk.modules.forEach(function(module){
-							var originalModule = module.getOriginalModule();
-							var file = getFile(compilation, filename, module, extractedChunk);
-							originalModule._source._value = originalModule._source._value.replace('%%extracted-file%%', file);
-						});
+						var originalModule = module.getOriginalModule();
+						var file = getFile(compilation, filename, module, extractedChunk.originalChunk);
+						originalModule._source._value = originalModule._source._value.replace('%%extracted-file%%', file);
 					});
 				});
 			});
 		}
+
+		// add the css files to assets and the files array corresponding to its chunks
 		compilation.plugin("additional-assets", function(callback) {
 			extractedChunks.forEach(function(extractedChunk) {	
 				if(extractedChunk.modules.length) {
@@ -321,12 +319,11 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 						return getOrder(a, b);
 					});
 
+					var stylesheet = this.renderExtractedChunk(extractedChunk);
 					var chunk = extractedChunk.originalChunk;
-					var module = this.renderExtractedChunk(extractedChunk);
-					var file = getFile(compilation, filename, module, extractedChunk)
+					var file = getFile(compilation, filename, stylesheet, chunk)
 
-					// add the css files to assets and the files array corresponding to its chunk
-					compilation.assets[file] = module;
+					compilation.assets[file] = stylesheet;
 					chunk.files.push(file);
 				}
 			}, this);

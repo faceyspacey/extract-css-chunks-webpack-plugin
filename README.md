@@ -17,7 +17,7 @@
 </p>
 
 # extract-css-chunks-webpack-plugin
-> **UPDATE (July 7th):** [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import) is now required to asynchronously import both css + js. *Much Faster Builds!* You likely want to read its intro article: https://medium.com/@faceyspacey/webpacks-import-will-soon-fetch-js-css-here-s-how-you-do-it-today-4eb5b4929852
+> **UPDATE (July 7th):** [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import) is now required to asynchronously import both css + js. *Much Faster Builds!* You likely want to read [its intro article](https://medium.com/@faceyspacey/webpacks-import-will-soon-fetch-js-css-here-s-how-you-do-it-today-4eb5b4929852). Note: with *webpack-flush-chunks* you will have to use the `chunkNames` option instead of the `moduleIds` option to use it. 
 
 Like `extract-text-webpack-plugin`, but creates multiple css files (one per chunk). Then, as part of server side rendering, you can deliver just the css chunks needed by the current request. The result is the most minimal CSS initially served compared to emerging "render path" solutions.
 
@@ -123,6 +123,47 @@ Keep in mind, by default `[name].css` is used when `process.env.NODE_ENV === 'de
 
 The 2 exceptions are: `allChunks` will no longer do anything, and `fallback` will no longer do anything when passed to to `extract`. Basically just worry about passing your `css-loader` string and `localIdentName` 🤓
 
+## Usage with [react-universal-component](https://github.com/faceyspacey/react-universal-component), [webpack-flush-chunks](https://github.com/faceyspacey/webpack-flush-chunks) and [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import)
+
+When using `webpack-flush-chunks` you will have to supply the `chunkNames` option, not the `moduleIds` option since the babel plugin is based on chunk names. Here's an example:
+
+*src/components/App.js:*
+```js
+const UniversalComponent = universal(() => import('./Foo'), {
+  resolve: () => require.resolveWeak('./Foo'),
+  chunkName: 'Foo'
+})
+
+const UniversalDynamicComponent = universal(() => import(`./base/${page}`), {
+  resolve: ({ page }) => require.resolveWeak(`./base/${page}`),
+  chunkName: ({ page }) => `base/${page}`
+})
+
+```
+*server/render.js:*
+```js
+import { flushChunkNames } from 'react-universal-component/server'
+import flushChunks from 'webpack-flush-chunks'
+
+const app = ReactDOMServer.renderToString(<App />)
+const { js, styles, cssHash } = flushChunks(webpackStats, {
+  chunkNames: flushChunkNames()
+})
+
+res.send(`
+  <!doctype html>
+  <html>
+    <head>
+      ${styles}
+    </head>
+    <body>
+      <div id="root">${app}</div>
+      ${js}
+      ${cssHash}
+    </body>
+  </html>
+`)
+```
 
 ## What about Aphrodite, Glamor, StyleTron, Styled-Components, Styled-Jsx, etc?
 
