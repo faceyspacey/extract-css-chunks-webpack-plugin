@@ -30,7 +30,7 @@ function forEachChunkModule( chunk, cb ) {
 
 	// webpack >= 3.x.x
 	if ( typeof chunk.forEachModule === 'function' ) {
-		cb.forEachModule( cb );
+		chunk.forEachModule( cb );
 	}
 	else {
 		// webpack < 3.x.x

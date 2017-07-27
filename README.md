@@ -93,8 +93,8 @@ Here's the sort of CSS you can expect to serve:
 	<!-- stylsheets that will be requested when import() on user navigation is called -->
 	<script>
 		window.__CSS_CHUNKS__ = {
-		Foo: '/static/Foo.css',
-		Bar: '/static/Bar.css'
+			Foo: '/static/Foo.css',
+			Bar: '/static/Bar.css'
 		}
 	</script>
 </body>
