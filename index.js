@@ -17,10 +17,50 @@ var pluginSchema = require('./schema/plugin-schema.json');
 var NS = fs.realpathSync(__dirname);
 var nextId = 0;
 
+function isChunk( chunk, error ) {
+	if ( !( chunk instanceof Chunk ) ) {
+		throw new Error( typeof error === 'string' ? error : 'chunk is not an instance of Chunk' );
+	}
+
+	return true;
+}
+
+function forEachChunkModule( chunk, cb ) {
+	isChunk( chunk );
+
+	// webpack >= 3.x.x
+	if ( typeof chunk.forEachModule === 'function' ) {
+		cb.forEachModule( cb );
+	}
+	else {
+		// webpack < 3.x.x
+		chunk.modules.forEach( cb );
+	}
+
+	// Nothing better to return...
+	return chunk;
+}
+
+function getChunkModulesArray( chunk ) {
+	isChunk( chunk );
+
+	var arr = [];
+
+	// webpack >= 3.x.x
+	if ( typeof chunk.mapModules === 'function' ) {
+		arr = chunk.mapModules();
+	}
+	else {
+		// webpack < 3.x.x
+		arr = chunk.modules.slice();
+	}
+
+	return arr;
+}
+
 function ExtractTextPluginCompilation() {
 	this.modulesByIdentifier = {};
 }
-
 
 ExtractTextPluginCompilation.prototype.addModule = function(identifier, originalModule, source, additionalInformation, sourceMap, prevModules) {
 	var m;
@@ -53,11 +93,15 @@ ExtractTextPluginCompilation.prototype.addResultToChunk = function(identifier, r
 };
 
 ExtractTextPlugin.prototype.renderExtractedChunk = function(chunk) {
+	var that   = this;
 	var source = new ConcatSource();
-	chunk.modules.forEach(function(module) {
+
+	forEachChunkModule( chunk, function ( module ) {
 		var moduleSource = module.source();
-		source.add(this.applyAdditionalInformation(moduleSource, module.additionalInformation));
-	}, this);
+
+		source.add( that.applyAdditionalInformation( moduleSource, module.additionalInformation ) );
+	} );
+
 	return source;
 };
 
@@ -251,7 +295,7 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 				// SETTING THIS TO TRUE INSURES ALL CHUNKS ARE HANDLED:
 				var shouldExtract = true; //!!(options.allChunks || chunk.isInitial());
 
-				async.forEach(chunk.modules.slice(), function(module, callback) {
+				async.forEach(getChunkModulesArray(chunk), function(module, callback) {
 					var meta = module[NS];
 					if(meta && (!meta.options.id || meta.options.id === id)) {
 						var wasExtracted = Array.isArray(meta.content);
@@ -294,7 +338,7 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 		if (process.env.NODE_ENV === 'development') {
 			compilation.plugin("before-chunk-assets", function() {
 				extractedChunks.forEach(function(extractedChunk) {
-					extractedChunk.modules.forEach(function(module) {
+					forEachChunkModule(extractedChunk, function(module) {
 						if(module.__fileInjected) return;
 						module.__fileInjected = true;
 
@@ -308,9 +352,11 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 
 		// add the css files to assets and the files array corresponding to its chunks
 		compilation.plugin("additional-assets", function(callback) {
-			extractedChunks.forEach(function(extractedChunk) {	
-				if(extractedChunk.modules.length) {
-					extractedChunk.modules.sort(function(a, b) {
+			extractedChunks.forEach(function(extractedChunk) {
+				var extractedChunkModules = getChunkModulesArray(extractedChunk);
+
+				if ( extractedChunkModules.length ) {
+					extractedChunkModules.sort(function(a, b) {
 						if(!options.ignoreOrder && isInvalidOrder(a, b)) {
 							compilation.errors.push(new OrderUndefinedError(a.getOriginalModule()));
 							compilation.errors.push(new OrderUndefinedError(b.getOriginalModule()));
@@ -320,7 +366,7 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 
 					var stylesheet = this.renderExtractedChunk(extractedChunk);
 					var chunk = extractedChunk.originalChunk;
-					var file = getFile(compilation, filename, stylesheet, chunk)
+					var file = getFile(compilation, filename, stylesheet, chunk);
 
 					compilation.assets[file] = stylesheet;
 					chunk.files.push(file);
