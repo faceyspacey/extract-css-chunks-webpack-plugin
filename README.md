@@ -129,9 +129,9 @@ res.send(`
       ${styles}
     </head>
     <body>
-		<div id="root">${app}</div>
-		${cssHash}
-		${js}
+      <div id="root">${app}</div>
+      ${cssHash}
+      ${js}
     </body>
   </html>
 `)
