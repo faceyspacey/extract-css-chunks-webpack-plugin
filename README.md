@@ -1,4 +1,8 @@
-# extract-css-chunks-webpack-plugin [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square)](https://gitter.im/Reactlandia/Lobby)
+<a href="https://gitter.im/Reactlandia/Lobby" target="_blank">
+  <img alt="Edit Redux-First Router Demo" src="http://cdn.reactlandia.com/chat-badge-reactlandia.png">
+</a>
+
+# extract-css-chunks-webpack-plugin
 
 <p align="center">
   <a href="https://www.npmjs.com/package/extract-css-chunks-webpack-plugin">
@@ -14,73 +18,34 @@
   </a>
 </p>
 
-> **UPDATE (July 7th):** [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import) is now required to asynchronously import both css + js. *Much Faster Builds!* You likely want to read [its intro article](https://medium.com/@faceyspacey/webpacks-import-will-soon-fetch-js-css-here-s-how-you-do-it-today-4eb5b4929852). Note: with *webpack-flush-chunks* you will have to use the `chunkNames` option instead of the `moduleIds` option to use it. 
+> **UPDATE (July 7th):** [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import) is now required to asynchronously import both css + js. *Much Faster Builds!* You likely want to read [its intro article](https://medium.com/@faceyspacey/webpacks-import-will-soon-fetch-js-css-here-s-how-you-do-it-today-4eb5b4929852).
+
+> **UPDATE (July 26th):** [babel-plugin-universal-import](https://github.com/faceyspacey/babel-plugin-universal-import) is what to use if you're using *React Universal Component*. 
 
 Like `extract-text-webpack-plugin`, but creates multiple css files (one per chunk). Then, as part of server side rendering, you can deliver just the css chunks needed by the current request. The result is the most minimal CSS initially served compared to emerging "render path" solutions.
 
-For a demo, `git clone` this: https://github.com/faceyspacey/flush-chunks-boilerplate-webpack-chunknames
+For a demo, `git clone`: [universal-demo](https://github.com/faceyspacey/universal-demo)
 
 *Note: this is a companion package to:*
 - [webpack-flush-chunks](https://github.com/faceyspacey/webpack-flush-chunks) 
 - [react-universal-component](https://github.com/faceyspacey/react-universal-component)
-- [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import)
-
-Read the intro article to all the "Universal" familar of packages:
-https://medium.com/@faceyspacey/code-cracked-for-code-splitting-ssr-in-reactlandia-react-loadable-webpack-flush-chunks-and-1a6b0112a8b8
+- [babel-plugin-universal-import](https://github.com/faceyspacey/babel-plugin-universal-import) ***or*** [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import)
 
 
-## Installation
+## Recommended Installation
 ```
-yarn add --dev extract-css-chunks-webpack-plugin babel-plugin-dual-import
+yarn add react-universal-component webpack-flush-chunks
+yarn add --dev extract-css-chunks-webpack-plugin babel-plugin-universal-import
 ```
 
 *.babelrc:*
 ```js
 {
-  "presets": [whatever you usually have],
-  "plugins": ["dual-import"]
+  "plugins": ["universal-import"]
 }
 ```
 
 *webpack.config.js:*
-```js
-plugins: [
-	new ExtractCssChunks,
-]
-```
-
-## Desired Output
-Here's the sort of CSS you can expect to serve:
-
-```
-<head>
-	<link rel='stylesheet' href='/static/main.css' />
-	<link rel='stylesheet' href='/static/0.css' />
-	<link rel='stylesheet' href='/static/7.css' />
-</head> 
-
-<body>
-	<div id="react-root"></div>
-	
-	<script type='text/javascript' src='/static/vendor.js'></script>
-	<script type='text/javascript' src='/static/0.js'></script>
-	<script type='text/javascript' src='/static/7.js'></script>
-	<script type='text/javascript' src='/static/main.js'></script>
-</body>
-```
-
-If you use [webpack-flush-chunks](https://github.com/faceyspacey/webpack-flush-chunks), it will scoop up the exact stylesheets to embed in your response string for you.
-
-***As for asynchronous calls to `import()`,*** [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import) is required. It requests both your js + your css. *Very Nice!* This is the new feature of the 2.0. Read *Sokra's* (author of webpack) article on how [on how this is the future of CSS for webpack](https://medium.com/webpack/the-new-css-workflow-step-1-79583bd107d7). Use this and be in the future today.
-
-## Perks
-- **HMR:** It also has first-class support for **Hot Module Replacement** across ALL those css files/chunks!!!
-- cacheable stylesheets 
-- smallest total bytes sent compared to "render-path" css-in-js solutions that include your CSS definitions in JS
-- Faster than the V1!
-
-
-## Usage
 ```js
 const ExtractCssChunks = require("extract-css-chunks-webpack-plugin")
 
@@ -107,36 +72,43 @@ module.exports = {
 }
 ```
 
-## API 
-You can pass the same options as `extract-text-webpack-plugin` to `new ExtractCssChunks`, such as:
+## Desired Output
+Here's the sort of CSS you can expect to serve:
 
-```javascript
-new ExtractCssChunk({
-	filename: '[name].[contenthash].css'
-})
+```
+<head>
+	<link rel='stylesheet' href='/static/main.css' />
+	<link rel='stylesheet' href='/static/0.css' />
+	<link rel='stylesheet' href='/static/7.css' />
+</head> 
+
+<body>
+	<div id="react-root"></div>
+	
+	<script type='text/javascript' src='/static/vendor.js'></script>
+	<script type='text/javascript' src='/static/0.js'></script>
+	<script type='text/javascript' src='/static/7.js'></script>
+	<script type='text/javascript' src='/static/main.js'></script>
+
+	<!-- stylsheets that will be requested when import() on user navigation is called -->
+	<script>
+		window.__CSS_CHUNKS__ = {
+		Foo: '/static/Foo.css',
+		Bar: '/static/Bar.css'
+		}
+	</script>
+</body>
 ```
 
-Keep in mind, by default `[name].css` is used when `process.env.NODE_ENV === 'deveopment'` and `[name].[contenthash].css` during production, so you can likely forget about having to pass anything.
-
-The 2 exceptions are: `allChunks` will no longer do anything, and `fallback` will no longer do anything when passed to to `extract`. Basically just worry about passing your `css-loader` string and `localIdentName` 🤓
-
-## Usage with [react-universal-component](https://github.com/faceyspacey/react-universal-component), [webpack-flush-chunks](https://github.com/faceyspacey/webpack-flush-chunks) and [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import)
-
-When using `webpack-flush-chunks` you will have to supply the `chunkNames` option, not the `moduleIds` option since the babel plugin is based on chunk names. Here's an example:
+If you use [webpack-flush-chunks](https://github.com/faceyspacey/webpack-flush-chunks), it will scoop up the exact stylesheets to embed in your response string for you. This is the recommended approach. Here's how you do it:
 
 *src/components/App.js:*
 ```js
-const UniversalComponent = universal(() => import('./Foo'), {
-  resolve: () => require.resolveWeak('./Foo'),
-  chunkName: 'Foo'
-})
+const UniversalComponent = universal(props => import(`./${props.page}`))
 
-const UniversalDynamicComponent = universal(() => import(`./base/${page}`), {
-  resolve: ({ page }) => require.resolveWeak(`./base/${page}`),
-  chunkName: ({ page }) => `base/${page}`
-})
-
+<UniversalComponent page='Foo' />
 ```
+
 *server/render.js:*
 ```js
 import { flushChunkNames } from 'react-universal-component/server'
@@ -155,12 +127,42 @@ res.send(`
     </head>
     <body>
       <div id="root">${app}</div>
+	  ${cssHash}
       ${js}
-      ${cssHash}
     </body>
   </html>
 `)
 ```
+
+***As for asynchronous calls to `import()` on user navigation,*** [babel-plugin-universal-import](https://github.com/faceyspacey/babel-plugin-universal-import) is required if you're using [react-universal-component](https://github.com/faceyspacey/react-universal-component). And if you aren't, you must use: [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import). 
+
+These babel plugins request both your js + your css. *Very Nice!* This is the new feature of the 2.0. Read *Sokra's* (author of webpack) article on how [on how this is the future of CSS for webpack](https://medium.com/webpack/the-new-css-workflow-step-1-79583bd107d7). Use this and be in the future today.
+
+## Perks
+- **HMR:** It also has first-class support for **Hot Module Replacement** across ALL those css files/chunks!!!
+- cacheable stylesheets 
+- smallest total bytes sent compared to "render-path" css-in-js solutions that include your CSS definitions in JS
+- Faster than the V1!
+
+
+
+
+## API 
+You can pass the same options as `extract-text-webpack-plugin` to `new ExtractCssChunks`, such as:
+
+```javascript
+new ExtractCssChunk({
+	filename: '[name].[contenthash].css'
+})
+```
+
+Keep in mind, by default `[name].css` is used when `process.env.NODE_ENV === 'deveopment'` and `[name].[contenthash].css` during production, so you can likely forget about having to pass anything.
+
+The 2 exceptions are: `allChunks` will no longer do anything, and `fallback` will no longer do anything when passed to to `extract`. Basically just worry about passing your `css-loader` string and `localIdentName` 🤓
+
+
+
+
 
 ## What about Aphrodite, Glamor, StyleTron, Styled-Components, Styled-Jsx, etc?
 
@@ -199,6 +201,17 @@ As an aside, so many apps share code between web and React Native--so the answer
 - pretty much already does everything covered by [@vjeux's 2014 css-in-js talk](https://speakerdeck.com/vjeux/react-css-in-js), besides dead code elimination. Dead code elimination is only solved for the other tools--as per the explanation above how the CSS is in the JS anyway--so much as Webpack and Uglify can remove **JS** that is not used. Either way, it's not a stretch to eventually add this feature to `extract-text-webpack-plugin` as well as this plugin. Hey, maybe it already has it??
 
 
+## Emotion!
+
+[Emotion](https://github.com/tkh44/emotion) is different. They allow for the extraction of static styles via their *extract mode*. We're very much looking forward to this being the perfect companion to the css chunks approach. 
+
+Currently however *extract mode* does not support IE11. So that means it's a no go, but we have hopes that in the future they'll solve that problem.
+
+The reason Emotion doesn't work in IE11+ is because they currently try to preserve any dynamic aspects of your CSS-in-JS by converting it CSS vars, which isn't supported in IE11. That was a very smart approach, but unfortunately not good enough. 
+
+The vision we'd like to see for that package is where dynamic css stays inline, and where only static CSS is extracted into stylesheets, in which case CSS vars aren't needed. I've heard from them they have some "hidden flags" that allow for something close to this. When, and if, they take this feature all the way, look forward to us pushing it as our recommended approach. *Go Emotion!*
+
+
 ## Conclusion:
 **We love CSS modules; no less, no more.**
 
@@ -207,4 +220,7 @@ As an aside, so many apps share code between web and React Native--so the answer
 
 ## Contributing
 We use [commitizen](https://github.com/commitizen/cz-cli), so run `npm run cm` to make commits. A command-line form will appear, requiring you answer a few questions to automatically produce a nicely formatted commit. Releases, semantic version numbers, tags and changelogs will automatically be generated based on these commits thanks to [semantic-release](https://github.com/semantic-release/semantic-release). Be good.
+
+## More from FaceySpacey in Reactlandia
+- [redux-first-router](https://github.com/faceyspacey/redux-first-router). It's made to work perfectly with *Universal*. Together they comprise our *"frameworkless"* Redux-based approach to what Next.js does (splitting, SSR, prefetching, and routing). *People are lovin it by the way* 😎
 
