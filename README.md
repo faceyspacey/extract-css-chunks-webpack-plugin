@@ -101,7 +101,9 @@ Here's the sort of CSS you can expect to serve:
 </body>
 ```
 
-If you use [webpack-flush-chunks](https://github.com/faceyspacey/webpack-flush-chunks), it will scoop up the exact stylesheets to embed in your response string for you. This is the recommended approach. Here's how you do it:
+[webpack-flush-chunks](https://github.com/faceyspacey/webpack-flush-chunks) will scoop up the exact stylesheets to embed in your response. It essentially automates producing the above. 
+
+Here's how you do it:
 
 *src/components/App.js:*
 ```js
@@ -127,9 +129,9 @@ res.send(`
       ${styles}
     </head>
     <body>
-      <div id="root">${app}</div>
-	  ${cssHash}
-      ${js}
+		<div id="root">${app}</div>
+		${cssHash}
+		${js}
     </body>
   </html>
 `)
