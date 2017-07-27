@@ -17,47 +17,6 @@ var pluginSchema = require('./schema/plugin-schema.json');
 var NS = fs.realpathSync(__dirname);
 var nextId = 0;
 
-function isChunk( chunk, error ) {
-	if ( !( chunk instanceof Chunk ) ) {
-		throw new Error( typeof error === 'string' ? error : 'chunk is not an instance of Chunk' );
-	}
-
-	return true;
-}
-
-function forEachChunkModule( chunk, cb ) {
-	isChunk( chunk );
-
-	// webpack >= 3.x.x
-	if ( typeof chunk.forEachModule === 'function' ) {
-		chunk.forEachModule( cb );
-	}
-	else {
-		// webpack < 3.x.x
-		chunk.modules.forEach( cb );
-	}
-
-	// Nothing better to return...
-	return chunk;
-}
-
-function getChunkModulesArray( chunk ) {
-	isChunk( chunk );
-
-	var arr = [];
-
-	// webpack >= 3.x.x
-	if ( typeof chunk.mapModules === 'function' ) {
-		arr = chunk.mapModules();
-	}
-	else {
-		// webpack < 3.x.x
-		arr = chunk.modules.slice();
-	}
-
-	return arr;
-}
-
 function ExtractTextPluginCompilation() {
 	this.modulesByIdentifier = {};
 }
@@ -394,4 +353,45 @@ function getPath(compilation, source, chunk) {
 			return loaderUtils.getHashDigest(sourceValue, arguments[1], arguments[2], parseInt(arguments[3], 10));
 		});
 	}
+}
+
+function isChunk(chunk, error) {
+	if (!(chunk instanceof Chunk)) {
+		throw new Error(typeof error === 'string' ? error : 'chunk is not an instance of Chunk');
+	}
+
+	return true;
+}
+
+function forEachChunkModule(chunk, cb) {
+	isChunk(chunk);
+
+	// webpack >= 3.x.x
+	if (typeof chunk.forEachModule === 'function') {
+		chunk.forEachModule(cb);
+	}
+	else {
+		// webpack < 3.x.x
+		chunk.modules.forEach(cb);
+	}
+
+	// Nothing better to return...
+	return chunk;
+}
+
+function getChunkModulesArray(chunk) {
+	isChunk(chunk);
+
+	var arr = [];
+
+	// webpack >= 3.x.x
+	if ( typeof chunk.mapModules === 'function' ) {
+		arr = chunk.mapModules();
+	}
+	else {
+		// webpack < 3.x.x
+		arr = chunk.modules.slice();
+	}
+
+	return arr;
 }

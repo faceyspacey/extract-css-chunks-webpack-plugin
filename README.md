@@ -2,6 +2,11 @@
   <img alt="Edit Redux-First Router Demo" src="http://cdn.reactlandia.com/chat-badge-reactlandia.png">
 </a>
 
+
+<a href="https://gitter.im/Reactlandia/Lobby" target="_blank">
+  <img alt="Edit Redux-First Router Demo" src="http://cdn.reactlandia.com/chat-badge-reactlandia.png">
+</a>
+
 # extract-css-chunks-webpack-plugin
 
 <p align="center">
