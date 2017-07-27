@@ -15,7 +15,6 @@ var loaderSchema = require('./schema/loader-schema');
 var pluginSchema = require('./schema/plugin-schema.json');
 
 var NS = fs.realpathSync(__dirname);
-var DEV = process.env.NODE_ENV === 'development';
 var nextId = 0;
 
 function ExtractTextPluginCompilation() {
@@ -108,7 +107,7 @@ function ExtractTextPlugin(options) {
 	} else {
 		schemaTester(pluginSchema, options);
 	}
-	this.filename = options.filename || (DEV ? '[name].css' : '[name].[contenthash].css');
+	this.filename = options.filename || (process.env.NODE_ENV === 'development' ? '[name].css' : '[name].[contenthash].css');
 	this.id = options.id != null ? options.id : ++nextId;
 	this.options = {};
 	mergeOptions(this.options, options);
@@ -292,7 +291,7 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 
 		// HMR: inject file name into corresponding javascript modules in order to trigger
 		// appropriate hot module reloading of CSS
-		if (DEV) {
+		if (process.env.NODE_ENV === 'development') {
 			compilation.plugin("before-chunk-assets", function() {
 				extractedChunks.forEach(function(extractedChunk) {
 					extractedChunk.modules.forEach(function(module) {
