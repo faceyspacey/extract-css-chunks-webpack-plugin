@@ -1,3 +1,5 @@
+# extract-css-chunks-webpack-plugin [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square)](https://gitter.im/Reactlandia/Lobby)
+
 <p align="center">
   <a href="https://www.npmjs.com/package/extract-css-chunks-webpack-plugin">
     <img src="https://img.shields.io/npm/v/extract-css-chunks-webpack-plugin.svg" alt="Version" />
@@ -10,13 +12,8 @@
   <a href="https://www.npmjs.com/package/extract-css-chunks-webpack-plugin">
     <img src="https://img.shields.io/npm/dt/extract-css-chunks-webpack-plugin.svg" alt="Downloads" />
   </a>
-
-  <a href="https://gitter.im/extract-css-chunks">
-    <img src="https://img.shields.io/gitter/room/nwjs/nw.js.svg" alt="Gitter Chat" />
-  </a>
 </p>
 
-# extract-css-chunks-webpack-plugin
 > **UPDATE (July 7th):** [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import) is now required to asynchronously import both css + js. *Much Faster Builds!* You likely want to read [its intro article](https://medium.com/@faceyspacey/webpacks-import-will-soon-fetch-js-css-here-s-how-you-do-it-today-4eb5b4929852). Note: with *webpack-flush-chunks* you will have to use the `chunkNames` option instead of the `moduleIds` option to use it. 
 
 Like `extract-text-webpack-plugin`, but creates multiple css files (one per chunk). Then, as part of server side rendering, you can deliver just the css chunks needed by the current request. The result is the most minimal CSS initially served compared to emerging "render path" solutions.
