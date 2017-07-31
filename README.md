@@ -164,8 +164,31 @@ Keep in mind, by default `[name].css` is used when `process.env.NODE_ENV === 'de
 The 2 exceptions are: `allChunks` will no longer do anything, and `fallback` will no longer do anything when passed to to `extract`. Basically just worry about passing your `css-loader` string and `localIdentName` 🤓
 
 
+### HMR Pitfall
 
+The most common workflow when working with webpack is to write a "development" / "production" value in to the
+'process.env.NODE_ENV' namespace, typically, using webpack's built-in "DefinePlugin" plugin. e.g:
 
+```javascript
+new webpack.DefinePlugin( {
+     'process.env': {
+        NODE_ENV: `"${config.devMode ? 'development' : 'production'}"`,
+      },
+} )
+```
+The value set by the aformentioned plugin will only be available in the runtime ( when webpack's javascript output is excuted ).
+In order for this plugin to work with hot module reloading, The npm script / gulp task / grunt task etc, should be invoked with the same environment variable as shown above.
+
+For example, when running the build using some form of npm script:
+
+```json
+{
+  "scripts": {
+    "build": "cross-env NODE_ENV=development webpack --config build/webpack.config.js"
+  }
+}
+```
+[cross-env](https://www.npmjs.com/package/cross-env) is optional but recomanded 
 
 ## What about Aphrodite, Glamor, StyleTron, Styled-Components, Styled-Jsx, etc?
 
@@ -226,4 +249,3 @@ We use [commitizen](https://github.com/commitizen/cz-cli), so run `npm run cm` t
 
 ## More from FaceySpacey in Reactlandia
 - [redux-first-router](https://github.com/faceyspacey/redux-first-router). It's made to work perfectly with *Universal*. Together they comprise our *"frameworkless"* Redux-based approach to what Next.js does (splitting, SSR, prefetching, and routing). *People are lovin it by the way* 😎
-
