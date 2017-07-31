@@ -15,7 +15,12 @@ var LimitChunkCountPlugin = require("webpack/lib/optimize/LimitChunkCountPlugin"
 var NS = fs.realpathSync(__dirname);
 
 module.exports = function(source) {
-	return source;
+	if (process.env.NODE_ENV !== 'development') return source
+
+	// We need to always require hotModuleReplacement.js for HMR to work in a wierd scenario
+	// where only one css file is imported. Otherwise HMR breaks when modules are disposed.
+	return `${source}
+require(${loaderUtils.stringifyRequest(this, path.join(__dirname, "hotModuleReplacement.js"))})`;
 };
 
 module.exports.pitch = function(request) {
