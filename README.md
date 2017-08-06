@@ -188,7 +188,7 @@ For example, when running the build using some form of npm script:
   }
 }
 ```
-[cross-env](https://www.npmjs.com/package/cross-env) is optional but recomanded 
+[cross-env](https://www.npmjs.com/package/cross-env) is optional but recommended. 
 
 ## What about Aphrodite, Glamor, StyleTron, Styled-Components, Styled-Jsx, etc?
 
