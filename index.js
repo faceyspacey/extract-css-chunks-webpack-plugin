@@ -201,7 +201,9 @@ ExtractTextPlugin.prototype.extract = function(options) {
 		before = [before];
 	}
 	options = mergeOptions({omit: before.length, remove: true}, options);
-  	options = mergeOptions(options, ExtractTextPlugin.options);
+	if (!this.options) {
+	  options = mergeOptions(options, ExtractTextPlugin.options);
+	}
 	delete options.loader;
 	delete options.use;
 	delete options.fallback;
@@ -214,7 +216,7 @@ ExtractTextPlugin.prototype.extract = function(options) {
 ExtractTextPlugin.extract = ExtractTextPlugin.prototype.extract.bind(ExtractTextPlugin);
 
 ExtractTextPlugin.prototype.apply = function(compiler) {
-	var options = this.options || ExtractTextPlugin.options;
+	var options = this.options;
 	compiler.plugin("this-compilation", function(compilation) {
 		var extractCompilation = new ExtractTextPluginCompilation();
 		compilation.plugin("normal-module-loader", function(loaderContext, module) {
