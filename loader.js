@@ -19,9 +19,11 @@ module.exports = function(source) {
 
 	// We need to always require hotModuleReplacement.js for HMR to work in a wierd scenario
 	// where only one css file is imported. Otherwise HMR breaks when modules are disposed.
-	return `${source}
-require(${loaderUtils.stringifyRequest(this, path.join(__dirname, "hotModuleReplacement.js"))})`;
+	return `
+require(${loaderUtils.stringifyRequest(this, path.join(__dirname, "hotModuleReplacement.js"))})
+${source}`;
 };
+
 
 module.exports.pitch = function(request) {
 	var self = this;
