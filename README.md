@@ -238,6 +238,11 @@ The reason Emotion doesn't work in IE11+ is because they currently try to preser
 The vision we'd like to see for that package is where dynamic css stays inline, and where only static CSS is extracted into stylesheets, in which case CSS vars aren't needed. I've heard from them they have some "hidden flags" that allow for something close to this. When, and if, they take this feature all the way, look forward to us pushing it as our recommended approach. *Go Emotion!*
 
 
+## What if I don't use SSR and use html-webpack-plugin?
+
+For that case you can use [css-chunks-html-webpack-plugin](https://github.com/mike1808/css-chunks-html-webpack-plugin) which will extract CSS chunks paths into your HTML file.
+
+
 ## Conclusion:
 **We love CSS modules; no less, no more.**
 
