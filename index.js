@@ -254,6 +254,7 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 				// SETTING THIS TO TRUE INSURES ALL CHUNKS ARE HANDLED:
 				var shouldExtract = true; //!!(options.allChunks || chunk.isInitial());
 
+				chunk.sortModules();
 				async.forEach(getChunkModulesArray(chunk), function(module, callback) {
 					var meta = module[NS];
 					if(meta && (!meta.options.id || meta.options.id === id)) {
@@ -312,16 +313,14 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 		// add the css files to assets and the files array corresponding to its chunks
 		compilation.plugin("additional-assets", function(callback) {
 			extractedChunks.forEach(function(extractedChunk) {
-				var extractedChunkModules = getChunkModulesArray(extractedChunk);
-
-				if ( extractedChunkModules.length ) {
-					extractedChunkModules.sort(function(a, b) {
-						if(!options.ignoreOrder && isInvalidOrder(a, b)) {
-							compilation.errors.push(new OrderUndefinedError(a.getOriginalModule()));
-							compilation.errors.push(new OrderUndefinedError(b.getOriginalModule()));
-						}
-						return getOrder(a, b);
-					});
+	      if (extractedChunk.getNumberOfModules()) {
+	        extractedChunk.sortModules((a, b) => {
+	          if (!options.ignoreOrder && isInvalidOrder(a, b)) {
+	            compilation.errors.push(new OrderUndefinedError(a.getOriginalModule()));
+	            compilation.errors.push(new OrderUndefinedError(b.getOriginalModule()));
+	          }
+	          return getOrder(a, b);
+	        });
 
 					var stylesheet = this.renderExtractedChunk(extractedChunk);
 					var chunk = extractedChunk.originalChunk;
