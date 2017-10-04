@@ -313,14 +313,14 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 		// add the css files to assets and the files array corresponding to its chunks
 		compilation.plugin("additional-assets", function(callback) {
 			extractedChunks.forEach(function(extractedChunk) {
-	      if (extractedChunk.getNumberOfModules()) {
-	        extractedChunk.sortModules((a, b) => {
-	          if (!options.ignoreOrder && isInvalidOrder(a, b)) {
-	            compilation.errors.push(new OrderUndefinedError(a.getOriginalModule()));
-	            compilation.errors.push(new OrderUndefinedError(b.getOriginalModule()));
-	          }
-	          return getOrder(a, b);
-	        });
+				if (extractedChunk.getNumberOfModules()) {
+					extractedChunk.sortModules((a, b) => {
+						if (!options.ignoreOrder && isInvalidOrder(a, b)) {
+							compilation.errors.push(new OrderUndefinedError(a.getOriginalModule()));
+							compilation.errors.push(new OrderUndefinedError(b.getOriginalModule()));
+						}
+						return getOrder(a, b);
+					});
 
 					var stylesheet = this.renderExtractedChunk(extractedChunk);
 					var chunk = extractedChunk.originalChunk;
