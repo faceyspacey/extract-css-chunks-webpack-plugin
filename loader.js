@@ -35,8 +35,8 @@ module.exports.pitch = function(request) {
 	// We already in child compiler, return empty bundle
 	if(this[NS] === undefined) {
 		throw new Error(
-			'"extract-text-webpack-plugin" loader is used without the corresponding plugin, ' +
-			'refer to https://github.com/webpack/extract-text-webpack-plugin for the usage example'
+			'"extract-css-chunks-webpack-plugin" loader is used without the corresponding plugin, ' +
+			'refer to https://github.com/faceyspacey/extract-css-chunks-webpack-plugin for the usage example'
 		);
 	} else if(this[NS] === false) {
 		return "";
