@@ -190,9 +190,9 @@ For example, when running the build using some form of npm script:
 ```
 [cross-env](https://www.npmjs.com/package/cross-env) is optional but recommended. 
 
-## What about Aphrodite, Glamor, StyleTron, Styled-Components, Styled-Jsx, etc?
+## What about Glamorous, Styled Components, Styled-Jsx, Aphrodite, etc?
 
-If you effectively use code-splitting, **Exract Css Chunks** can be a far better option than using emerging solutions like *StyleTron*, *StyledComponents*, and slightly older tools like *Aphrodite*, *Glamor*, etc. We aren't fans of either rounds of tools because of several issues, but particularly because they all have a runtime overhead. Every time your React component is rendered with those, CSS is generated and updated within the DOM. On the server, you're going to also see unnecessary cycles for flushing the CSS along the critical render path. *Next.js's* `styled-jsx`, by the way, doesn't even work on the server--*not so good when it comes to flash of unstyled content (FOUC).*
+If you effectively use code-splitting, **Exract Css Chunks** can be a far better option than using emerging solutions like *Glamorous*, *Styled Components*, and slightly older tools like *Aphrodite*, *Glamor*, etc. We aren't fans of either rounds of tools because of several issues, but particularly because they all have a runtime overhead. Every time your React component is rendered with those, CSS is generated and updated within the DOM. On the server, you're going to also see unnecessary cycles for flushing the CSS along the critical render path. *Next.js's* `styled-jsx`, by the way, doesn't even work on the server--*not so good when it comes to flash of unstyled content (FOUC).*
 
 The reason *Extract CSS Chunk* can be a better option is because *we also generate multiple sets of CSS based on what is actually "used",* ***but without the runtime overhead***. The difference is our definition of "used" is modules determined *statically* (which may not in fact be rendered) vs. what is in the "critical render path" (as is the case with the other tools). 
 
@@ -237,6 +237,11 @@ The reason Emotion doesn't work in IE11+ is because they currently try to preser
 
 The vision we'd like to see for that package is where dynamic css stays inline, and where only static CSS is extracted into stylesheets, in which case CSS vars aren't needed. I've heard from them they have some "hidden flags" that allow for something close to this. When, and if, they take this feature all the way, look forward to us pushing it as our recommended approach. *Go Emotion!*
 
+## Linaria
+
+Linaria is another modern CSS-in-JSS library. It's focused around static styles, which may make it a perfect fit for usage with this plugin. Check it out:
+
+https://github.com/callstack/linaria
 
 ## What if I don't use SSR and use html-webpack-plugin?
 
