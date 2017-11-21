@@ -116,6 +116,7 @@ function ExtractTextPlugin(options) {
 	mergeOptions(this.options, options);
 	delete this.options.filename;
 	delete this.options.id;
+	ExtractTextPlugin.options = this.options;
 }
 module.exports = ExtractTextPlugin;
 
@@ -200,6 +201,9 @@ ExtractTextPlugin.prototype.extract = function(options) {
 		before = [before];
 	}
 	options = mergeOptions({omit: before.length, remove: true}, options);
+	if (!this.options) {
+	  options = mergeOptions(options, ExtractTextPlugin.options);
+	}
 	delete options.loader;
 	delete options.use;
 	delete options.fallback;
@@ -295,7 +299,7 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 
 		// HMR: inject file name into corresponding javascript modules in order to trigger
 		// appropriate hot module reloading of CSS
-		if (process.env.NODE_ENV === 'development') {
+		if (!options.justExtract && (process.env.NODE_ENV === 'development')) {
 			compilation.plugin("before-chunk-assets", function() {
 				extractedChunks.forEach(function(extractedChunk) {
 					forEachChunkModule(extractedChunk, function(module) {

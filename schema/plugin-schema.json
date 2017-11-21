@@ -30,6 +30,10 @@
       "description": "Ignore dependency order (useful for CSS Modules)",
       "type": "boolean"
     },
+    "justExtract": {
+      "description": "Tells the plugin just to extract CSS, and do not touch anything else",
+      "type": "boolean"
+    },
     "loader": {
       "description": "The loader that ExtractTextPlugin will attempt to load through.",
       "modes": {

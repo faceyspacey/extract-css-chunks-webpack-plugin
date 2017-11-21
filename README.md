@@ -68,7 +68,7 @@ module.exports = {
     ]
   },
   plugins: [
-    new ExtractCssChunks,
+    new ExtractCssChunks(),
   ]
 }
 ```
@@ -163,6 +163,7 @@ Keep in mind, by default `[name].css` is used when `process.env.NODE_ENV === 'de
 
 The 2 exceptions are: `allChunks` will no longer do anything, and `fallback` will no longer do anything when passed to to `extract`. Basically just worry about passing your `css-loader` string and `localIdentName` 🤓
 
+You can use `justExtract: true` option to ignore the value of `process.env.NODE_ENV` and any HMR-related actions, and just to extract CSS.
 
 ### HMR Pitfall
 

@@ -139,7 +139,7 @@ module.exports.pitch = function(request) {
 					//
 					// All we need is a date that changes during dev, to trigger a reload since
 					// hashes generated based on the file contents are what trigger HMR.
-					if (process.env.NODE_ENV === 'development') {
+					if (!query.justExtract && (process.env.NODE_ENV === 'development')) {
 						resultSource += `
 if (module.hot) {
 	module.hot.accept();
