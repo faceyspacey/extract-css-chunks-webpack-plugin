@@ -356,7 +356,9 @@ function getPath(compilation, source, chunk) {
 
 function isChunk(chunk, error) {
 	if (!(chunk instanceof Chunk)) {
-		throw new Error(typeof error === 'string' ? error : 'chunk is not an instance of Chunk');
+    var e = (chunk && chunk.entryModule && chunk.entryModule.error) || error;
+    if (e instanceof Error) throw e;
+    throw new Error(typeof e === 'string' ? e : 'chunk is not an instance of Chunk');
 	}
 
 	return true;
