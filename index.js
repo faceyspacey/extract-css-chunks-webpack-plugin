@@ -356,7 +356,19 @@ function getPath(compilation, source, chunk) {
 
 function isChunk(chunk, error) {
 	if (!(chunk instanceof Chunk)) {
-		throw new Error(typeof error === 'string' ? error : 'chunk is not an instance of Chunk');
+    /* If the entry module failed to build, throw the error that caused it. */
+    var e = chunk && chunk.entryModule && chunk.entryModule.error;
+    if (e) throw e;
+
+    /* If any of dependency modules failed to build, throw the first found
+     * error that caused it. */
+    chunk._modules.forEach((m) => {
+      if (m.error) throw m.error;
+    });
+
+    /* Otherwise throw an error with the error message passed in, or with
+     * the fallback error message. */
+    throw new Error(typeof error === 'string' ? error : 'chunk is not an instance of Chunk');
 	}
 
 	return true;
