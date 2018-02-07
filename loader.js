@@ -15,6 +15,7 @@ var LimitChunkCountPlugin = require("webpack/lib/optimize/LimitChunkCountPlugin"
 var NS = fs.realpathSync(__dirname);
 
 module.exports = function(source) {
+	var query = loaderUtils.getOptions(this) || {};
 	var hot = "hot" in query ? query.hot : (!process.env.NODE_ENV || process.env.NODE_ENV === "development");
 	if (!hot) return source
 
