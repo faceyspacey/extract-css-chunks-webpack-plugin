@@ -60,7 +60,7 @@ module.exports.pitch = function(request) {
 			publicPath: publicPath || this._compilation.outputOptions.publicPath,
 		};
 		var childCompiler = this._compilation.createChildCompiler("extract-text-webpack-plugin", outputOptions);
-		childCompiler.apply(new NodeTemplatePlugin(outputOptions));
+		childCompiler.apply(new NodeTemplatePlugin());
 		childCompiler.apply(new LibraryTemplatePlugin(null, "commonjs2"));
 		childCompiler.apply(new NodeTargetPlugin());
 		childCompiler.apply(new SingleEntryPlugin(this.context, "!!" + request));
