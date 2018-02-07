@@ -222,21 +222,14 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 		var id = this.id;
 		var extractedChunks, entryChunks, initialChunks;
 		compilation.plugin("optimize-tree", function(chunks, modules, callback) {
-			extractedChunks = chunks.map(function() {
-				return new Chunk();
+			extractedChunks = chunks.map(function(chunk) {
+				return new Chunk(chunk.name);
 			});
 			chunks.forEach(function(chunk, i) {
 				var extractedChunk = extractedChunks[i];
-				extractedChunk.index = i;
-				extractedChunk.originalChunk = chunk;
 				extractedChunk.name = chunk.name;
-				extractedChunk.entrypoints = chunk.entrypoints;
-				chunk.chunks.forEach(function(c) {
-					extractedChunk.addChunk(extractedChunks[chunks.indexOf(c)]);
-				});
-				chunk.parents.forEach(function(c) {
-					extractedChunk.addParent(extractedChunks[chunks.indexOf(c)]);
-				});
+				extractedChunk.originalChunk = chunk;
+				splitChunk(chunk, extractedChunk);
 			});
 			async.forEach(chunks, function(chunk, callback) {
 				var extractedChunk = extractedChunks[chunks.indexOf(chunk)];
@@ -355,32 +348,53 @@ function isChunk(chunk, error) {
 function forEachChunkModule(chunk, cb) {
 	isChunk(chunk);
 
+	// webpack >= 4.x.x
+	if (chunk.modulesIterable) {
+		Array.from(chunk.modulesIterable, (x) => {
+			cb(x);
+			return x;
+		})
+	}
 	// webpack >= 3.x.x
-	if (typeof chunk.forEachModule === 'function') {
+	else if (typeof chunk.forEachModule === 'function') {
 		chunk.forEachModule(cb);
 	}
+	// webpack < 3.x.x
 	else {
-		// webpack < 3.x.x
 		chunk.modules.forEach(cb);
 	}
-
-	// Nothing better to return...
-	return chunk;
 }
 
 function getChunkModulesArray(chunk) {
 	isChunk(chunk);
 
-	var arr = [];
-
+	// webpack >= 4.x.x
+	if (chunk.modulesIterable) {
+		return Array.from(chunk.modulesIterable);
+	}
 	// webpack >= 3.x.x
-	if ( typeof chunk.mapModules === 'function' ) {
-		arr = chunk.mapModules();
+	else if ( typeof chunk.mapModules === 'function' ) {
+		return chunk.mapModules();
 	}
 	else {
 		// webpack < 3.x.x
-		arr = chunk.modules.slice();
+		return chunk.modules.slice();
 	}
+}
 
-	return arr;
+function splitChunk(chunk, extractedChunk) {
+	// webpack >= 4.x.x
+	if (typeof chunk.split === 'function') {
+		chunk.split(extractedChunk);
+	}
+	// webpack < 4.x.x
+	else {
+		extractedChunk.entrypoints = chunk.entrypoints;
+		chunk.chunks.forEach(function(c) {
+			extractedChunk.addChunk(extractedChunks[chunks.indexOf(c)]);
+		});
+		chunk.parents.forEach(function(c) {
+			extractedChunk.addParent(extractedChunks[chunks.indexOf(c)]);
+		});
+	}
 }
