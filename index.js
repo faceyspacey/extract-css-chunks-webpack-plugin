@@ -189,7 +189,11 @@ ExtractTextPlugin.prototype.extract = function(options) {
 	} else if(!Array.isArray(before)) {
 		before = [before];
 	}
-	options = mergeOptions({omit: before.length, remove: true}, options);
+	options = mergeOptions({
+		omit: before.length,
+		remove: true,
+		hot: !process.env.NODE_ENV || (process.env.NODE_ENV === "development")
+	}, options);
 	delete options.loader;
 	delete options.use;
 	delete options.fallback;
@@ -278,7 +282,7 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 
 		// HMR: inject file name into corresponding javascript modules in order to trigger
 		// appropriate hot module reloading of CSS
-		if (process.env.NODE_ENV === 'development') {
+		if (options.hot) {
 			compilation.plugin("before-chunk-assets", function() {
 				extractedChunks.forEach(function(extractedChunk) {
 					forEachChunkModule(extractedChunk, function(module) {

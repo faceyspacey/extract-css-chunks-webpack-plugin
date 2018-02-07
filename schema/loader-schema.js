@@ -11,6 +11,7 @@ module.exports = {
 		"filename": { "type": "string" },
 		"use": { "type": ["string", "array", "object"] },
 		"publicPath": { "type": "string" },
+		"hot": { "type": "boolean" },
 
 		// deprecated
 		"fallbackLoader": { "type": ["string", "array", "object"] },
