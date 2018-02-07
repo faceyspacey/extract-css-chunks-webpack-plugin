@@ -105,7 +105,7 @@ function ExtractTextPlugin(options) {
 						"    allChunks: boolean\n" +
 						"    disable: boolean\n");
 	}
-	if(isString(options)) {
+	if(typeof options === "string") {
 		options = { filename: options };
 	} else {
 		schemaTester(pluginSchema, options);
@@ -120,7 +120,7 @@ function ExtractTextPlugin(options) {
 module.exports = ExtractTextPlugin;
 
 function getLoaderObject(loader) {
-	if (isString(loader)) {
+	if (typeof loader === "string") {
 		return {loader: loader};
 	}
 	return loader;
@@ -132,18 +132,6 @@ function mergeOptions(a, b) {
 		a[key] = b[key];
 	});
 	return a;
-}
-
-function isString(a) {
-	return typeof a === "string";
-}
-
-function isFunction(a) {
-	return isType('Function', a);
-}
-
-function isType(type, obj) {
-	return Object.prototype.toString.call(obj) === '[object ' + type + ']';
 }
 
 ExtractTextPlugin.loader = function(options) {
@@ -184,17 +172,17 @@ ExtractTextPlugin.prototype.extract = function(options) {
 	if(options.loader) {
 		console.warn('loader option has been deprecated - replace with "use"');
 	}
-	if(Array.isArray(options) || isString(options) || typeof options.options === "object" || typeof options.query === 'object') {
+	if(Array.isArray(options) || (typeof options === "string") || typeof options.options === "object" || typeof options.query === 'object') {
 		options = { loader: options };
 	} else {
 		schemaTester(loaderSchema, options);
 	}
 	var loader = options.use ||  options.loader;
 	var before = options.fallback || options.fallbackLoader || [];
-	if(isString(loader)) {
+	if(typeof loader === "string") {
 		loader = loader.split("!");
 	}
-	if(isString(before)) {
+	if(typeof before === "string") {
 		before = before.split("!");
 	} else if(!Array.isArray(before)) {
 		before = [before];
