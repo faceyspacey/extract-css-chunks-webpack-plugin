@@ -110,7 +110,9 @@ function ExtractTextPlugin(options) {
 	} else {
 		schemaTester(pluginSchema, options);
 	}
-	this.filename = options.filename || (process.env.NODE_ENV === 'development' ? '[name].css' : '[name].[contenthash].css');
+	this.filename = options.filename || (
+		!process.env.NODE_ENV || (process.env.NODE_ENV === 'development') ? '[name].css' : '[name].[contenthash].css'
+	);
 	this.id = options.id != null ? options.id : ++nextId;
 	this.options = {};
 	mergeOptions(this.options, options);
