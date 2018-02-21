@@ -225,7 +225,9 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 					content: content,
 					options: opt || {}
 				};
-				return options.allChunks || module[NS + "/extract"]; // eslint-disable-line no-path-concat
+
+				// SETTING THIS TO TRUE INSURES A DETERMINISTIC BUILD:
+				return true; //options.allChunks || module[NS + "/extract"];
 			};
 		});
 		var filename = this.filename;
