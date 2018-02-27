@@ -15,7 +15,9 @@ var LimitChunkCountPlugin = require("webpack/lib/optimize/LimitChunkCountPlugin"
 var NS = fs.realpathSync(__dirname);
 
 module.exports = function(source) {
-	if (process.env.NODE_ENV !== 'development') return source
+	var query = loaderUtils.getOptions(this) || {};
+	var hot = "hot" in query ? query.hot : (!process.env.NODE_ENV || process.env.NODE_ENV === "development");
+	if (!hot) return source
 
 	// We need to always require hotModuleReplacement.js for HMR to work in a wierd scenario
 	// where only one css file is imported. Otherwise HMR breaks when modules are disposed.
@@ -54,13 +56,14 @@ module.exports.pitch = function(request) {
 		}
 
 		var childFilename = "extract-text-webpack-plugin-output-filename"; // eslint-disable-line no-path-concat
-		var publicPath = typeof query.publicPath === "string" ? query.publicPath : this._compilation.outputOptions.publicPath;
+		var publicPath = typeof query.publicPath === "string" ? query.publicPath : null;
 		var outputOptions = {
 			filename: childFilename,
-			publicPath: publicPath
+			publicPath: publicPath || this._compilation.outputOptions.publicPath,
 		};
+		var hot = "hot" in query ? query.hot : (!process.env.NODE_ENV || process.env.NODE_ENV === "development");
 		var childCompiler = this._compilation.createChildCompiler("extract-text-webpack-plugin", outputOptions);
-		childCompiler.apply(new NodeTemplatePlugin(outputOptions));
+		childCompiler.apply(new NodeTemplatePlugin());
 		childCompiler.apply(new LibraryTemplatePlugin(null, "commonjs2"));
 		childCompiler.apply(new NodeTargetPlugin());
 		childCompiler.apply(new SingleEntryPlugin(this.context, "!!" + request));
@@ -139,13 +142,15 @@ module.exports.pitch = function(request) {
 					//
 					// All we need is a date that changes during dev, to trigger a reload since
 					// hashes generated based on the file contents are what trigger HMR.
-					if (process.env.NODE_ENV === 'development') {
+					if (hot) {
+						const pathVar = publicPath ?
+							`"${publicPath}"` : "__wepback_public_path__";
 						resultSource += `
 if (module.hot) {
 	module.hot.accept();
 	if (module.hot.data) {
 		var neverUsed = ${+new Date()}
-		require(${loaderUtils.stringifyRequest(this, path.join(__dirname, "hotModuleReplacement.js"))})("${publicPath}", "%%extracted-file%%");
+		require(${loaderUtils.stringifyRequest(this, path.join(__dirname, "hotModuleReplacement.js"))})(${pathVar}, "%%extracted-file%%");
 	}
 }`;
 					}

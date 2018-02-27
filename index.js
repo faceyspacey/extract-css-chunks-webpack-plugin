@@ -105,12 +105,14 @@ function ExtractTextPlugin(options) {
 						"    allChunks: boolean\n" +
 						"    disable: boolean\n");
 	}
-	if(isString(options)) {
+	if(typeof options === "string") {
 		options = { filename: options };
 	} else {
 		schemaTester(pluginSchema, options);
 	}
-	this.filename = options.filename || (process.env.NODE_ENV === 'development' ? '[name].css' : '[name].[contenthash].css');
+	this.filename = options.filename || (
+		!process.env.NODE_ENV || (process.env.NODE_ENV === 'development') ? '[name].css' : '[name].[contenthash].css'
+	);
 	this.id = options.id != null ? options.id : ++nextId;
 	this.options = {};
 	mergeOptions(this.options, options);
@@ -120,7 +122,7 @@ function ExtractTextPlugin(options) {
 module.exports = ExtractTextPlugin;
 
 function getLoaderObject(loader) {
-	if (isString(loader)) {
+	if (typeof loader === "string") {
 		return {loader: loader};
 	}
 	return loader;
@@ -132,18 +134,6 @@ function mergeOptions(a, b) {
 		a[key] = b[key];
 	});
 	return a;
-}
-
-function isString(a) {
-	return typeof a === "string";
-}
-
-function isFunction(a) {
-	return isType('Function', a);
-}
-
-function isType(type, obj) {
-	return Object.prototype.toString.call(obj) === '[object ' + type + ']';
 }
 
 ExtractTextPlugin.loader = function(options) {
@@ -184,22 +174,26 @@ ExtractTextPlugin.prototype.extract = function(options) {
 	if(options.loader) {
 		console.warn('loader option has been deprecated - replace with "use"');
 	}
-	if(Array.isArray(options) || isString(options) || typeof options.options === "object" || typeof options.query === 'object') {
+	if(Array.isArray(options) || (typeof options === "string") || typeof options.options === "object" || typeof options.query === 'object') {
 		options = { loader: options };
 	} else {
 		schemaTester(loaderSchema, options);
 	}
 	var loader = options.use ||  options.loader;
 	var before = options.fallback || options.fallbackLoader || [];
-	if(isString(loader)) {
+	if(typeof loader === "string") {
 		loader = loader.split("!");
 	}
-	if(isString(before)) {
+	if(typeof before === "string") {
 		before = before.split("!");
 	} else if(!Array.isArray(before)) {
 		before = [before];
 	}
-	options = mergeOptions({omit: before.length, remove: true}, options);
+	options = mergeOptions({
+		omit: before.length,
+		remove: true,
+		hot: !process.env.NODE_ENV || (process.env.NODE_ENV === "development")
+	}, options);
 	delete options.loader;
 	delete options.use;
 	delete options.fallback;
@@ -232,21 +226,14 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 		var id = this.id;
 		var extractedChunks, entryChunks, initialChunks;
 		compilation.plugin("optimize-tree", function(chunks, modules, callback) {
-			extractedChunks = chunks.map(function() {
-				return new Chunk();
+			extractedChunks = chunks.map(function(chunk) {
+				return new Chunk(chunk.name);
 			});
 			chunks.forEach(function(chunk, i) {
 				var extractedChunk = extractedChunks[i];
-				extractedChunk.index = i;
-				extractedChunk.originalChunk = chunk;
 				extractedChunk.name = chunk.name;
-				extractedChunk.entrypoints = chunk.entrypoints;
-				chunk.chunks.forEach(function(c) {
-					extractedChunk.addChunk(extractedChunks[chunks.indexOf(c)]);
-				});
-				chunk.parents.forEach(function(c) {
-					extractedChunk.addParent(extractedChunks[chunks.indexOf(c)]);
-				});
+				extractedChunk.originalChunk = chunk;
+				splitChunk(chunk, extractedChunk, extractedChunks);
 			});
 			async.forEach(chunks, function(chunk, callback) {
 				var extractedChunk = extractedChunks[chunks.indexOf(chunk)];
@@ -295,7 +282,7 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 
 		// HMR: inject file name into corresponding javascript modules in order to trigger
 		// appropriate hot module reloading of CSS
-		if (process.env.NODE_ENV === 'development') {
+		if (options.hot) {
 			compilation.plugin("before-chunk-assets", function() {
 				extractedChunks.forEach(function(extractedChunk) {
 					forEachChunkModule(extractedChunk, function(module) {
@@ -355,7 +342,11 @@ function getPath(compilation, source, chunk) {
 }
 
 function isChunk(chunk, error) {
-	if (!(chunk instanceof Chunk)) {
+	if (!chunk || (
+		!chunk.modulesIterable &&
+		!chunk.forEachModule &&
+		!chunk.modules
+	)) {
 		throw new Error(typeof error === 'string' ? error : 'chunk is not an instance of Chunk');
 	}
 
@@ -365,32 +356,53 @@ function isChunk(chunk, error) {
 function forEachChunkModule(chunk, cb) {
 	isChunk(chunk);
 
+	// webpack >= 4.x.x
+	if (chunk.modulesIterable) {
+		Array.from(chunk.modulesIterable, (x) => {
+			cb(x);
+			return x;
+		})
+	}
 	// webpack >= 3.x.x
-	if (typeof chunk.forEachModule === 'function') {
+	else if (typeof chunk.forEachModule === 'function') {
 		chunk.forEachModule(cb);
 	}
+	// webpack < 3.x.x
 	else {
-		// webpack < 3.x.x
 		chunk.modules.forEach(cb);
 	}
-
-	// Nothing better to return...
-	return chunk;
 }
 
 function getChunkModulesArray(chunk) {
 	isChunk(chunk);
 
-	var arr = [];
-
+	// webpack >= 4.x.x
+	if (chunk.modulesIterable) {
+		return Array.from(chunk.modulesIterable);
+	}
 	// webpack >= 3.x.x
-	if ( typeof chunk.mapModules === 'function' ) {
-		arr = chunk.mapModules();
+	else if ( typeof chunk.mapModules === 'function' ) {
+		return chunk.mapModules();
 	}
 	else {
 		// webpack < 3.x.x
-		arr = chunk.modules.slice();
+		return chunk.modules.slice();
 	}
+}
 
-	return arr;
+function splitChunk(chunk, extractedChunk, extractedChunks) {
+	// webpack >= 4.x.x
+	if (typeof chunk.split === 'function') {
+		chunk.split(extractedChunk);
+	}
+	// webpack < 4.x.x
+	else {
+		extractedChunk.entrypoints = chunk.entrypoints;
+		chunk.chunks.forEach(function(c) {
+			extractedChunk.addChunk(extractedChunks[chunks.indexOf(c)]);
+		});
+		chunk.parents.forEach(function(c) {
+			extractedChunk.addParent(extractedChunks[chunks.indexOf(c)]);
+		});
+	}
 }

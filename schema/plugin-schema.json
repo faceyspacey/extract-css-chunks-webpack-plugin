@@ -41,6 +41,10 @@
     "publicPath": {
       "description": "",
       "type": "string"
+    },
+    "hot": {
+      "description": "Enable HMR",
+      "type": "boolean"
     }
   }
 }

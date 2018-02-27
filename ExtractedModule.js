@@ -12,6 +12,7 @@ function ExtractedModule(identifier, originalModule, source, sourceMap, addtitio
 	this._sourceMap = sourceMap;
 	this._prevModules = prevModules;
 	this.addtitionalInformation = addtitionalInformation;
+	this.type = "css";
 	this.chunks = [];
 }
 module.exports = ExtractedModule;
