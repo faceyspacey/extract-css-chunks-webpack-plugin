@@ -233,7 +233,7 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 				var extractedChunk = extractedChunks[i];
 				extractedChunk.name = chunk.name;
 				extractedChunk.originalChunk = chunk;
-				splitChunk(chunk, extractedChunk);
+				splitChunk(chunk, extractedChunk, extractedChunks);
 			});
 			async.forEach(chunks, function(chunk, callback) {
 				var extractedChunk = extractedChunks[chunks.indexOf(chunk)];
@@ -390,7 +390,7 @@ function getChunkModulesArray(chunk) {
 	}
 }
 
-function splitChunk(chunk, extractedChunk) {
+function splitChunk(chunk, extractedChunk, extractedChunks) {
 	// webpack >= 4.x.x
 	if (typeof chunk.split === 'function') {
 		chunk.split(extractedChunk);
