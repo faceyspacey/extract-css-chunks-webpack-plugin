@@ -1,32 +1,9 @@
 {
-  "name": "extract-css-chunks-webpack-plugin",
-  "version": "0.0.0-placeholder",
   "author": "James Gillmore <james@faceyspacey.com>",
-  "description": "Extract CSS from chunks into stylesheets + HMR",
-  "engines": {
-    "node": ">=4.3.0 < 5.0.0 || >= 5.10"
-  },
-  "main": "index.js",
-  "files": [
-    "schema",
-    "ExtractedModule.js",
-    "index.js",
-    "loader.js",
-    "OrderUndefinedError.js",
-    "hotModuleReplacement.js"
-  ],
-  "license": "MIT",
-  "scripts": {
-    "test": "mocha",
-    "travis": "npm run cover -- --report lcovonly",
-    "cover": "istanbul cover _mocha",
-    "release": "standard-version",
-    "build:example": "(cd example && webpack)",
-    "cm": "git-cz",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
-  },
-  "peerDependencies": {
-    "webpack": "*"
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   },
   "dependencies": {
     "ajv": "4.11.2",
@@ -36,6 +13,7 @@
     "style-loader": "^0.18.2",
     "webpack-sources": "^1.0.1"
   },
+  "description": "Extract CSS from chunks into stylesheets + HMR",
   "devDependencies": {
     "codecov.io": "^0.1.2",
     "commitizen": "^2.9.6",
@@ -52,14 +30,36 @@
     "standard-version": "^4.0.0",
     "webpack": "^2.2.0"
   },
+  "engines": {
+    "node": ">=4.3.0 < 5.0.0 || >= 5.10"
+  },
+  "files": [
+    "ExtractedModule.js",
+    "OrderUndefinedError.js",
+    "hotModuleReplacement.js",
+    "index.js",
+    "loader.js",
+    "schema"
+  ],
   "homepage": "http://github.com/faceyspacey/extract-css-chunks-webpack-plugin",
+  "license": "MIT",
+  "main": "index.js",
+  "name": "extract-css-chunks-webpack-plugin",
+  "peerDependencies": {
+    "webpack": "*"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/faceyspacey/extract-css-chunks-webpack-plugin.git"
   },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
-  }
+  "scripts": {
+    "build:example": "(cd example && webpack)",
+    "cm": "git-cz",
+    "cover": "istanbul cover _mocha",
+    "release": "standard-version",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post",
+    "test": "mocha",
+    "travis": "npm run cover -- --report lcovonly"
+  },
+  "version": "0.0.0-placeholder"
 }
