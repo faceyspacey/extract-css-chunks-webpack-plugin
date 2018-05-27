@@ -32,7 +32,8 @@
     "build:example": "(cd example && webpack)",
     "cm": "git-cz",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
-    "travis": "npm run cover -- --report lcovonly"
+    "travis": "npm run cover -- --report lcovonly",
+    "prepack": "npm i && rm -rf ./node_modules"
   },
   "peerDependencies": {
     "webpack": "^4.4.0"
