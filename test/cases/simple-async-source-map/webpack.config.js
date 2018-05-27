@@ -2,6 +2,7 @@ const Self = require('../../../');
 
 module.exports = {
   entry: './index.js',
+  devtool: 'source-map',
   module: {
     rules: [
       {

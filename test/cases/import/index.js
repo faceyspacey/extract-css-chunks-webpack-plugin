@@ -1,3 +1,3 @@
+import './c.css';
 import './a.css';
-import './component';
 import './b.css';

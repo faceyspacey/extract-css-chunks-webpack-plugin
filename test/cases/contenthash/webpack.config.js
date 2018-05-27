@@ -1,6 +1,6 @@
 const Self = require('../../../');
 
-module.exports = {
+module.exports = [1, 2].map(n => ({
   entry: './index.js',
   module: {
     rules: [
@@ -13,9 +13,17 @@ module.exports = {
       },
     ],
   },
+  output: {
+    filename: `${n}.[name].js`,
+  },
+  resolve: {
+    alias: {
+      './style.css': `./style${n}.css`,
+    },
+  },
   plugins: [
     new Self({
-      filename: '[name].css',
+      filename: `${n}.[name].[contenthash].css`,
     }),
   ],
-};
+}));
