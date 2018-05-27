@@ -1,7 +1,7 @@
 const Self = require('../../');
 const webpack = require('webpack');
 
-const poop = {
+const config = {
   mode: 'development',
   output: {
     chunkFilename: '[contenthash].js',
@@ -35,4 +35,4 @@ const poop = {
   },
 };
 
-module.exports = poop;
+module.exports = config;

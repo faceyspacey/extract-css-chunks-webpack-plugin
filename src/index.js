@@ -11,7 +11,7 @@ const { Template, util: { createHash } } = webpack;
 
 const NS = path.dirname(fs.realpathSync(__filename));
 
-const pluginName = 'mini-css-extract-plugin';
+const pluginName = 'extract-css-chunks-webpack-plugin';
 
 const REGEXP_CHUNKHASH = /\[chunkhash(?::(\d+))?\]/i;
 const REGEXP_CONTENTHASH = /\[contenthash(?::(\d+))?\]/i;
@@ -196,7 +196,7 @@ class MiniCssExtractPlugin {
                 chunk,
                 contentHashType: NS,
               },
-              identifier: `mini-css-extract-plugin.${chunk.id}`,
+              identifier: `extract-css-chunks-webpack-plugin.${chunk.id}`,
               hash: chunk.contentHash[NS],
             });
           }
@@ -220,7 +220,7 @@ class MiniCssExtractPlugin {
                 chunk,
                 contentHashType: NS,
               },
-              identifier: `mini-css-extract-plugin.${chunk.id}`,
+              identifier: `extract-css-chunks-webpack-plugin.${chunk.id}`,
               hash: chunk.contentHash[NS],
             });
           }
@@ -333,7 +333,7 @@ class MiniCssExtractPlugin {
             return Template.asString([
               source,
               '',
-              '// mini-css-extract-plugin CSS loading',
+              '// extract-css-chunks-webpack-plugin CSS loading',
               `var cssChunks = ${JSON.stringify(chunkMap)};`,
               'if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);',
               'else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {',

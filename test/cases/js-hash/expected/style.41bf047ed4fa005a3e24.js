@@ -2,7 +2,7 @@
 /* 0 */,
 /* 1 */
 /** */ (function (module, exports, __webpack_require__) {
-// extracted by mini-css-extract-plugin
+// extracted by extract-css-chunks-webpack-plugin
   module.exports = { a: 'wX52cuPepLZcpDx5S3yYO' };
 /** */ }),
 ]]);
