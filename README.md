@@ -43,7 +43,7 @@ Additionally, if you are already a user of the universal family -- we will be wa
 The functionality is still available to you via chunk flushing, and it can come in super handy when needing to easily resolve style assets as urls that might need to be passed to a third party.
 
 
-#BETA TESTING WEBPACK 4
+# BETA TESTING WEBPACK 4
 
 If you want to test this alpha branch, which is currently not published to the NPM registry. 
 
@@ -52,7 +52,7 @@ Add the following to your package.json file, then `npm i`
     "extract-css-chunks-webpack-plugin": "git+ssh://git@github.com/zackljackson/extract-css-chunks-webpack-plugin.git#webpack-4",
 
 
-##Webpack 4 Standalone Installation:
+## Webpack 4 Standalone Installation:
 
 If you are just looking for something that works like `mini-css-extract-plugin` but with HMR. Then look no further
 
@@ -96,7 +96,7 @@ module.exports = {
 
 
 
-####What about Webpack 3?
+#### What about Webpack 3?
 This is a breaking change. The entire loader has been fundamentally rewritten specifically for Webpack 4. Aiming to support our existing user base, allowing them to upgrade their infrastructure to support Webpack 4 based universally code-split server-side rendered react applications. 
 
 There have been some challenges along the way since the release of webpack 4. Ultimately the only remaining hurdle is code split, async style loading. 
