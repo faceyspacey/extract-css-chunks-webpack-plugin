@@ -68,20 +68,22 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
-        use: ExtractCssChunks.extract({
-          use: {
-            loader: 'css-loader',
-            options: {
-              modules: true,
-              localIdentName: '[name]__[local]--[hash:base64:5]'
-            }
-          }
-        })
+        use: [
+           ExtractCssChunks.loader,
+           "css-loader"
+         ]
       }
     ]
   },
   plugins: [
-    new ExtractCssChunks(),
+    new ExtractCssChunks(
+        {
+          // Options similar to the same options in webpackOptions.output
+          // both options are optional
+          filename: "[name].css",
+          chunkFilename: "[id].css"
+        }
+    ),
   ]
 }
 ```
