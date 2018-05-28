@@ -11,8 +11,11 @@ const config = {
     rules: [
       {
         test: /\.css$/,
+
         use: [
-          Self.loader,
+          {
+            loader: Self.loader,
+          },
           'css-loader',
         ],
       },

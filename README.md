@@ -61,6 +61,7 @@ NOTE: We have aligned out loader implementation to be the same as `mini-css-extr
 **If you already use `mini-css-extract-plugin`, then you can just change the `require` statement - its that easy**
 
 
+**DONT USE THIS INSTALL CMD IF YOU ARE BETA TESTING:**
 ```
 yarn add --dev extract-css-chunks-webpack-plugin
 ```
@@ -96,7 +97,7 @@ module.exports = {
 
 
 
-#### What about Webpack 3?
+### What about Webpack 3?
 This is a breaking change. The entire loader has been fundamentally rewritten specifically for Webpack 4. Aiming to support our existing user base, allowing them to upgrade their infrastructure to support Webpack 4 based universally code-split server-side rendered react applications. 
 
 There have been some challenges along the way since the release of webpack 4. Ultimately the only remaining hurdle is code split, async style loading. 
@@ -106,15 +107,15 @@ If you do need Webpack 3, make sure to stick with the latest `v2.x.x` release. `
 
 
 
-Like `extract-text-webpack-plugin`, but creates multiple css files (one per chunk). Then, as part of server side rendering, you can deliver just the css chunks needed by the current request. The result is the most minimal CSS initially served compared to emerging "render path" solutions.
-
-For a demo, `git clone`: [universal-demo](https://github.com/faceyspacey/universal-demo)
-
 *Note: this is a companion package to:*
 - [webpack-flush-chunks](https://github.com/faceyspacey/webpack-flush-chunks) 
 - [react-universal-component](https://github.com/faceyspacey/react-universal-component)
 - [babel-plugin-universal-import](https://github.com/faceyspacey/babel-plugin-universal-import) ***or*** [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import)
 
+<details><summary>See Old Docs</summary>
+Like `extract-text-webpack-plugin`, but creates multiple css files (one per chunk). Then, as part of server side rendering, you can deliver just the css chunks needed by the current request. The result is the most minimal CSS initially served compared to emerging "render path" solutions.
+
+For a demo, `git clone`: [universal-demo](https://github.com/faceyspacey/universal-demo)
 
 ## Recommended Installation
 ```
@@ -343,3 +344,4 @@ We use [commitizen](https://github.com/commitizen/cz-cli), so run `npm run cm` t
 ## More from FaceySpacey in Reactlandia
 - [redux-first-router](https://github.com/faceyspacey/redux-first-router). It's made to work perfectly with *Universal*. Together they comprise our *"frameworkless"* Redux-based approach to what Next.js does (splitting, SSR, prefetching, and routing). *People are lovin it by the way* 😎
 
+</details>
