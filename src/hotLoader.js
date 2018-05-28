@@ -1,11 +1,11 @@
 const path = require('path');
-
 const loaderUtils = require('loader-utils');
 
 const defaultOptions = {
   fileMap: '{fileName}',
 };
-module.exports = function (content) {
+
+function hotReload(content) {
   this.cacheable();
   const options = Object.assign(
     {},
@@ -24,4 +24,6 @@ module.exports = function (content) {
       module.hot.accept(undefined, cssReload);
     }
   `;
-};
+}
+
+module.exports = hotReload;

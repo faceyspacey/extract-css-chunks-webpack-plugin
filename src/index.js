@@ -38,7 +38,7 @@ class CssDependency extends webpack.Dependency {
 }
 
 class CssDependencyTemplate {
-  apply() {
+  apply() { // eslint-disable-line class-methods-use-this
   }
 }
 
@@ -81,7 +81,7 @@ class CssModule extends webpack.Module {
     this.sourceMap = module.sourceMap;
   }
 
-  needRebuild() {
+  needRebuild() { // eslint-disable-line class-methods-use-this
     return true;
   }
 
@@ -100,12 +100,12 @@ class CssModule extends webpack.Module {
 }
 
 class CssModuleFactory {
-  create({ dependencies: [dependency] }, callback) {
+  create({ dependencies: [dependency] }, callback) { // eslint-disable-line class-methods-use-this
     callback(null, new CssModule(dependency));
   }
 }
 
-class MiniCssExtractPlugin {
+class ExtractCssChunks {
   constructor(options) {
     this.options = Object.assign(
       {
@@ -136,7 +136,6 @@ class MiniCssExtractPlugin {
       if (rule.use) {
         const isMiniCss = rule.use.some((l) => {
           const needle = l.loader || l;
-          console.log('NEEDLE:', needle, 'HAS:', needle.includes(pluginName));
           return needle.includes(pluginName);
         });
         if (isMiniCss) {
@@ -387,7 +386,7 @@ class MiniCssExtractPlugin {
     });
   }
 
-  getCssChunkObject(mainChunk) {
+  getCssChunkObject(mainChunk) { // eslint-disable-line class-methods-use-this
     const obj = {};
     for (const chunk of mainChunk.getAllAsyncChunks()) {
       for (const module of chunk.modulesIterable) {
@@ -400,7 +399,7 @@ class MiniCssExtractPlugin {
     return obj;
   }
 
-  renderContentAsset(modules, requestShortener) {
+  renderContentAsset(modules, requestShortener) { // eslint-disable-line class-methods-use-this
     modules.sort((a, b) => a.index2 - b.index2);
     const source = new ConcatSource();
     const externalsSource = new ConcatSource();
@@ -447,6 +446,6 @@ class MiniCssExtractPlugin {
   }
 }
 
-MiniCssExtractPlugin.loader = require.resolve('./loader');
+ExtractCssChunks.loader = require.resolve('./loader');
 
-export default MiniCssExtractPlugin;
+export default ExtractCssChunks;

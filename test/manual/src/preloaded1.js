@@ -1,3 +1,3 @@
 import './preloaded1.css';
 
-alert('Ok');
+alert('Ok'); // eslint-disable-line no-alert

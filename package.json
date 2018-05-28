@@ -15,7 +15,7 @@
     "start": "npm run build -- -w",
     "build": "cross-env NODE_ENV=production babel src -d dist --ignore 'src/**/*.test.js' --copy-files",
     "clean": "del-cli dist",
-    "lint": "eslint --cache src test",
+    "lint": "eslint --cache --fix src test",
     "prebuild": "npm run clean",
     "prepublish": "npm run build",
     "release": "standard-version",
@@ -25,11 +25,12 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --collectCoverageFrom='src/**/*.js' --coverage",
+    "test:example": "npm run build && webpack-dev-server test/manual/src/index.js --config test/manual/webpack.config.js",
     "ci:lint": "npm run lint && npm run security",
     "ci:test": "npm run test -- --runInBand",
     "ci:coverage": "npm run test:coverage -- --runInBand",
     "below:zack": "echo 1",
-    "build:example": "(cd example && webpack)",
+    "build:example": "npm run build && webpack-dev-server test/manual/src/index.js --open --config test/manual/webpack.config.js",
     "cm": "git-cz",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
     "travis": "npm run cover -- --report lcovonly",
@@ -41,6 +42,8 @@
   "dependencies": {
     "@webpack-contrib/schema-utils": "^1.0.0-beta.0",
     "loader-utils": "^1.1.0",
+    "lodash": "^4.17.10",
+    "normalize-url": "^3.0.0",
     "webpack-sources": "^1.1.0"
   },
   "devDependencies": {

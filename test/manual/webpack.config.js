@@ -13,8 +13,6 @@ const config = {
         test: /\.css$/,
         use: [
           Self.loader,
-		  // alternatively
-		  // { loader: Self.loader },
           'css-loader',
         ],
       },

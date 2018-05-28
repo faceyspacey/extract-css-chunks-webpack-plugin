@@ -8,5 +8,14 @@ module.exports = {
 		sourceType: 'module',
 		allowImportExportEverywhere: false
 	},
-	extends: ['airbnb']
-}
+	extends: ['airbnb'],
+	env: {
+		'browser': true,
+	},
+	rules: {
+		'no-param-reassign': 0,
+		'func-names': 0,
+		'no-underscore-dangle': 0,
+		'no-restricted-syntax': 0,
+	}
+};

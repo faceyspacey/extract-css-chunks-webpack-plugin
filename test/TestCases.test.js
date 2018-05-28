@@ -1,4 +1,5 @@
-/* eslint-disable no-restricted-syntax, import/no-dynamic-require, global-require, no-console */
+/* eslint-disable no-restricted-syntax, import/no-dynamic-require, global-require,
+ no-console, no-undef, no-loop-func */
 import fs from 'fs';
 import path from 'path';
 import webpack from 'webpack';

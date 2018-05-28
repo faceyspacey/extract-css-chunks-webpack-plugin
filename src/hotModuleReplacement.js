@@ -69,6 +69,17 @@ function updateCss(el, url) {
   el.parentNode.appendChild(newEl);
 }
 
+function getReloadUrl(href, src) {
+  href = normalizeUrl(href, { stripWWW: false });
+  let ret;
+  src.some((url) => { // eslint-disable-line array-callback-return
+    if (href.indexOf(src) > -1) {
+      ret = url;
+    }
+  });
+  return ret;
+}
+
 function reloadStyle(src) {
   const elements = document.querySelectorAll('link');
   let loaded = false;
@@ -86,17 +97,6 @@ function reloadStyle(src) {
   return loaded;
 }
 
-function getReloadUrl(href, src) {
-  href = normalizeUrl(href, { stripWWW: false });
-  let ret;
-  src.some((url) => {
-    if (href.indexOf(src) > -1) {
-      ret = url;
-    }
-  });
-  return ret;
-}
-
 function reloadAll() {
   const elements = document.querySelectorAll('link');
   forEach.call(elements, (el) => {
@@ -106,21 +106,19 @@ function reloadAll() {
 }
 
 module.exports = function (moduleId, options) {
-  let getScriptSrc;
-
   if (noDocument) {
     return noop;
   }
 
-  getScriptSrc = getCurrentScriptUrl(moduleId);
+  const getScriptSrc = getCurrentScriptUrl(moduleId);
 
   function update() {
     const src = getScriptSrc(options.fileMap);
     const reloaded = reloadStyle(src);
     if (reloaded) {
-      console.log('[HMR] css reload %s', src.join(' '));
+      console.log('[HMR] css reload %s', src.join(' ')); // eslint-disable-line no-console
     } else {
-      console.log('[HMR] Reload all css');
+      console.log('[HMR] Reload all css'); // eslint-disable-line no-console
       reloadAll();
     }
   }

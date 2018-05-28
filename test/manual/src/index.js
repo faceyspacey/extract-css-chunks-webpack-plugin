@@ -2,7 +2,7 @@ import './initial.css';
 
 const handleError = (err) => {
   document.querySelector('.errors').textContent += `\n${err.toString()}`;
-  console.error(err);
+  console.error(err); // eslint-disable-line no-console
 };
 
 const makeButton = (className, fn) => {
