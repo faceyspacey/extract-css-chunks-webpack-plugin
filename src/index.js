@@ -133,7 +133,8 @@ class ExtractCssChunks {
 
   apply(compiler) {
     const updatedRules = compiler.options.module.rules.reduce((rules, rule) => {
-      if (rule.use) {
+
+      if (rule.use && typeof rule.use !== 'string') {
         const isMiniCss = rule.use.some((l) => {
           const needle = l.loader || l;
           return needle.includes(pluginName);
