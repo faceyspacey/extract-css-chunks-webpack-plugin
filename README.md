@@ -23,11 +23,6 @@
 > **HEADLINES (May 2018): Now Independently supports Webpack 4:** 
 Yep that's right. The universal family is now fully Webpack 4. Thank you to all our users for your loyalty and patience! If you love Universal, then you are gonna fall head over heels when we bring out the main course! 
 
-
-> **UPDATE (July 7th):** [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import) is now required to asynchronously import both css + js. *Much Faster Builds!* You likely want to read [its intro article](https://medium.com/@faceyspacey/webpacks-import-will-soon-fetch-js-css-here-s-how-you-do-it-today-4eb5b4929852).
-
-> **UPDATE (July 26th):** [babel-plugin-universal-import](https://github.com/faceyspacey/babel-plugin-universal-import) is what to use if you're using *React Universal Component*. 
-
 So... why did we rebuild `extract-css-chunks`? What does it offer? 
 
 Its got all the goodness of `mini-css-extract-plugin` but with 2 gleaming, sought after benefits. 
@@ -47,6 +42,16 @@ Additionally, if you are already a user of the universal family -- we will be wa
 
 The functionality is still available to you via chunk flushing, and it can come in super handy when needing to easily resolve style assets as urls that might need to be passed to a third party.
 
+
+#BETA TESTING WEBPACK 4
+
+If you want to test this alpha branch, which is currently not published to the NPM registry. 
+
+Add the following to your package.json file, then `npm i`
+
+    "extract-css-chunks-webpack-plugin": "git+ssh://git@github.com/zackljackson/extract-css-chunks-webpack-plugin.git#webpack-4",
+
+
 ##Webpack 4 Standalone Installation:
 
 If you are just looking for something that works like `mini-css-extract-plugin` but with HMR. Then look no further
@@ -54,6 +59,7 @@ If you are just looking for something that works like `mini-css-extract-plugin` 
 NOTE: We have aligned out loader implementation to be the same as `mini-css-extract-plugin` 
 
 **If you already use `mini-css-extract-plugin`, then you can just change the `require` statement - its that easy**
+
 
 ```
 yarn add --dev extract-css-chunks-webpack-plugin

@@ -10,3 +10,4 @@ module.exports = {
     '<rootDir>/test/js',
   ],
 };
+

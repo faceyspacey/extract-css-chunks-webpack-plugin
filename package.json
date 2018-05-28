@@ -18,9 +18,6 @@
     "lint": "eslint --cache --fix src test",
     "prebuild": "npm run clean",
     "prepublish": "npm run build",
-    "release": "standard-version",
-    "release:ci": "conventional-github-releaser -p angular",
-    "release:validate": "commitlint --from=$(git describe --tags --abbrev=0) --to=$(git rev-parse HEAD)",
     "security": "nsp check",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -34,13 +31,12 @@
     "cm": "git-cz",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
     "travis": "npm run cover -- --report lcovonly",
-    "prepack": "npm i && rm -rf ./node_modules"
+    "prepack": "npm i yarn && yarn && rm -rf ./node_modules"
   },
   "peerDependencies": {
     "webpack": "^4.4.0"
   },
   "dependencies": {
-    "@webpack-contrib/schema-utils": "^1.0.0-beta.0",
     "loader-utils": "^1.1.0",
     "lodash": "^4.17.5",
     "normalize-url": "^1.9.1",
