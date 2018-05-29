@@ -1,0 +1,21 @@
+module.exports = {
+	parser: 'babel-eslint',
+	parserOptions: {
+		ecmaFeatures: {
+			generators: true,
+			experimentalObjectRestSpread: true
+		},
+		sourceType: 'module',
+		allowImportExportEverywhere: false
+	},
+	extends: ['airbnb'],
+	env: {
+		'browser': true,
+	},
+	rules: {
+		'no-param-reassign': 0,
+		'func-names': 0,
+		'no-underscore-dangle': 0,
+		'no-restricted-syntax': 0,
+	}
+};

@@ -1,2 +1,1 @@
-require("./a.txt");
-require("./b.txt");
+import './style.css';

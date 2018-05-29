@@ -19,19 +19,103 @@
   </a>
 </p>
 
-> **UPDATE (July 7th):** [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import) is now required to asynchronously import both css + js. *Much Faster Builds!* You likely want to read [its intro article](https://medium.com/@faceyspacey/webpacks-import-will-soon-fetch-js-css-here-s-how-you-do-it-today-4eb5b4929852).
 
-> **UPDATE (July 26th):** [babel-plugin-universal-import](https://github.com/faceyspacey/babel-plugin-universal-import) is what to use if you're using *React Universal Component*. 
+> **HEADLINES (May 2018): Now Independently supports Webpack 4:** 
+Yep that's right. The universal family is now fully Webpack 4. Thank you to all our users for your loyalty and patience! If you love Universal, then you are gonna fall head over heels when we bring out the main course! 
 
-Like `extract-text-webpack-plugin`, but creates multiple css files (one per chunk). Then, as part of server side rendering, you can deliver just the css chunks needed by the current request. The result is the most minimal CSS initially served compared to emerging "render path" solutions.
+So... why did we rebuild `extract-css-chunks`? What does it offer? 
 
-For a demo, `git clone`: [universal-demo](https://github.com/faceyspacey/universal-demo)
+Its got all the goodness of `mini-css-extract-plugin` but with 2 gleaming, sought after benefits. 
+
+Compared to the existing loaders, we are offering a single solution as opposed to needing to depend on multiple loaders to cater for different features:
+
+* Async loading
+* No duplicate compilation (performance)
+* Easier to use
+* Specific to CSS
+* True **Hot Module Reloading** - that means no `style-loader`
+* SSR Friendly development build, focused on frontend DX
+* Works seamlessly with the Universal family
+* Works fantastically as a standalone style loader (You can use it for any webpack project! with no extra dependencies!)
+
+Additionally, if you are already a user of the universal family -- we will be waving goodbye to the mandatory ```window.__CSS_CHUNKS__```.
+
+The functionality is still available to you via chunk flushing, and it can come in super handy when needing to easily resolve style assets as urls that might need to be passed to a third party.
+
+
+# BETA TESTING WEBPACK 4
+
+If you want to test this alpha branch, which is currently not published to the NPM registry. 
+
+Add the following to your package.json file, then `npm i`
+
+    "extract-css-chunks-webpack-plugin": "git+ssh://git@github.com/zackljackson/extract-css-chunks-webpack-plugin.git#webpack-4",
+
+
+## Webpack 4 Standalone Installation:
+
+If you are just looking for something that works like `mini-css-extract-plugin` but with HMR. Then look no further
+
+NOTE: We have aligned out loader implementation to be the same as `mini-css-extract-plugin` 
+
+**If you already use `mini-css-extract-plugin`, then you can just change the `require` statement - its that easy**
+
+
+**DONT USE THIS INSTALL CMD IF YOU ARE BETA TESTING:**
+```
+yarn add --dev extract-css-chunks-webpack-plugin
+```
+
+*webpack.config.js:*
+```js
+const ExtractCssChunks = require("extract-css-chunks-webpack-plugin")
+
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [
+           ExtractCssChunks.loader,
+           "css-loader"
+         ]
+      }
+    ]
+  },
+  plugins: [
+    new ExtractCssChunks(
+        {
+          // Options similar to the same options in webpackOptions.output
+          // both options are optional
+          filename: "[name].css",
+          chunkFilename: "[id].css"
+        }
+    ),
+  ]
+}
+```
+
+
+
+### What about Webpack 3?
+This is a breaking change. The entire loader has been fundamentally rewritten specifically for Webpack 4. Aiming to support our existing user base, allowing them to upgrade their infrastructure to support Webpack 4 based universally code-split server-side rendered react applications. 
+
+There have been some challenges along the way since the release of webpack 4. Ultimately the only remaining hurdle is code split, async style loading. 
+
+If you do need Webpack 3, make sure to stick with the latest `v2.x.x` release. `v3.x.x` is only intend for users with Webpack 4
+
+
+
 
 *Note: this is a companion package to:*
 - [webpack-flush-chunks](https://github.com/faceyspacey/webpack-flush-chunks) 
 - [react-universal-component](https://github.com/faceyspacey/react-universal-component)
 - [babel-plugin-universal-import](https://github.com/faceyspacey/babel-plugin-universal-import) ***or*** [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import)
 
+<details><summary>See Old Docs</summary>
+Like `extract-text-webpack-plugin`, but creates multiple css files (one per chunk). Then, as part of server side rendering, you can deliver just the css chunks needed by the current request. The result is the most minimal CSS initially served compared to emerging "render path" solutions.
+
+For a demo, `git clone`: [universal-demo](https://github.com/faceyspacey/universal-demo)
 
 ## Recommended Installation
 ```
@@ -260,3 +344,4 @@ We use [commitizen](https://github.com/commitizen/cz-cli), so run `npm run cm` t
 ## More from FaceySpacey in Reactlandia
 - [redux-first-router](https://github.com/faceyspacey/redux-first-router). It's made to work perfectly with *Universal*. Together they comprise our *"frameworkless"* Redux-based approach to what Next.js does (splitting, SSR, prefetching, and routing). *People are lovin it by the way* 😎
 
+</details>
