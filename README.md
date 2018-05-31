@@ -47,9 +47,9 @@ The functionality is still available to you via chunk flushing, and it can come 
 
 If you want to test this alpha branch, which is currently not published to the NPM registry. 
 
-Add the following to your package.json file, then `npm i`
+Add the following to your package.json file, then
 
-    "extract-css-chunks-webpack-plugin": "git+ssh://git@github.com/zackljackson/extract-css-chunks-webpack-plugin.git#webpack-4",
+    npm i extract-css-chunks-webpack-plugin@next
 
 
 ## Webpack 4 Standalone Installation:
