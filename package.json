@@ -1,6 +1,6 @@
 {
   "name": "extract-css-chunks-webpack-plugin",
-  "version": "0.0.0-placeholder",
+  "version": "3.0.0-alpha",
   "author": "James Gillmore <james@faceyspacey.com>",
   "description": "Extract CSS from chunks into stylesheets + HMR",
   "engines": {
@@ -26,7 +26,6 @@
     "ci:lint": "npm run lint && npm run security",
     "ci:test": "npm run test -- --runInBand",
     "ci:coverage": "npm run test:coverage -- --runInBand",
-    "below:zack": "echo 1",
     "build:example": "npm run build && webpack-dev-server test/manual/src/index.js --open --config test/manual/webpack.config.js",
     "cm": "git-cz",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
@@ -47,6 +46,7 @@
     "babel-cli": "^6.26.0",
     "babel-eslint": "^7.2.3",
     "babel-jest": "^22.2.2",
+    "babel-loader": "^7.1.4",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.6.1",
