@@ -265,10 +265,7 @@ For example, when running the build using some form of npm script:
 
 
 ### What about Glamorous, Styled Components, Styled-Jsx, Aphrodite, etc?
-<details>
-<summary>
-    Click to Read
-</summary>
+
 If you effectively use code-splitting, **Exract Css Chunks** can be a far better option than using emerging solutions like *Glamorous*, *Styled Components*, and slightly older tools like *Aphrodite*, *Glamor*, etc. We aren't fans of either rounds of tools because of several issues, but particularly because they all have a runtime overhead. Every time your React component is rendered with those, CSS is generated and updated within the DOM. On the server, you're going to also see unnecessary cycles for flushing the CSS along the critical render path. *Next.js's* `styled-jsx`, by the way, doesn't even work on the server--*not so good when it comes to flash of unstyled content (FOUC).*
 
 The reason **Extract CSS Chunk** can be a better option is because **we also generate multiple sets of CSS based on what is actually "used",** ***but without the runtime overhead***. The difference is our definition of "used" is modules determined *statically* (which may not in fact be rendered) vs. what is in the "critical render path" (as is the case with the other tools). 
@@ -278,7 +275,6 @@ So yes, our CSS may be mildly larger and include unnecessary css, but our `no_cs
 On top of that, those are extra packages all with a huge number of issues in their Github repos corresponding to various limitations in the CSS they generate--something that is prevented when your definition for "CSS-in-JS" is simply importing CSS files compiled as normal by powerful proven CSS-specific processors.
 
 Lastly, those solutions don't provide cacheable stylesheets. They do a lot of work--but they will **continue** doing it for you when you could have been done in one go long ago. Cloudflare is free--serve them through their CDN and you're winning. I love true javascript in css--don't get me wrong--but first I'd have to see they generate cacheable stylesheets. In my opinion, for now, it's best for environments that natively support it such as React Native.
-</details>
 
 
 #### Next:
@@ -289,6 +285,7 @@ Now with that out of the way, for completeness let's compare what bytes of just 
 <summary>
     Read more on the topic:
 </summary>
+
 This is where the real problem lies--where the real amount of unnecessary CSS comes from. If you effectively code-split your app, you may end up with 10 chunks. Now you can serve just the corresponding CSS for that chunk. If you try to go even farther and remove the css not used in the render path, you're likely acheiving somewhere between 1-20% of the gains you achieved by thorough code-splitting. In other words, code splitting fulfills the 80/20 rule and attains the simple sweetspot of 80% optimization you--*as a balanced, level-headed, non-neurotic and professional developer*--are looking to achieve.
 
 *In short, by putting code splitting in appropriate places you have a lot of control over the CSS files that are created and can send a sensible* ***minimal*** *amount of associated bytes over the wire for the first request, perhaps even the smallest amount of all options.* 
@@ -298,14 +295,7 @@ It's our perspective that you have achieved 80-99% of the performance gains (i.e
 There may be other reasons to use those tools (e.g. you don't like setting up webpack configs, or somehow you're really fond of pre-creating many `<div />` elements with their styles), but we prefer a simple standards-based way (without HoCs or specialized style components) to import styles just as you would in React Native. However to give the other tools credit, many of them likely started out with a different problem motivating them: avoiding webpack configs so you can include packages and their contained CSS without client apps being required to setup something like CSS loaders in Webpack. Having your CSS completely contained in true JS has its use cases, but at the application level--especially when you're already using something like Webpack--we fail to see its benefits. About all they share is a solution to avoiding **flashes of unstyled content** (FOUC), except one can save you a lot more bytes in what you send over the wire and save you from a continual runtime overhead where it's not needed. ***Honorable Mention:*** *StyleTron's concept of "atomic declaration-level deduplication" where it will make a class out of, say, `color: blue` so you don't need to send redundant styles certainly is a novel innovation, but again if the code still exists in your JS and you're building an application using Webpack (instead of a package), what's the point. In fact, it just makes editing the stylesheets in your browser developer tools more complicated. One benefit of critical render path solutions is the browser can spend less time matching the smaller number of styles to new DOM nodes as they appear, but then again it also has to spend the time injecting and parsing the new styles constantly, which is likely costlier.*
 
 As an aside, so many apps share code between web and React Native--so the answer to the styles problem must be one that is identical for both. From that perspective importing a styles object **still** makes a lot of sense. **You're not missing out on the fundamental aspect of CSS-in-JSS:** ***isolated component-level styles and the ability to import them just like any other javascript code.*** Put them in other files, and use tools like `extract-css-chunks-webpack-plugin` and your pre-processors of choice that innately get styles right for the browser. As long as you're using **CSS Modules**, you're still at the cutting edge of CSS-in-JSS. Let's just say the other tools took one wrong turn and took it too far, when we already were at our destination. 
-
 </details>
-
-<details><summary>See Old Docs</summary>
-
-For a demo, `git clone`: [universal-demo](https://github.com/faceyspacey/universal-demo)
-
-
 
 **SUMMARY OF BENEFITS COMPARED TO "CRITICAL-RENDER-PATH" SOLUTIONS:** 
 
@@ -314,17 +304,20 @@ For a demo, `git clone`: [universal-demo](https://github.com/faceyspacey/univers
 - **You DO NOT need to clutter your component code with a specialized way of applying CSS (HoCs, styled elements)!** 
 - The way you import module-based styles is exactly how you would import styles in React Native that exist in a separate file, which allows for extremely interchangeable code between React Native and regular React. Hurray! 
 - pretty much already does everything covered by [@vjeux's 2014 css-in-js talk](https://speakerdeck.com/vjeux/react-css-in-js), besides dead code elimination. Dead code elimination is only solved for the other tools--as per the explanation above how the CSS is in the JS anyway--so much as Webpack and Uglify can remove **JS** that is not used. Either way, it's not a stretch to eventually add this feature to `extract-text-webpack-plugin` as well as this plugin. Hey, maybe it already has it??
-
-
 ## Emotion!
 
 [Emotion](https://github.com/tkh44/emotion) is different. They allow for the extraction of static styles via their *extract mode*. We're very much looking forward to this being the perfect companion to the css chunks approach. 
+<details>
+<summary>
+    Read more on the topic:
+</summary>
 
 Currently however *extract mode* does not support IE11. So that means it's a no go, but we have hopes that in the future they'll solve that problem.
 
 The reason Emotion doesn't work in IE11+ is because they currently try to preserve any dynamic aspects of your CSS-in-JS by converting it CSS vars, which isn't supported in IE11. That was a very smart approach, but unfortunately not good enough. 
 
 The vision we'd like to see for that package is where dynamic css stays inline, and where only static CSS is extracted into stylesheets, in which case CSS vars aren't needed. I've heard from them they have some "hidden flags" that allow for something close to this. When, and if, they take this feature all the way, look forward to us pushing it as our recommended approach. *Go Emotion!*
+</details>
 
 ## Linaria
 
@@ -334,8 +327,7 @@ https://github.com/callstack/linaria
 
 ## What if I don't use SSR and use html-webpack-plugin?
 
-For that case you can use [css-chunks-html-webpack-plugin](https://github.com/mike1808/css-chunks-html-webpack-plugin) which will extract CSS chunks paths into your HTML file.
-
+For that case you can use [css-chunks-html-webpack-plugin](https://github.com/teamable-software/css-chunks-html-webpack-plugin) which will extract CSS chunks paths into your HTML file.
 
 ## Conclusion:
 **We love CSS modules; no less, no more.**
@@ -348,5 +340,10 @@ We use [commitizen](https://github.com/commitizen/cz-cli), so run `npm run cm` t
 
 ## More from FaceySpacey in Reactlandia
 - [redux-first-router](https://github.com/faceyspacey/redux-first-router). It's made to work perfectly with *Universal*. Together they comprise our *"frameworkless"* Redux-based approach to what Next.js does (splitting, SSR, prefetching, and routing). *People are lovin it by the way* 😎
+
+
+<details><summary>See Old Docs</summary>
+
+For a demo, `git clone`: [universal-demo](https://github.com/faceyspacey/universal-demo)
 
 </details>
