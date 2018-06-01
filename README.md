@@ -29,11 +29,15 @@ Its got all the goodness of `mini-css-extract-plugin` but with 2 gleaming, sough
 
 Compared to the existing loaders, we are offering a single solution as opposed to needing to depend on multiple loaders to cater for different features:
 
+## Perks
+* **HMR:** It also has first-class support for **Hot Module Replacement** across ALL those css files/chunks!!!
+* cacheable stylesheets 
+* smallest total bytes sent compared to "render-path" css-in-js solutions that include your CSS definitions in JS
+* Faster than the V2!
 * Async loading
 * No duplicate compilation (performance)
 * Easier to use
 * Specific to CSS
-* True **Hot Module Reloading** - that means no `style-loader`
 * SSR Friendly development build, focused on frontend DX
 * Works seamlessly with the Universal family
 * Works fantastically as a standalone style loader (You can use it for any webpack project! with no extra dependencies!)
@@ -49,7 +53,7 @@ If you want to test this alpha branch, which is currently not published to the N
 
 Add the following to your package.json file, then
 
-    npm i extract-css-chunks-webpack-plugin@next
+    yarn add extract-css-chunks-webpack-plugin@next
 
 
 ## Webpack 4 Standalone Installation:
@@ -112,10 +116,6 @@ If you do need Webpack 3, make sure to stick with the latest `v2.x.x` release. `
 - [react-universal-component](https://github.com/faceyspacey/react-universal-component)
 - [babel-plugin-universal-import](https://github.com/faceyspacey/babel-plugin-universal-import) ***or*** [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import)
 
-<details><summary>See Old Docs</summary>
-Like `extract-text-webpack-plugin`, but creates multiple css files (one per chunk). Then, as part of server side rendering, you can deliver just the css chunks needed by the current request. The result is the most minimal CSS initially served compared to emerging "render path" solutions.
-
-For a demo, `git clone`: [universal-demo](https://github.com/faceyspacey/universal-demo)
 
 ## Recommended Installation
 ```
@@ -139,22 +139,23 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
-        use: ExtractCssChunks.extract({
-          use: {
+        use: [
+          ExtractCssChunks.loader,
+          {
             loader: 'css-loader',
             options: {
               modules: true,
-              localIdentName: '[name]__[local]--[hash:base64:5]'
-            }
-          }
-        })
-      }
-    ]
+              localIdentName: '[name]__[local]--[hash:base64:5]',
+            },
+          },
+        ],
+      },
+    ],
   },
   plugins: [
-    new ExtractCssChunks,
+    new ExtractCssChunks(),
   ]
-}
+};
 ```
 
 ## Desired Output
@@ -174,20 +175,15 @@ Here's the sort of CSS you can expect to serve:
 	<script type='text/javascript' src='/static/0.js'></script>
 	<script type='text/javascript' src='/static/7.js'></script>
 	<script type='text/javascript' src='/static/main.js'></script>
-
-	<!-- stylsheets that will be requested when import() on user navigation is called -->
-	<script>
-		window.__CSS_CHUNKS__ = {
-			Foo: '/static/Foo.css',
-			Bar: '/static/Bar.css'
-		}
-	</script>
 </body>
 ```
 
-[webpack-flush-chunks](https://github.com/faceyspacey/webpack-flush-chunks) will scoop up the exact stylesheets to embed in your response. It essentially automates producing the above. 
+If you need to resolve your stylesheets on the client side, for whatever reason. 
+
+[webpack-flush-chunks](https://github.com/faceyspacey/webpack-flush-chunks) will scoop up the exact stylesheets to embed in your response. It will give you an object which can be embedded on page
 
 Here's how you do it:
+
 
 *src/components/App.js:*
 ```js
@@ -214,7 +210,9 @@ res.send(`
     </head>
     <body>
       <div id="root">${app}</div>
+      <!-- not needed unless you want to access css chunks urls manually  -->
       ${cssHash}
+      <!-- extract-css-chunks takes care of loading the css assets automatically -->
       ${js}
     </body>
   </html>
@@ -223,30 +221,21 @@ res.send(`
 
 ***As for asynchronous calls to `import()` on user navigation,*** [babel-plugin-universal-import](https://github.com/faceyspacey/babel-plugin-universal-import) is required if you're using [react-universal-component](https://github.com/faceyspacey/react-universal-component). And if you aren't, you must use: [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import). 
 
+
 These babel plugins request both your js + your css. *Very Nice!* This is the new feature of the 2.0. Read *Sokra's* (author of webpack) article on how [on how this is the future of CSS for webpack](https://medium.com/webpack/the-new-css-workflow-step-1-79583bd107d7). Use this and be in the future today.
-
-## Perks
-- **HMR:** It also has first-class support for **Hot Module Replacement** across ALL those css files/chunks!!!
-- cacheable stylesheets 
-- smallest total bytes sent compared to "render-path" css-in-js solutions that include your CSS definitions in JS
-- Faster than the V1!
-
-
 
 
 ## API 
-You can pass the same options as `extract-text-webpack-plugin` to `new ExtractCssChunks`, such as:
+You can pass the same options as `mini-css-extract` to `new ExtractCssChunks`, such as:
 
 ```javascript
 new ExtractCssChunk({
-	filename: '[name].[contenthash].css'
+      filename: devMode ? '[name].css' : '[name].[hash].css',
+      chunkFilename: devMode ? '[id].css' : '[id].[hash].css',
 })
 ```
 
-Keep in mind, by default `[name].css` is used when `process.env.NODE_ENV === 'development'` and `[name].[contenthash].css` during production, so you can likely forget about having to pass anything.
-
-The 2 exceptions are: `allChunks` will no longer do anything, and `fallback` will no longer do anything when passed to to `extract`. Basically just worry about passing your `css-loader` string and `localIdentName` 🤓
-
+>Keep in mind, by default `[name].css` is used when `process.env.NODE_ENV === 'development'` and `[name].[contenthash].css` during production, so you can likely forget about having to pass anything.
 
 ### HMR Pitfall
 
@@ -274,8 +263,12 @@ For example, when running the build using some form of npm script:
 ```
 [cross-env](https://www.npmjs.com/package/cross-env) is optional but recommended. 
 
-## What about Glamorous, Styled Components, Styled-Jsx, Aphrodite, etc?
 
+What about Glamorous, Styled Components, Styled-Jsx, Aphrodite, etc?
+<details>
+<summary>
+ <span style="color:blue">Click to Read</span>.
+</summary>
 If you effectively use code-splitting, **Exract Css Chunks** can be a far better option than using emerging solutions like *Glamorous*, *Styled Components*, and slightly older tools like *Aphrodite*, *Glamor*, etc. We aren't fans of either rounds of tools because of several issues, but particularly because they all have a runtime overhead. Every time your React component is rendered with those, CSS is generated and updated within the DOM. On the server, you're going to also see unnecessary cycles for flushing the CSS along the critical render path. *Next.js's* `styled-jsx`, by the way, doesn't even work on the server--*not so good when it comes to flash of unstyled content (FOUC).*
 
 The reason *Extract CSS Chunk* can be a better option is because *we also generate multiple sets of CSS based on what is actually "used",* ***but without the runtime overhead***. The difference is our definition of "used" is modules determined *statically* (which may not in fact be rendered) vs. what is in the "critical render path" (as is the case with the other tools). 
@@ -285,6 +278,12 @@ So yes, our CSS may be mildly larger and include unnecessary css, but our `no_cs
 On top of that, those are extra packages all with a huge number of issues in their Github repos corresponding to various limitations in the CSS they generate--something that is prevented when your definition for "CSS-in-JS" is simply importing CSS files compiled as normal by powerful proven CSS-specific processors.
 
 Lastly, those solutions don't provide cacheable stylesheets. They do a lot of work--but they will *continue* doing it for you when you could have been done in one go long ago. Cloudflare is free--serve them through their CDN and you're winning. I love true javascript in css--don't get me wrong--but first I'd have to see they generate cacheable stylesheets. In my opinion, for now, it's best for environments that natively support it such as React Native.
+<details>
+<details><summary>See Old Docs</summary>
+
+For a demo, `git clone`: [universal-demo](https://github.com/faceyspacey/universal-demo)
+
+
 
 #### Next:
 
