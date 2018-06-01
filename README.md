@@ -17,6 +17,14 @@
   <a href="https://www.npmjs.com/package/extract-css-chunks-webpack-plugin">
     <img src="https://img.shields.io/npm/dt/extract-css-chunks-webpack-plugin.svg" alt="Downloads" />
   </a>
+
+  <a href="https://www.npmjs.com/package/extract-css-chunks-webpack-plugin">
+    <img src="https://img.shields.io/npm/dw/extract-css-chunks-webpack-plugin.svg" alt="License" />
+  </a>
+  
+  <a href="https://www.npmjs.com/package/extract-css-chunks-webpack-plugin">
+    <img src="https://img.shields.io/npm/l/extract-css-chunks-webpack-plugin.svg" alt="License" />
+  </a>
 </p>
 
 
@@ -277,13 +285,13 @@ On top of that, those are extra packages all with a huge number of issues in the
 Lastly, those solutions don't provide cacheable stylesheets. They do a lot of work--but they will **continue** doing it for you when you could have been done in one go long ago. Cloudflare is free--serve them through their CDN and you're winning. I love true javascript in css--don't get me wrong--but first I'd have to see they generate cacheable stylesheets. In my opinion, for now, it's best for environments that natively support it such as React Native.
 
 
-#### Next:
+### Next:
 
 Now with that out of the way, for completeness let's compare what bytes of just the CSS are sent over the wire. The difference basically is minimal. Whereas solutions that flush from the critical render path will capture no more than the precise bits of CSS from the `if/else` branches followed, **Extract Css Chunks** is all about you effectively using code-splitting to insure, for example, you don't serve your Administration Panel's CSS in your public-facing site, etc. *In other words, it's all about avoiding serving large swaths of CSS from completely different sections of your app.* ***I.e. the biggest gains available to you.*** 
 
 <details>
 <summary>
-    Read more on the topic:
+    Read more on the topic ^^
 </summary>
 
 This is where the real problem lies--where the real amount of unnecessary CSS comes from. If you effectively code-split your app, you may end up with 10 chunks. Now you can serve just the corresponding CSS for that chunk. If you try to go even farther and remove the css not used in the render path, you're likely acheiving somewhere between 1-20% of the gains you achieved by thorough code-splitting. In other words, code splitting fulfills the 80/20 rule and attains the simple sweetspot of 80% optimization you--*as a balanced, level-headed, non-neurotic and professional developer*--are looking to achieve.
@@ -297,19 +305,21 @@ There may be other reasons to use those tools (e.g. you don't like setting up we
 As an aside, so many apps share code between web and React Native--so the answer to the styles problem must be one that is identical for both. From that perspective importing a styles object **still** makes a lot of sense. **You're not missing out on the fundamental aspect of CSS-in-JSS:** ***isolated component-level styles and the ability to import them just like any other javascript code.*** Put them in other files, and use tools like `extract-css-chunks-webpack-plugin` and your pre-processors of choice that innately get styles right for the browser. As long as you're using **CSS Modules**, you're still at the cutting edge of CSS-in-JSS. Let's just say the other tools took one wrong turn and took it too far, when we already were at our destination. 
 </details>
 
-**SUMMARY OF BENEFITS COMPARED TO "CRITICAL-RENDER-PATH" SOLUTIONS:** 
+
+####SUMMARY OF BENEFITS COMPARED TO "CRITICAL-RENDER-PATH" SOLUTIONS:
 
 - no continual runtime overhead during `render` using HoCs that inject styles
 - smaller JS bundles without CSS injection
 - **You DO NOT need to clutter your component code with a specialized way of applying CSS (HoCs, styled elements)!** 
 - The way you import module-based styles is exactly how you would import styles in React Native that exist in a separate file, which allows for extremely interchangeable code between React Native and regular React. Hurray! 
 - pretty much already does everything covered by [@vjeux's 2014 css-in-js talk](https://speakerdeck.com/vjeux/react-css-in-js), besides dead code elimination. Dead code elimination is only solved for the other tools--as per the explanation above how the CSS is in the JS anyway--so much as Webpack and Uglify can remove **JS** that is not used. Either way, it's not a stretch to eventually add this feature to `extract-text-webpack-plugin` as well as this plugin. Hey, maybe it already has it??
+
 ## Emotion!
 
 [Emotion](https://github.com/tkh44/emotion) is different. They allow for the extraction of static styles via their *extract mode*. We're very much looking forward to this being the perfect companion to the css chunks approach. 
 <details>
 <summary>
-    Read more on the topic:
+    Read more on the topic ^^
 </summary>
 
 Currently however *extract mode* does not support IE11. So that means it's a no go, but we have hopes that in the future they'll solve that problem.
