@@ -146,33 +146,32 @@ class ExtractCssChunks {
   }
 
   apply(compiler) {
+    if (process.env.NODE_ENV === 'development') {
+      try {
+        const isHOT = isHMR(compiler);
 
-     if(process.env.NODE_ENV === 'development') {
-         try {
-             const isHOT = isHMR(compiler);
+        if (isHOT && compiler.options.module && compiler.options.module.rules) {
+          const updatedRules = compiler.options.module.rules.reduce((rules, rule) => {
+            if (rule.use && Array.isArray(rule.use)) {
+              const isMiniCss = rule.use.some((l) => {
+                const needle = l.loader || l;
+                return needle.includes(pluginName);
+              });
+              if (isMiniCss) {
+                rule.use.unshift(hotLoader);
+              }
+            }
+            rules.push(rule);
 
-             if (isHOT && compiler.options.module && compiler.options.module.rules) {
-                 const updatedRules = compiler.options.module.rules.reduce((rules, rule) => {
-                     if (rule.use && Array.isArray(rule.use)) {
-                         const isMiniCss = rule.use.some((l) => {
-                             const needle = l.loader || l;
-                             return needle.includes(pluginName);
-                         });
-                         if (isMiniCss) {
-                             rule.use.unshift(hotLoader);
-                         }
-                     }
-                     rules.push(rule);
+            return rules;
+          }, []);
 
-                     return rules;
-                 }, []);
-
-                 compiler.options.module.rules = updatedRules;
-             }
-         } catch (e) {
-             console.error('Something went wrong: contact the author', e);
-         }
-     }
+          compiler.options.module.rules = updatedRules;
+        }
+      } catch (e) {
+        console.error('Something went wrong: contact the author', e);
+      }
+    }
 
     compiler.hooks.thisCompilation.tap(pluginName, (compilation) => {
       compilation.hooks.normalModuleLoader.tap(pluginName, (lc, m) => {
