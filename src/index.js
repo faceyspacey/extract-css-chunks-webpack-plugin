@@ -4,7 +4,7 @@ import path from 'path';
 import webpack from 'webpack';
 import sources from 'webpack-sources';
 
-const thing = path.resolve(__dirname, './hotLoader.js');
+const hotLoader = path.resolve(__dirname, './hotLoader.js');
 
 const { ConcatSource, SourceMapSource, OriginalSource } = sources;
 const { Template, util: { createHash } } = webpack;
@@ -16,6 +16,20 @@ const pluginName = 'extract-css-chunks-webpack-plugin';
 const REGEXP_CHUNKHASH = /\[chunkhash(?::(\d+))?\]/i;
 const REGEXP_CONTENTHASH = /\[contenthash(?::(\d+))?\]/i;
 const REGEXP_NAME = /\[name\]/i;
+
+const isHMR = (compiler) => {
+  if (compiler && compiler.options) {
+    if (compiler.options.devServer && compiler.options.devServer.hot) {
+      return true;
+    }
+
+    if (compiler.options.entry) {
+      const entryString = JSON.stringify(compiler.options.entry);
+      return entryString.includes('hot') || entryString.includes('hmr');
+    }
+  }
+  return false;
+};
 
 class CssDependency extends webpack.Dependency {
   constructor(
@@ -132,24 +146,31 @@ class ExtractCssChunks {
   }
 
   apply(compiler) {
-      console.log('DevServerHot:', compiler.options.devServer.hot)
-// console.log(compiler.options)
-    const updatedRules = compiler.options.module.rules.reduce((rules, rule) => {
-      if (rule.use && Array.isArray(rule.use)) {
-        const isMiniCss = rule.use.some((l) => {
-          const needle = l.loader || l;
-          return needle.includes(pluginName);
-        });
-        if (isMiniCss) {
-          rule.use.unshift(thing);
-        }
+    try {
+      const isHOT = isHMR(compiler);
+
+      if (isHOT && compiler.options.module && compiler.options.module.rules) {
+        const updatedRules = compiler.options.module.rules.reduce((rules, rule) => {
+          if (rule.use && Array.isArray(rule.use)) {
+            const isMiniCss = rule.use.some((l) => {
+              const needle = l.loader || l;
+              return needle.includes(pluginName);
+            });
+            if (isMiniCss) {
+              rule.use.unshift(hotLoader);
+            }
+          }
+          rules.push(rule);
+
+          return rules;
+        }, []);
+
+        compiler.options.module.rules = updatedRules;
       }
-      rules.push(rule);
+    } catch (e) {
+      console.error('Something went wrong: contact the author', e);
+    }
 
-      return rules;
-    }, []);
-
-    compiler.options.module.rules = updatedRules;
 
     compiler.hooks.thisCompilation.tap(pluginName, (compilation) => {
       compilation.hooks.normalModuleLoader.tap(pluginName, (lc, m) => {
