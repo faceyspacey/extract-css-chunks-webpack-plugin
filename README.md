@@ -257,7 +257,7 @@ new webpack.DefinePlugin( {
       },
 } )
 ```
-The value set by the aformentioned plugin will only be available in the runtime ( when webpack's javascript output is excuted ).
+The value set by the aforementioned plugin will only be available in the runtime ( when webpack's javascript output is executed ).
 In order for this plugin to work with hot module reloading, The npm script / gulp task / grunt task etc, should be invoked with the same environment variable as shown above.
 
 For example, when running the build using some form of npm script:
@@ -274,11 +274,11 @@ For example, when running the build using some form of npm script:
 
 ### What about Glamorous, Styled Components, Styled-Jsx, Aphrodite, etc?
 
-If you effectively use code-splitting, **Exract Css Chunks** can be a far better option than using emerging solutions like *Glamorous*, *Styled Components*, and slightly older tools like *Aphrodite*, *Glamor*, etc. We aren't fans of either rounds of tools because of several issues, but particularly because they all have a runtime overhead. Every time your React component is rendered with those, CSS is generated and updated within the DOM. On the server, you're going to also see unnecessary cycles for flushing the CSS along the critical render path. *Next.js's* `styled-jsx`, by the way, doesn't even work on the server--*not so good when it comes to flash of unstyled content (FOUC).*
+If you effectively use code-splitting, **Extract Css Chunks** can be a far better option than using emerging solutions like *Glamorous*, *Styled Components*, and slightly older tools like *Aphrodite*, *Glamor*, etc. We aren't fans of either rounds of tools because of several issues, but particularly because they all have a runtime overhead. Every time your React component is rendered with those, CSS is generated and updated within the DOM. On the server, you're going to also see unnecessary cycles for flushing the CSS along the critical render path. *Next.js's* `styled-jsx`, by the way, doesn't even work on the server--*not so good when it comes to flash of unstyled content (FOUC).*
 
 The reason **Extract CSS Chunk** can be a better option is because **we also generate multiple sets of CSS based on what is actually "used",** ***but without the runtime overhead***. The difference is our definition of "used" is modules determined *statically* (which may not in fact be rendered) vs. what is in the "critical render path" (as is the case with the other tools). 
 
-So yes, our CSS may be mildly larger and include unnecessary css, but our `no_css.js` bundles will be a lot smaller as they don't need to inject any styles. See, even though those solutions have the smallest possible CSS file size, their javascript bundles, **in order to continue to render your components styled properly on the client,** must contain the necessary CSS for all posibilities! Those solutions serve both your entire bundle's CSS (in your javascript) **and** the CSS flushed from the critical render path. 
+So yes, our CSS may be mildly larger and include unnecessary css, but our `no_css.js` bundles will be a lot smaller as they don't need to inject any styles. See, even though those solutions have the smallest possible CSS file size, their javascript bundles, **in order to continue to render your components styled properly on the client,** must contain the necessary CSS for all possibilities! Those solutions serve both your entire bundle's CSS (in your javascript) **and** the CSS flushed from the critical render path. 
 
 On top of that, those are extra packages all with a huge number of issues in their Github repos corresponding to various limitations in the CSS they generate--something that is prevented when your definition for "CSS-in-JS" is simply importing CSS files compiled as normal by powerful proven CSS-specific processors.
 
@@ -294,7 +294,7 @@ Now with that out of the way, for completeness let's compare what bytes of just 
     Read more on the topic ^^
 </summary>
 
-This is where the real problem lies--where the real amount of unnecessary CSS comes from. If you effectively code-split your app, you may end up with 10 chunks. Now you can serve just the corresponding CSS for that chunk. If you try to go even farther and remove the css not used in the render path, you're likely acheiving somewhere between 1-20% of the gains you achieved by thorough code-splitting. In other words, code splitting fulfills the 80/20 rule and attains the simple sweetspot of 80% optimization you--*as a balanced, level-headed, non-neurotic and professional developer*--are looking to achieve.
+This is where the real problem lies--where the real amount of unnecessary CSS comes from. If you effectively code-split your app, you may end up with 10 chunks. Now you can serve just the corresponding CSS for that chunk. If you try to go even farther and remove the css not used in the render path, you're likely achieving somewhere between 1-20% of the gains you achieved by thorough code-splitting. In other words, code splitting fulfills the 80/20 rule and attains the simple sweetspot of 80% optimization you--*as a balanced, level-headed, non-neurotic and professional developer*--are looking to achieve.
 
 *In short, by putting code splitting in appropriate places you have a lot of control over the CSS files that are created and can send a sensible* ***minimal*** *amount of associated bytes over the wire for the first request, perhaps even the smallest amount of all options.* 
 
