@@ -32,8 +32,7 @@
     "build:example": "npm run build && webpack-dev-server test/manual/src/index.js --open --config test/manual/webpack.config.js",
     "cm": "git-cz",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
-    "travis": "npm run cover -- --report lcovonly",
-    "prepack": "npm i yarn && yarn && rm -rf ./node_modules"
+    "travis": "npm run cover -- --report lcovonly"
   },
   "peerDependencies": {
     "webpack": "^4.4.0"
