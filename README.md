@@ -54,16 +54,6 @@ Additionally, if you are already a user of the universal family -- we will be wa
 
 The functionality is still available to you via chunk flushing, and it can come in super handy when needing to easily resolve style assets as urls that might need to be passed to a third party.
 
-
-# BETA TESTING WEBPACK 4
-
-If you want to test this alpha branch, which is currently not published to the NPM registry. 
-
-Add the following to your package.json file, then
-
-    yarn add extract-css-chunks-webpack-plugin@next
-
-
 ## Webpack 4 Standalone Installation:
 
 If you are just looking for something that works like `mini-css-extract-plugin` but with HMR. Then look no further
@@ -270,7 +260,33 @@ For example, when running the build using some form of npm script:
 }
 ```
 [cross-env](https://www.npmjs.com/package/cross-env) is optional but recommended. 
-
+<details>
+## Trusted by
+![Facebook](https://avatars2.githubusercontent.com/u/69631?s=64&v=4 "Facebook")
+<img alt="React Static" src="https://github.com/nozzle/react-static/raw/master/media/logo.png" height="64px">
+<img alt="Timber.io" src="https://user-images.githubusercontent.com/25274700/40869185-4254b8ea-65e4-11e8-9489-1e210f761600.jpg" height="64px">
+<img alt="Netlify" src="https://avatars0.githubusercontent.com/u/7892489?s=200&v=4" height="64px">
+<img alt="Intuit" src="https://lib.intuitcdn.net/img/turbo/1.0/logos/turbo-light@2x.png" height="64px">
+<img alt="React Tools" src="https://github.com/react-tools/media/raw/master/logo-react-show.png" height="64px">
+<img alt="CodeSandbox" src="https://user-images.githubusercontent.com/25274700/40869328-1e9ff97a-65e7-11e8-8eb0-a7745e46e0aa.png" height="64px">
+<img alt="Bloomberg" src="https://www.bna.com/assets/img/logo.svg" height="64px">
+<img alt="CreativeWave" src="https://avatars3.githubusercontent.com/u/15889096?s=200&v=4" height="64px">
+<img alt="Nextcast" src="https://github.com/takuu/nexcast-web/blob/master/src/images/nexcast_logo_dark.png?raw=true" height="64px">
+<img alt="CoolJam" src="https://d33wubrfki0l68.cloudfront.net/0e10c97634da0242be91bec4f6a198a78dd68f99/b5de5/img/jamstack-full-logo.svg" height="64px">
+<img alt="TopCoder" src="https://avatars2.githubusercontent.com/u/8822926?s=200&v=4" height="64px">
+<img alt="Ueno" src="https://user-images.githubusercontent.com/25274700/40869730-bb7bcc14-65ed-11e8-83a7-b015a900627a.jpg" height="64px">
+<img alt="Etch" src="https://user-images.githubusercontent.com/25274700/40870947-8dcd6f94-6600-11e8-8813-31884a6a0723.jpg" height="64px">
+<img alt="teamable" src="https://avatars0.githubusercontent.com/u/34074373?s=200&v=4" height="64px">
+<img alt="MorpheoOrg" src="https://avatars0.githubusercontent.com/u/25452765?s=200&v=4" height="64px">
+<img alt="Cask" src="https://avatars0.githubusercontent.com/u/8123023?s=200&v=4" height="64px">
+<img alt="MADE Code" src="https://camo.githubusercontent.com/f38950bc57dd3d74c7bbc8cba6ba70e201c1ca88/68747470733a2f2f7777772e6d6164652e636f2e7a612f6c6f676f2e706e67" height="64px">
+<img alt="boldr" src="https://github.com/strues/boldr/raw/master/docs/assets/boldr-text-logo.png" height="64px">
+<img alt="troglio" src="https://camo.githubusercontent.com/a2f68dd23af0cacf6b49cd3529838faf019f9411/68747470733a2f2f74726f676c696f2e636f6d2f696d672f74726f676c696f2d6c6f676f2e706e67" height="64px">
+<img alt="spothire" src="https://avatars2.githubusercontent.com/u/29357421?s=200&v=4" height="64px">
+<img alt="selleo" src="https://selleo.com/wp-content/uploads/2017/05/selleo-logo-main.png" height="64px">
+<img alt="REI" src="https://avatars0.githubusercontent.com/u/6014050?s=200&v=4" height="64px">
+<img alt="OpenST Foundation" src="https://avatars1.githubusercontent.com/u/31754790?s=200&v=4" height="64px">
+</details>
 
 ### What about Glamorous, Styled Components, Styled-Jsx, Aphrodite, etc?
 
