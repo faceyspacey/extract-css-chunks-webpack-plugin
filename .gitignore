@@ -4,7 +4,8 @@
 /coverage
 /dist
 
-/.idea
+.idea
+.eslintcache
 
 .DS_Store
 *.log
