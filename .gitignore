@@ -1,11 +1,12 @@
 /node_modules
 
-/example/assets
-
 /test/js
 /coverage
+/dist
 
-/.idea
+.idea
+.eslintcache
 
 .DS_Store
-npm-debug.log
+*.log
+.eslintcache

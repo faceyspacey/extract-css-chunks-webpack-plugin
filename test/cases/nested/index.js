@@ -1,3 +1,3 @@
-require("./a.txt");
-require("./file");
-require("./b.txt");
+import './a.css';
+import './component';
+import './b.css';

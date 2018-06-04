@@ -1,55 +1,41 @@
-var fs = require("fs");
-var vm = require("vm");
-var path = require("path");
-var webpack = require("webpack");
-var should = require("should");
-var ExtractTextPlugin = require("../");
+/* eslint-disable no-restricted-syntax, import/no-dynamic-require, global-require,
+ no-console, no-undef, no-loop-func */
+import fs from 'fs';
+import path from 'path';
+import webpack from 'webpack';
 
-var cases = process.env.CASES ? process.env.CASES.split(",") : fs.readdirSync(path.join(__dirname, "cases"));
-
-describe("TestCases", function() {
-	cases.forEach(function(testCase) {
-		it(testCase, function(done) {
-			var testDirectory = path.join(__dirname, "cases", testCase);
-			var outputDirectory = path.join(__dirname, "js", testCase);
-			var options = { entry: { test: "./index.js" } };
-			var configFile = path.join(testDirectory, "webpack.config.js");
-			if(fs.existsSync(configFile))
-				options = require(configFile);
-			options.context = testDirectory;
-			if(!options.module) options.module = {};
-			if(!options.module.loaders) options.module.loaders = [
-				{ test: /\.txt$/, loader: ExtractTextPlugin.extract("raw-loader") }
-			];
-			if(!options.output) options.output = { filename: "[name].js" };
-			if(!options.output.path) options.output.path = outputDirectory;
-			if(process.env.CASES) {
-				console.log("\nwebpack." + testCase + ".config.js " + JSON.stringify(options, null, 2));
-			}
-			webpack(options, function(err, stats) {
-				if(err) return done(err);
-				if(stats.hasErrors()) return done(new Error(stats.toString()));
-				var testFile = path.join(outputDirectory, "test.js");
-				if(fs.existsSync(testFile))
-					require(testFile)(suite);
-				var expectedDirectory = path.join(testDirectory, "expected");
-				fs.readdirSync(expectedDirectory).forEach(function(file) {
-					var filePath = path.join(expectedDirectory, file);
-					var actualPath = path.join(outputDirectory, file);
-					readFileOrEmpty(actualPath).should.be.eql(
-						readFileOrEmpty(filePath),
-						file + " should be correct");
-				});
-				done();
-			});
-		});
-	});
+describe('TestCases', () => {
+  const casesDirectory = path.resolve(__dirname, 'cases');
+  const outputDirectory = path.resolve(__dirname, 'js');
+  for (const directory of fs.readdirSync(casesDirectory)) {
+    if (!/^(\.|_)/.test(directory)) {
+      it(`${directory} should compile to the expected result`, (done) => {
+        const directoryForCase = path.resolve(casesDirectory, directory);
+        const outputDirectoryForCase = path.resolve(outputDirectory, directory);
+        const webpackConfig = require(path.resolve(directoryForCase, 'webpack.config.js'));
+        for (const config of [].concat(webpackConfig)) {
+          Object.assign(config, { mode: 'none', context: directoryForCase, output: Object.assign({ path: outputDirectoryForCase }, config.output) }, config);
+        }
+        webpack(webpackConfig, (err, stats) => {
+          if (err) {
+            done(err);
+            return;
+          }
+          done();
+          console.log(stats.toString({ context: path.resolve(__dirname, '..'), chunks: true, chunkModules: true, modules: false }));
+          if (stats.hasErrors()) {
+            done(new Error(stats.toString({ context: path.resolve(__dirname, '..'), errorDetails: true })));
+            return;
+          }
+          const expectedDirectory = path.resolve(directoryForCase, 'expected');
+          for (const file of fs.readdirSync(expectedDirectory)) {
+            const content = fs.readFileSync(path.resolve(expectedDirectory, file), 'utf-8');
+            const actualContent = fs.readFileSync(path.resolve(outputDirectoryForCase, file), 'utf-8');
+            expect(actualContent).toEqual(content);
+          }
+          done();
+        });
+      }, 10000);
+    }
+  }
 });
-
-function readFileOrEmpty(path) {
-	try {
-		return fs.readFileSync(path, "utf-8");
-	} catch(e) {
-		return "";
-	}
-}
