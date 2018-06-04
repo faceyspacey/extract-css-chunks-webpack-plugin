@@ -169,7 +169,7 @@ class ExtractCssChunks {
           compiler.options.module.rules = updatedRules;
         }
       } catch (e) {
-        console.error('Something went wrong: contact the author', e);
+        console.error('Something went wrong: contact the author', JSON.stringify(e)); // eslint-disable-line no-console
       }
     }
 
