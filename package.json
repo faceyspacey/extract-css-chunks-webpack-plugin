@@ -31,8 +31,9 @@
     "ci:coverage": "npm run test:coverage -- --runInBand",
     "build:example": "npm run build && webpack-dev-server test/manual/src/index.js --open --config test/manual/webpack.config.js",
     "cm": "git-cz",
+    "release": "standard-version",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
-    "travis": "npm run cover -- --report lcovonly"
+    "travis": "npm run ci:coverage"
   },
   "peerDependencies": {
     "webpack": "^4.4.0"
@@ -58,6 +59,7 @@
     "css-loader": "^0.28.10",
     "cz-conventional-changelog": "^2.1.0",
     "del": "^3.0.0",
+    "standard-version": "^4.0.0",
     "del-cli": "^1.1.0",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.0.1",
