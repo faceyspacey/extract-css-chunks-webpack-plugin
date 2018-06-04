@@ -27,7 +27,7 @@
   </a>
 </p>
 
-<h2 align="center">🍾🍾🍾It's our absolute pleasure to announce **Webpack 4** Support 🚀🚀🚀</h2>
+<h2 align="center">🍾🍾🍾It's our absolute pleasure to announce Webpack 4 Support 🚀🚀🚀</h2>
 
 > **HEADLINES (May 2018): Now Independently supports Webpack 4:** 
 Yep that's right. The universal family is now fully Webpack 4. Thank you to all our users for your loyalty and patience! If you love Universal, then you are gonna fall head over heels when we bring out the main course! 
