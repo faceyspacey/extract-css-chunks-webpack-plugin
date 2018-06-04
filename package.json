@@ -59,7 +59,6 @@
     "css-loader": "^0.28.10",
     "cz-conventional-changelog": "^2.1.0",
     "del": "^3.0.0",
-    "standard-version": "^4.0.0",
     "del-cli": "^1.1.0",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.0.1",
