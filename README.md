@@ -27,6 +27,7 @@
   </a>
 </p>
 
+🍾🍾🍾 <h2>It's our absolute pleasure to announce **Webpack 4** Support</h2> 🚀🚀🚀
 
 > **HEADLINES (May 2018): Now Independently supports Webpack 4:** 
 Yep that's right. The universal family is now fully Webpack 4. Thank you to all our users for your loyalty and patience! If you love Universal, then you are gonna fall head over heels when we bring out the main course! 
@@ -295,7 +296,7 @@ As an aside, so many apps share code between web and React Native--so the answer
 </details>
 
 
-####SUMMARY OF BENEFITS COMPARED TO "CRITICAL-RENDER-PATH" SOLUTIONS:
+#### SUMMARY OF BENEFITS COMPARED TO "CRITICAL-RENDER-PATH" SOLUTIONS:
 
 - no continual runtime overhead during `render` using HoCs that inject styles
 - smaller JS bundles without CSS injection
@@ -339,10 +340,3 @@ We use [commitizen](https://github.com/commitizen/cz-cli), so run `npm run cm` t
 
 ## More from FaceySpacey in Reactlandia
 - [redux-first-router](https://github.com/faceyspacey/redux-first-router). It's made to work perfectly with *Universal*. Together they comprise our *"frameworkless"* Redux-based approach to what Next.js does (splitting, SSR, prefetching, and routing). *People are lovin it by the way* 😎
-
-
-<details><summary>See Old Docs</summary>
-
-For a demo, `git clone`: [universal-demo](https://github.com/faceyspacey/universal-demo)
-
-</details>
