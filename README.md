@@ -91,7 +91,8 @@ module.exports = {
           // Options similar to the same options in webpackOptions.output
           // both options are optional
           filename: "[name].css",
-          chunkFilename: "[id].css"
+          chunkFilename: "[id].css",
+          hot: true // optional is the plguin cannot automatically detect if you are using HOT, not for production use
         }
     ),
   ]
