@@ -13,6 +13,17 @@
   "files": [
     "dist"
   ],
+  "keywords": [
+    "css",
+    "chunks",
+    "code splitting",
+    "mini-css",
+    "hot",
+    "hmr",
+    "universal",
+    "webpack",
+    "webpack 4"
+  ],
   "license": "MIT",
   "scripts": {
     "start": "npm run build -- -w",
