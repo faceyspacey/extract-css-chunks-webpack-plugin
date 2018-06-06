@@ -19,7 +19,7 @@
   </a>
 
   <a href="https://www.npmjs.com/package/extract-css-chunks-webpack-plugin">
-    <img src="https://img.shields.io/npm/dw/extract-css-chunks-webpack-plugin.svg" alt="License" />
+    <img src="https://img.shields.io/npm/dm/extract-css-chunks-webpack-plugin.svg" alt="License" />
   </a>
   
   <a href="https://www.npmjs.com/package/extract-css-chunks-webpack-plugin">
@@ -91,13 +91,23 @@ module.exports = {
           // Options similar to the same options in webpackOptions.output
           // both options are optional
           filename: "[name].css",
-          chunkFilename: "[id].css"
+          chunkFilename: "[id].css",
+          hot: true // optional is the plguin cannot automatically detect if you are using HOT, not for production use
         }
     ),
   ]
 }
 ```
 
+*webpack.server.config.js*
+
+The server needs to be handeled differently, we still want one chunks. Luckily webpack 4 supports **LimitChunkCountPlugin**
+
+```js
+new webpack.optimize.LimitChunkCountPlugin({
+    maxChunks: 1
+})
+```
 
 
 ### What about Webpack 3?
@@ -116,7 +126,7 @@ If you do need Webpack 3, make sure to stick with the latest `v2.x.x` release. `
 - [babel-plugin-universal-import](https://github.com/faceyspacey/babel-plugin-universal-import) ***or*** [babel-plugin-dual-import](https://github.com/faceyspacey/babel-plugin-dual-import)
 
 
-## Recommended Installation
+## Recommended Installation For Universal
 ```
 yarn add react-universal-component webpack-flush-chunks
 yarn add --dev extract-css-chunks-webpack-plugin babel-plugin-universal-import
@@ -128,6 +138,8 @@ yarn add --dev extract-css-chunks-webpack-plugin babel-plugin-universal-import
   "plugins": ["universal-import"]
 }
 ```
+The main thing is you need to cater for the new chunking system of webpack!
+With **webpack.optimize.CommonsChunkPlugin** plugin no longer part of Webpack 4, we need another way to define the code-splitting. Luckily we have `optimization` configs built into webpack now
 
 *webpack.config.js:*
 ```js
@@ -151,8 +163,38 @@ module.exports = {
       },
     ],
   },
+  optimization: {
+      // FOR PRODUCTION
+      minimizer: [
+          new UglifyJSPlugin({
+              uglifyOptions: {
+                  output: {
+                      comments: false,
+                      ascii_only: true
+                  },
+                  compress: {
+                      comparisons: false
+                  }
+              }
+          })
+      ],
+      // END
+      // NEEDED BOTH IN PROD AND DEV BUILDS
+      runtimeChunk: {
+          name: 'bootstrap'
+      },
+      splitChunks: {
+          chunks: 'initial', // <-- The key to this
+          cacheGroups: {
+              vendors: {
+                  test: /[\\/]node_modules[\\/]/,
+                  name: 'vendor'
+              }
+          }
+      }
+  },
   plugins: [
-    new ExtractCssChunks(),
+    new ExtractCssChunks({hot:true}), //if you want HMR - we try to automatically inject hot reloading but if its not working, add it to the config
   ]
 };
 ```
@@ -256,7 +298,7 @@ For example, when running the build using some form of npm script:
 ```json
 {
   "scripts": {
-    "build": "cross-env NODE_ENV=development webpack --config build/webpack.config.js"
+     "build": "cross-env NODE_ENV=production babel src -d dist --ignore 'src/**/*.test.js' --copy-files"
   }
 }
 ```
