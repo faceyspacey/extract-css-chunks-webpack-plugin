@@ -34,7 +34,7 @@ Yep that's right. The universal family is now fully Webpack 4. Thank you to all 
 
 So... why did we rebuild `extract-css-chunks`? What does it offer? 
 
-Its got all the goodness of `mini-css-extract-plugin` but with 2 gleaming, sought after benefits. 
+It's got all the goodness of `mini-css-extract-plugin` but with 2 gleaming, sought after benefits. 
 
 Compared to the existing loaders, we are offering a single solution as opposed to needing to depend on multiple loaders to cater for different features:
 
@@ -57,11 +57,11 @@ The functionality is still available to you via chunk flushing, and it can come 
 
 ## Webpack 4 Standalone Installation:
 
-If you are just looking for something that works like `mini-css-extract-plugin` but with HMR. Then look no further
+If you are just looking for something that works like `mini-css-extract-plugin` but with HMR, then look no further.
 
 NOTE: We have aligned out loader implementation to be the same as `mini-css-extract-plugin` 
 
-**If you already use `mini-css-extract-plugin`, then you can just change the `require` statement - its that easy**
+**If you already use `mini-css-extract-plugin`, then you can just change the `require` statement - it's that easy**
 
 
 **DONT USE THIS INSTALL CMD IF YOU ARE BETA TESTING:**
@@ -92,7 +92,7 @@ module.exports = {
           // both options are optional
           filename: "[name].css",
           chunkFilename: "[id].css",
-          hot: true // optional is the plguin cannot automatically detect if you are using HOT, not for production use
+          hot: true // optional as the plugin cannot automatically detect if you are using HOT, not for production use
         }
     ),
   ]
@@ -101,7 +101,7 @@ module.exports = {
 
 *webpack.server.config.js*
 
-The server needs to be handeled differently, we still want one chunks. Luckily webpack 4 supports **LimitChunkCountPlugin**
+The server needs to be handled differently, we still want one chunk. Luckily webpack 4 supports **LimitChunkCountPlugin**
 
 ```js
 new webpack.optimize.LimitChunkCountPlugin({
@@ -115,7 +115,7 @@ This is a breaking change. The entire loader has been fundamentally rewritten sp
 
 There have been some challenges along the way since the release of webpack 4. Ultimately the only remaining hurdle is code split, async style loading. 
 
-If you do need Webpack 3, make sure to stick with the latest `v2.x.x` release. `v3.x.x` is only intend for users with Webpack 4
+If you do need Webpack 3, make sure to stick with the latest `v2.x.x` release. `v3.x.x` is only intended for users with Webpack 4
 
 
 
@@ -138,7 +138,7 @@ yarn add --dev extract-css-chunks-webpack-plugin babel-plugin-universal-import
   "plugins": ["universal-import"]
 }
 ```
-The main thing is you need to cater for the new chunking system of webpack!
+The main thing is you need to cater to the new chunking system of webpack!
 With **webpack.optimize.CommonsChunkPlugin** plugin no longer part of Webpack 4, we need another way to define the code-splitting. Luckily we have `optimization` configs built into webpack now
 
 *webpack.config.js:*
@@ -194,7 +194,7 @@ module.exports = {
       }
   },
   plugins: [
-    new ExtractCssChunks({hot:true}), //if you want HMR - we try to automatically inject hot reloading but if its not working, add it to the config
+    new ExtractCssChunks({hot:true}), //if you want HMR - we try to automatically inject hot reloading but if it's not working, add it to the config
   ]
 };
 ```
