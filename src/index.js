@@ -24,7 +24,8 @@ const isHMR = (compiler) => {
     }
 
     if (compiler.options.entry) {
-      const entryString = JSON.stringify(compiler.options.entry);
+        const entry = typeof compiler.options.entry === 'function' ? compiler.options.entry() : compiler.options.entry;
+      const entryString = JSON.stringify(entry);
       return entryString.includes('hot') || entryString.includes('hmr');
     }
   }
