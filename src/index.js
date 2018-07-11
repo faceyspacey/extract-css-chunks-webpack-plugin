@@ -24,7 +24,7 @@ const isHMR = (compiler) => {
     }
 
     if (compiler.options.entry) {
-        const entry = typeof compiler.options.entry === 'function' ? compiler.options.entry() : compiler.options.entry;
+      const entry = typeof compiler.options.entry === 'function' ? compiler.options.entry() : compiler.options.entry;
       const entryString = JSON.stringify(entry);
       return entryString.includes('hot') || entryString.includes('hmr');
     }
@@ -34,7 +34,9 @@ const isHMR = (compiler) => {
 
 class CssDependency extends webpack.Dependency {
   constructor(
-    { identifier, content, media, sourceMap },
+    {
+      identifier, content, media, sourceMap,
+    },
     context,
     identifierIndex,
   ) {
@@ -80,7 +82,7 @@ class CssModule extends webpack.Module {
   readableIdentifier(requestShortener) {
     return `css ${requestShortener.shorten(this._identifier)}${
       this._identifierIndex ? ` (${this._identifierIndex})` : ''
-      }`;
+    }`;
   }
 
   nameForCondition() {
@@ -208,11 +210,10 @@ class ExtractCssChunks {
           );
           if (renderedModules.length > 0) {
             result.push({
-              render: () =>
-                this.renderContentAsset(
-                  renderedModules,
-                  compilation.runtimeTemplate.requestShortener,
-                ),
+              render: () => this.renderContentAsset(
+                renderedModules,
+                compilation.runtimeTemplate.requestShortener,
+              ),
               filenameTemplate: this.options.filename,
               pathOptions: {
                 chunk,
@@ -232,11 +233,10 @@ class ExtractCssChunks {
           );
           if (renderedModules.length > 0) {
             result.push({
-              render: () =>
-                this.renderContentAsset(
-                  renderedModules,
-                  compilation.runtimeTemplate.requestShortener,
-                ),
+              render: () => this.renderContentAsset(
+                renderedModules,
+                compilation.runtimeTemplate.requestShortener,
+              ),
               filenameTemplate: this.options.chunkFilename,
               pathOptions: {
                 chunk,
@@ -306,8 +306,7 @@ class ExtractCssChunks {
               JSON.stringify(this.options.chunkFilename),
               {
                 hash: `" + ${mainTemplate.renderCurrentHashCode(hash)} + "`,
-                hashWithLength: length =>
-                  `" + ${mainTemplate.renderCurrentHashCode(hash, length)} + "`,
+                hashWithLength: length => `" + ${mainTemplate.renderCurrentHashCode(hash, length)} + "`,
                 chunk: {
                   id: '" + chunkId + "',
                   hash: `" + ${JSON.stringify(chunkMaps.hash)}[chunkId] + "`,
@@ -317,7 +316,7 @@ class ExtractCssChunks {
                       if (typeof chunkMaps.hash[chunkId] === 'string') {
                         shortChunkHashMap[chunkId] = chunkMaps.hash[
                           chunkId
-                          ].substring(0, length);
+                        ].substring(0, length);
                       }
                     }
                     return `" + ${JSON.stringify(
@@ -337,7 +336,7 @@ class ExtractCssChunks {
                         if (typeof contentHash[chunkId] === 'string') {
                           shortContentHashMap[chunkId] = contentHash[
                             chunkId
-                            ].substring(0, length);
+                          ].substring(0, length);
                         }
                       }
                       return `" + ${JSON.stringify(
