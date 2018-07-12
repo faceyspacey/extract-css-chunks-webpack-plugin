@@ -35,66 +35,62 @@ export function pitch(request) {
   const loaders = this.loaders.slice(this.loaderIndex + 1);
   this.addDependency(this.resourcePath);
   const childFilename = '*'; // eslint-disable-line no-path-concat
-  const publicPath =
-        typeof query.publicPath === 'string'
-            ? query.publicPath
-            : this._compilation.outputOptions.publicPath;
+  const publicPath = typeof query.publicPath === 'string'
+    ? query.publicPath
+    : this._compilation.outputOptions.publicPath;
   const outputOptions = {
     filename: childFilename,
     publicPath,
   };
   const childCompiler = this._compilation.createChildCompiler(
-        `extract-css-chunks-webpack-plugin ${request}`,
-        outputOptions,
-    );
+    `extract-css-chunks-webpack-plugin ${request}`,
+    outputOptions,
+  );
   new NodeTemplatePlugin(outputOptions).apply(childCompiler);
   new LibraryTemplatePlugin(null, 'commonjs2').apply(childCompiler);
   new NodeTargetPlugin().apply(childCompiler);
   new SingleEntryPlugin(
-        this.context,
-        `!!${request}`,
-        'extract-css-chunks-webpack-plugin',
-    ).apply(childCompiler);
+    this.context,
+    `!!${request}`,
+    'extract-css-chunks-webpack-plugin',
+  ).apply(childCompiler);
   new LimitChunkCountPlugin({ maxChunks: 1 }).apply(childCompiler);
-    // We set loaderContext[NS] = false to indicate we already in
-    // a child compiler so we don't spawn another child compilers from there.
+  // We set loaderContext[NS] = false to indicate we already in
+  // a child compiler so we don't spawn another child compilers from there.
   childCompiler.hooks.thisCompilation.tap(
+    'extract-css-chunks-webpack-plugin loader',
+    (compilation) => {
+      compilation.hooks.normalModuleLoader.tap(
         'extract-css-chunks-webpack-plugin loader',
-        (compilation) => {
-          compilation.hooks.normalModuleLoader.tap(
-                'extract-css-chunks-webpack-plugin loader',
-                (loaderContext, module) => {
-                  loaderContext[NS] = false; // eslint-disable-line no-param-reassign
-                  if (module.request === request) {
-                    module.loaders = loaders.map(loader =>
-                            // eslint-disable-line no-param-reassign
-                            ({
-                              loader: loader.path,
-                              options: loader.options,
-                              ident: loader.ident,
-                            }));
-                  }
-                },
-            );
+        (loaderContext, module) => {
+          loaderContext[NS] = false; // eslint-disable-line no-param-reassign
+          if (module.request === request) {
+            module.loaders = loaders.map(loader => ({
+              loader: loader.path,
+              options: loader.options,
+              ident: loader.ident,
+            }));
+          }
         },
-    );
+      );
+    },
+  );
 
   let source;
   childCompiler.hooks.afterCompile.tap(
-        'extract-css-chunks-webpack-plugin',
-        (compilation) => {
-          source =
-                compilation.assets[childFilename] &&
-                compilation.assets[childFilename].source();
+    'extract-css-chunks-webpack-plugin',
+    (compilation) => {
+      source = compilation.assets[childFilename]
+                && compilation.assets[childFilename].source();
 
-            // Remove all chunk assets
-          compilation.chunks.forEach((chunk) => {
-            chunk.files.forEach((file) => {
-              delete compilation.assets[file]; // eslint-disable-line no-param-reassign
-            });
-          });
-        },
-    );
+      // Remove all chunk assets
+      compilation.chunks.forEach((chunk) => {
+        chunk.files.forEach((file) => {
+          delete compilation.assets[file]; // eslint-disable-line no-param-reassign
+        });
+      });
+    },
+  );
 
   const callback = this.async();
   childCompiler.runAsChild((err, entries, compilation) => {

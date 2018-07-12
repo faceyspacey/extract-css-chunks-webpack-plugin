@@ -4,7 +4,7 @@ const srcByModuleId = Object.create(null);
 const debounce = require('lodash/debounce');
 
 const noDocument = typeof document === 'undefined';
-const forEach = Array.prototype.forEach;
+const { forEach } = Array.prototype;
 
 const noop = function () {};
 
@@ -13,13 +13,13 @@ const getCurrentScriptUrl = function (moduleId) {
 
   if (!src) {
     if (document.currentScript) {
-      src = document.currentScript.src;
+      src = document.currentScript.src; // eslint-disable-line prefer-destructuring
     } else {
       const scripts = document.getElementsByTagName('script');
       const lastScriptTag = scripts[scripts.length - 1];
 
       if (lastScriptTag) {
-        src = lastScriptTag.src;
+        src = lastScriptTag.src; // eslint-disable-line prefer-destructuring
       }
     }
     srcByModuleId[moduleId] = src;
@@ -43,7 +43,7 @@ const getCurrentScriptUrl = function (moduleId) {
 
 function updateCss(el, url) {
   if (!url) {
-    url = el.href.split('?')[0];
+    [url] = el.href.split('?');
   }
   if (el.isLoaded === false) {
     // We seem to be about to replace a css link that hasn't loaded yet.
@@ -80,7 +80,7 @@ function getReloadUrl(href, src) {
   return ret;
 }
 
-function reloadStyle(src) {
+function reloadStyle(src) { // eslint-disable-line no-unused-vars
   const elements = document.querySelectorAll('link');
   let loaded = false;
 
@@ -114,7 +114,7 @@ module.exports = function (moduleId, options) {
 
   function update() {
     const src = getScriptSrc(options.fileMap);
-    const reloaded = reloadStyle(src);
+    const reloaded = false; // hack of all hacks...for now
     if (reloaded) {
       console.log('[HMR] css reload %s', src.join(' ')); // eslint-disable-line no-console
     } else {
