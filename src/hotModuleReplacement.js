@@ -31,7 +31,7 @@ const getCurrentScriptUrl = function (moduleId) {
     if (!filename) {
       return [src.replace('.js', '.css')];
     }
-    return fileMap.split(',').map((mapRule) => {
+    return fileMap.split(',').map(function (mapRule) {
       const reg = new RegExp(`${filename}\\.js$`, 'g');
       return normalizeUrl(
         src.replace(reg, `${mapRule.replace(/{fileName}/g, filename)}.css`),
@@ -56,11 +56,11 @@ function updateCss(el, url) {
   const newEl = el.cloneNode();
 
   newEl.isLoaded = false;
-  newEl.addEventListener('load', () => {
+  newEl.addEventListener('load', function () {
     newEl.isLoaded = true;
     el.remove();
   });
-  newEl.addEventListener('error', () => {
+  newEl.addEventListener('error', function () {
     newEl.isLoaded = true;
     el.remove();
   });
@@ -72,7 +72,7 @@ function updateCss(el, url) {
 function getReloadUrl(href, src) {
   href = normalizeUrl(href, { stripWWW: false });
   let ret;
-  src.some((url) => { // eslint-disable-line array-callback-return
+  src.some(function (url) { // eslint-disable-line array-callback-return
     if (href.indexOf(src) > -1) {
       ret = url;
     }
@@ -84,7 +84,7 @@ function reloadStyle(src) { // eslint-disable-line no-unused-vars
   const elements = document.querySelectorAll('link');
   let loaded = false;
 
-  forEach.call(elements, (el) => {
+  forEach.call(elements, function (el) {
     if (el.visited === true) return;
 
     const url = getReloadUrl(el.href, src);
@@ -99,7 +99,7 @@ function reloadStyle(src) { // eslint-disable-line no-unused-vars
 
 function reloadAll() {
   const elements = document.querySelectorAll('link');
-  forEach.call(elements, (el) => {
+  forEach.call(elements, function (el) {
     if (el.visited === true) return;
     updateCss(el);
   });
