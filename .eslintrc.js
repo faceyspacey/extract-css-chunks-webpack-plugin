@@ -17,6 +17,7 @@ module.exports = {
         'func-names': 0,
         'no-underscore-dangle': 0,
         'no-restricted-syntax': 0,
-        'prefer-arrow-callback': 0
+        'prefer-arrow-callback': 0,
+        'prefer-destructuring': 0
     }
 };

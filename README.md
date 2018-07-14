@@ -63,8 +63,6 @@ NOTE: We have aligned out loader implementation to be the same as `mini-css-extr
 
 **If you already use `mini-css-extract-plugin`, then you can just change the `require` statement - it's that easy**
 
-
-**DONT USE THIS INSTALL CMD IF YOU ARE BETA TESTING:**
 ```
 yarn add --dev extract-css-chunks-webpack-plugin
 ```
