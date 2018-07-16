@@ -32,9 +32,9 @@ const getCurrentScriptUrl = function (moduleId) {
       return [src.replace('.js', '.css')];
     }
     return fileMap.split(',').map(function (mapRule) {
-      const reg = new RegExp(`${filename}\\.js$`, 'g');
+      const reg = new RegExp(filename + '\\.js$', 'g');
       return normalizeUrl(
-        src.replace(reg, `${mapRule.replace(/{fileName}/g, filename)}.css`),
+        src.replace(reg, mapRule.replace(/{fileName}/g, filename) + '.css'),
         { stripWWW: false },
       );
     });
@@ -65,7 +65,7 @@ function updateCss(el, url) {
     el.remove();
   });
 
-  newEl.href = `${url}?${Date.now()}`;
+  newEl.href = url + '?' + Date.now();
   el.parentNode.appendChild(newEl);
 }
 

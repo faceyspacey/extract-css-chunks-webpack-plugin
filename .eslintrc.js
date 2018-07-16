@@ -18,6 +18,7 @@ module.exports = {
         'no-underscore-dangle': 0,
         'no-restricted-syntax': 0,
         'prefer-arrow-callback': 0,
-        'prefer-destructuring': 0
+        'prefer-destructuring': 0,
+        'prefer-template': 0
     }
 };
