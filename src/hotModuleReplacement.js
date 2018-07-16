@@ -4,7 +4,7 @@ const srcByModuleId = Object.create(null);
 const debounce = require('lodash/debounce');
 
 const noDocument = typeof document === 'undefined';
-const { forEach } = Array.prototype;
+const forEach = Array.prototype.forEach;
 
 const noop = function () {};
 
@@ -13,13 +13,13 @@ const getCurrentScriptUrl = function (moduleId) {
 
   if (!src) {
     if (document.currentScript) {
-      src = document.currentScript.src; // eslint-disable-line prefer-destructuring
+      src = document.currentScript.src;
     } else {
       const scripts = document.getElementsByTagName('script');
       const lastScriptTag = scripts[scripts.length - 1];
 
       if (lastScriptTag) {
-        src = lastScriptTag.src; // eslint-disable-line prefer-destructuring
+        src = lastScriptTag.src;
       }
     }
     srcByModuleId[moduleId] = src;
@@ -31,10 +31,10 @@ const getCurrentScriptUrl = function (moduleId) {
     if (!filename) {
       return [src.replace('.js', '.css')];
     }
-    return fileMap.split(',').map((mapRule) => {
-      const reg = new RegExp(`${filename}\\.js$`, 'g');
+    return fileMap.split(',').map(function (mapRule) {
+      const reg = new RegExp(filename + '\\.js$', 'g');
       return normalizeUrl(
-        src.replace(reg, `${mapRule.replace(/{fileName}/g, filename)}.css`),
+        src.replace(reg, mapRule.replace(/{fileName}/g, filename) + '.css'),
         { stripWWW: false },
       );
     });
@@ -43,7 +43,7 @@ const getCurrentScriptUrl = function (moduleId) {
 
 function updateCss(el, url) {
   if (!url) {
-    [url] = el.href.split('?');
+    url = el.href.split('?')[0];
   }
   if (el.isLoaded === false) {
     // We seem to be about to replace a css link that hasn't loaded yet.
@@ -56,23 +56,23 @@ function updateCss(el, url) {
   const newEl = el.cloneNode();
 
   newEl.isLoaded = false;
-  newEl.addEventListener('load', () => {
+  newEl.addEventListener('load', function () {
     newEl.isLoaded = true;
     el.remove();
   });
-  newEl.addEventListener('error', () => {
+  newEl.addEventListener('error', function () {
     newEl.isLoaded = true;
     el.remove();
   });
 
-  newEl.href = `${url}?${Date.now()}`;
+  newEl.href = url + '?' + Date.now();
   el.parentNode.appendChild(newEl);
 }
 
 function getReloadUrl(href, src) {
   href = normalizeUrl(href, { stripWWW: false });
   let ret;
-  src.some((url) => { // eslint-disable-line array-callback-return
+  src.some(function (url) { // eslint-disable-line array-callback-return
     if (href.indexOf(src) > -1) {
       ret = url;
     }
@@ -84,7 +84,7 @@ function reloadStyle(src) { // eslint-disable-line no-unused-vars
   const elements = document.querySelectorAll('link');
   let loaded = false;
 
-  forEach.call(elements, (el) => {
+  forEach.call(elements, function (el) {
     if (el.visited === true) return;
 
     const url = getReloadUrl(el.href, src);
@@ -99,7 +99,7 @@ function reloadStyle(src) { // eslint-disable-line no-unused-vars
 
 function reloadAll() {
   const elements = document.querySelectorAll('link');
-  forEach.call(elements, (el) => {
+  forEach.call(elements, function (el) {
     if (el.visited === true) return;
     updateCss(el);
   });
