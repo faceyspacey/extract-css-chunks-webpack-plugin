@@ -58,11 +58,11 @@ function updateCss(el, url) {
   newEl.isLoaded = false;
   newEl.addEventListener('load', function () {
     newEl.isLoaded = true;
-    el.remove();
+    el.parentNode.removeChild(el);
   });
   newEl.addEventListener('error', function () {
     newEl.isLoaded = true;
-    el.remove();
+    el.parentNode.removeChild(el);
   });
 
   newEl.href = url + '?' + Date.now();
