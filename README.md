@@ -139,6 +139,8 @@ yarn add --dev extract-css-chunks-webpack-plugin babel-plugin-universal-import
 The main thing is you need to cater to the new chunking system of webpack!
 With **webpack.optimize.CommonsChunkPlugin** plugin no longer part of Webpack 4, we need another way to define the code-splitting. Luckily we have `optimization` configs built into webpack now
 
+> There are more aggressive ways to code split, thanks to webpack 4. Check out the RUC Readme if you are looking for a more aggressive code split optimization configuration. These are just examples, you should be able to configure them as you see fit
+
 *webpack.config.js:*
 ```js
 const ExtractCssChunks = require("extract-css-chunks-webpack-plugin")
@@ -182,7 +184,7 @@ module.exports = {
           name: 'bootstrap'
       },
       splitChunks: {
-          chunks: 'initial', // <-- The key to this
+          chunks: 'initial',
           cacheGroups: {
               vendors: {
                   test: /[\\/]node_modules[\\/]/,
