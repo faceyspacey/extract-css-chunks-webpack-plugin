@@ -19,6 +19,7 @@ module.exports = {
         'no-restricted-syntax': 0,
         'prefer-arrow-callback': 0,
         'prefer-destructuring': 0,
-        'prefer-template': 0
+        'prefer-template': 0,
+        'class-methods-use-this': 0
     }
 };
