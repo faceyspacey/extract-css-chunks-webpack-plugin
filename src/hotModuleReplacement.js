@@ -33,10 +33,7 @@ const getCurrentScriptUrl = function (moduleId) {
     }
     return fileMap.split(',').map(function (mapRule) {
       const reg = new RegExp(filename + '\\.js$', 'g');
-      return normalizeUrl(
-        src.replace(reg, mapRule.replace(/{fileName}/g, filename) + '.css'),
-        { stripWWW: false },
-      );
+      return normalizeUrl(src.replace(reg, mapRule.replace(/{fileName}/g, filename) + '.css'), { stripWWW: false });
     });
   };
 };
@@ -46,8 +43,8 @@ function updateCss(el, url) {
     url = el.href.split('?')[0];
   }
   if (el.isLoaded === false) {
-    // We seem to be about to replace a css link that hasn't loaded yet.
-    // We're probably changing the same file more than once.
+        // We seem to be about to replace a css link that hasn't loaded yet.
+        // We're probably changing the same file more than once.
     return;
   }
   if (!url || !(url.indexOf('.css') > -1)) return;
@@ -58,29 +55,18 @@ function updateCss(el, url) {
   newEl.isLoaded = false;
   newEl.addEventListener('load', function () {
     newEl.isLoaded = true;
-    el.parentNode.removeChild(el);
+    el.remove();
   });
   newEl.addEventListener('error', function () {
     newEl.isLoaded = true;
-    el.parentNode.removeChild(el);
+    el.remove();
   });
 
   newEl.href = url + '?' + Date.now();
   el.parentNode.appendChild(newEl);
 }
 
-function getReloadUrl(href, src) {
-  href = normalizeUrl(href, { stripWWW: false });
-  let ret;
-  src.some(function (url) { // eslint-disable-line array-callback-return
-    if (href.indexOf(src) > -1) {
-      ret = url;
-    }
-  });
-  return ret;
-}
-
-function reloadStyle(src) { // eslint-disable-line no-unused-vars
+function reloadStyle(src) {
   const elements = document.querySelectorAll('link');
   let loaded = false;
 
@@ -97,6 +83,17 @@ function reloadStyle(src) { // eslint-disable-line no-unused-vars
   return loaded;
 }
 
+function getReloadUrl(href, src) {
+  href = normalizeUrl(href, { stripWWW: false });
+  let ret;
+  src.some(function (url) {
+    if (href.indexOf(src) > -1) {
+      ret = url;
+    }
+  });
+  return ret;
+}
+
 function reloadAll() {
   const elements = document.querySelectorAll('link');
   forEach.call(elements, function (el) {
@@ -106,19 +103,21 @@ function reloadAll() {
 }
 
 module.exports = function (moduleId, options) {
+  let getScriptSrc;
+
   if (noDocument) {
     return noop;
   }
 
-  const getScriptSrc = getCurrentScriptUrl(moduleId);
+  getScriptSrc = getCurrentScriptUrl(moduleId);
 
   function update() {
     const src = getScriptSrc(options.fileMap);
-    const reloaded = false; // hack of all hacks...for now
-    if (reloaded) {
-      console.log('[HMR] css reload %s', src.join(' ')); // eslint-disable-line no-console
+    const reloaded = reloadStyle(src);
+    if (reloaded && !options.reloadAll) {
+      console.log('[HMR] css reload %s', src.join(' '));
     } else {
-      console.log('[HMR] Reload all css'); // eslint-disable-line no-console
+      console.log('[HMR] Reload all css');
       reloadAll();
     }
   }
