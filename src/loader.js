@@ -10,12 +10,11 @@ import SingleEntryPlugin from 'webpack/lib/SingleEntryPlugin';
 import LimitChunkCountPlugin from 'webpack/lib/optimize/LimitChunkCountPlugin';
 
 const NS = path.dirname(fs.realpathSync(__filename));
+const pluginName = 'extract-css-chunks-webpack-plugin';
 
 const exec = (loaderContext, code, filename) => {
   const module = new NativeModule(filename, loaderContext);
-
-  // eslint-disable-next-line no-underscore-dangle
-  module.paths = NativeModule._nodeModulePaths(loaderContext.context);
+  module.paths = NativeModule._nodeModulePaths(loaderContext.context); // eslint-disable-line no-underscore-dangle, max-len
   module.filename = filename;
   module._compile(code, filename); // eslint-disable-line no-underscore-dangle
   return module.exports;
@@ -35,41 +34,42 @@ export function pitch(request) {
   const loaders = this.loaders.slice(this.loaderIndex + 1);
   this.addDependency(this.resourcePath);
   const childFilename = '*'; // eslint-disable-line no-path-concat
-  const publicPath = typeof query.publicPath === 'string'
-    ? query.publicPath
-    : this._compilation.outputOptions.publicPath;
+  const publicPath =
+    typeof query.publicPath === 'string'
+      ? query.publicPath
+      : this._compilation.outputOptions.publicPath;
   const outputOptions = {
     filename: childFilename,
     publicPath,
   };
   const childCompiler = this._compilation.createChildCompiler(
-    `extract-css-chunks-webpack-plugin ${request}`,
+    `${pluginName} ${request}`,
     outputOptions,
   );
   new NodeTemplatePlugin(outputOptions).apply(childCompiler);
   new LibraryTemplatePlugin(null, 'commonjs2').apply(childCompiler);
   new NodeTargetPlugin().apply(childCompiler);
-  new SingleEntryPlugin(
-    this.context,
-    `!!${request}`,
-    'extract-css-chunks-webpack-plugin',
-  ).apply(childCompiler);
+  new SingleEntryPlugin(this.context, `!!${request}`, pluginName).apply(
+    childCompiler,
+  );
   new LimitChunkCountPlugin({ maxChunks: 1 }).apply(childCompiler);
   // We set loaderContext[NS] = false to indicate we already in
   // a child compiler so we don't spawn another child compilers from there.
   childCompiler.hooks.thisCompilation.tap(
-    'extract-css-chunks-webpack-plugin loader',
+    `${pluginName} loader`,
     (compilation) => {
       compilation.hooks.normalModuleLoader.tap(
-        'extract-css-chunks-webpack-plugin loader',
+        `${pluginName} loader`,
         (loaderContext, module) => {
           loaderContext[NS] = false; // eslint-disable-line no-param-reassign
           if (module.request === request) {
-            module.loaders = loaders.map(loader => ({
-              loader: loader.path,
-              options: loader.options,
-              ident: loader.ident,
-            }));
+            module.loaders = loaders.map(loader =>
+              // eslint-disable-line no-param-reassign
+               ({
+                 loader: loader.path,
+                 options: loader.options,
+                 ident: loader.ident,
+               }));
           }
         },
       );
@@ -77,20 +77,18 @@ export function pitch(request) {
   );
 
   let source;
-  childCompiler.hooks.afterCompile.tap(
-    'extract-css-chunks-webpack-plugin',
-    (compilation) => {
-      source = compilation.assets[childFilename]
-                && compilation.assets[childFilename].source();
+  childCompiler.hooks.afterCompile.tap(pluginName, (compilation) => {
+    source =
+      compilation.assets[childFilename] &&
+      compilation.assets[childFilename].source();
 
-      // Remove all chunk assets
-      compilation.chunks.forEach((chunk) => {
-        chunk.files.forEach((file) => {
-          delete compilation.assets[file]; // eslint-disable-line no-param-reassign
-        });
+    // Remove all chunk assets
+    compilation.chunks.forEach((chunk) => {
+      chunk.files.forEach((file) => {
+        delete compilation.assets[file]; // eslint-disable-line no-param-reassign
       });
-    },
-  );
+    });
+  });
 
   const callback = this.async();
   childCompiler.runAsChild((err, entries, compilation) => {
@@ -106,7 +104,7 @@ export function pitch(request) {
       this.addContextDependency(dep);
     }, this);
     if (!source) {
-      return callback(new Error('Didn\'t get a result from child compiler'));
+      return callback(new Error("Didn't get a result from child compiler"));
     }
     let text;
     let locals;
@@ -130,7 +128,7 @@ export function pitch(request) {
     } catch (e) {
       return callback(e);
     }
-    let resultSource = '// extracted by extract-css-chunks-webpack-plugin';
+    let resultSource = `// extracted by ${pluginName}`;
     if (locals && typeof resultSource !== 'undefined') {
       resultSource += `\nmodule.exports = ${JSON.stringify(locals)};`;
     }
@@ -138,6 +136,4 @@ export function pitch(request) {
     return callback(null, resultSource);
   });
 }
-
-export default function () {
-}
+export default function () {}
