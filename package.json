@@ -10,8 +10,10 @@
     "node": ">= 6.9.0 <7.0.0 || >= 8.9.0"
   },
   "main": "dist/cjs.js",
+  "types": "index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "index.d.ts"
   ],
   "keywords": [
     "css",
