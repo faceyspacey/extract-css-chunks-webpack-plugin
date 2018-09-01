@@ -150,22 +150,7 @@ class ExtractCssChunks {
       const isHOT = this.options.hot ? true : isHMR(compiler);
 
       if (isHOT && compiler.options.module && compiler.options.module.rules) {
-        const updatedRules = compiler.options.module.rules.reduce((rules, rule) => {
-          if (rule.use && Array.isArray(rule.use)) {
-            const isMiniCss = rule.use.some((l) => {
-              const needle = l.loader || l;
-              return needle.includes(pluginName);
-            });
-            if (isMiniCss) {
-              rule.use.unshift(hotLoader);
-            }
-          }
-          rules.push(rule);
-
-          return rules;
-        }, []);
-
-        compiler.options.module.rules = updatedRules;
+        compiler.options.module.rules = this.updateWebpackConfig(compiler.options.module.rules);
       }
     } catch (e) {
       console.error('Something went wrong: contact the author', JSON.stringify(e)); // eslint-disable-line no-console
@@ -410,6 +395,30 @@ class ExtractCssChunks {
                 },
             );
     });
+  }
+
+  updateWebpackConfig(rulez) {
+    let isExtract = null;
+    return rulez.reduce((rules, rule) => {
+      if (rule.oneOf) {
+        rule.oneOf = this.updateWebpackConfig(rule.oneOf);
+      }
+
+      if (rule.use && Array.isArray(rule.use)) {
+        isExtract = rule.use.some((l) => {
+          const needle = l.loader || l;
+          return needle.includes(pluginName);
+        });
+
+        if (isExtract) {
+          rule.use.unshift(hotLoader);
+        }
+      }
+
+      rules.push(rule);
+
+      return rules;
+    }, []);
   }
 
   getCssChunkObject(mainChunk) {
