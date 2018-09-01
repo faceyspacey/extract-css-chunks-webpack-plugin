@@ -3,7 +3,7 @@
   "version": "0.0.0-placeholder",
   "author": "James Gillmore <james@faceyspacey.com>",
   "contributors": [
-    "Zack Jackson <zackary.l.jackson@gmail.com> (https://github.com/ScriptedAlchemy)"
+    "Zack Jackson <zack@ScriptedAlchemy.com> (https://github.com/ScriptedAlchemy)"
   ],
   "description": "Extract CSS from chunks into stylesheets + HMR. Supports Webpack 4",
   "engines": {
