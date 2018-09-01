@@ -4,7 +4,7 @@ const srcByModuleId = Object.create(null);
 const debounce = require('lodash/debounce');
 
 const noDocument = typeof document === 'undefined';
-const { forEach } = Array.prototype;
+const forEach = Array.prototype.forEach;
 
 const noop = function () {};
 
@@ -13,13 +13,13 @@ const getCurrentScriptUrl = function (moduleId) {
 
   if (!src) {
     if (document.currentScript) {
-      src = document.currentScript.src; // eslint-disable-line prefer-destructuring
+      src = document.currentScript.src;
     } else {
       const scripts = document.getElementsByTagName('script');
       const lastScriptTag = scripts[scripts.length - 1];
 
       if (lastScriptTag) {
-        src = lastScriptTag.src; // eslint-disable-line prefer-destructuring
+        src = lastScriptTag.src;
       }
     }
     srcByModuleId[moduleId] = src;
@@ -40,7 +40,7 @@ const getCurrentScriptUrl = function (moduleId) {
 
 function updateCss(el, url) {
   if (!url) {
-    [url] = el.href.split('?');
+    url = el.href.split('?')[0];
   }
   if (el.isLoaded === false) {
         // We seem to be about to replace a css link that hasn't loaded yet.
@@ -66,6 +66,17 @@ function updateCss(el, url) {
   el.parentNode.appendChild(newEl);
 }
 
+function getReloadUrl(href, src) {
+  href = normalizeUrl(href, { stripWWW: false });
+  let ret;
+  src.some(function (url) {
+    if (href.indexOf(src) > -1) {
+      ret = url;
+    }
+  });
+  return ret;
+}
+
 function reloadStyle(src) {
   const elements = document.querySelectorAll('link');
   let loaded = false;
@@ -83,17 +94,6 @@ function reloadStyle(src) {
   return loaded;
 }
 
-function getReloadUrl(href, src) {
-  href = normalizeUrl(href, { stripWWW: false });
-  let ret;
-  src.some(function (url) {
-    if (href.indexOf(src) > -1) {
-      ret = url;
-    }
-  });
-  return ret;
-}
-
 function reloadAll() {
   const elements = document.querySelectorAll('link');
   forEach.call(elements, function (el) {
@@ -103,13 +103,11 @@ function reloadAll() {
 }
 
 module.exports = function (moduleId, options) {
-  let getScriptSrc;
-
   if (noDocument) {
     return noop;
   }
 
-  getScriptSrc = getCurrentScriptUrl(moduleId);
+  const getScriptSrc = getCurrentScriptUrl(moduleId);
 
   function update() {
     const src = getScriptSrc(options.fileMap);
