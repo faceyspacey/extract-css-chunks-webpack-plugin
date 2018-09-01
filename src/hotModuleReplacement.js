@@ -66,6 +66,17 @@ function updateCss(el, url) {
   el.parentNode.appendChild(newEl);
 }
 
+function getReloadUrl(href, src) {
+  href = normalizeUrl(href, { stripWWW: false });
+  let ret;
+  src.some(function (url) {
+    if (href.indexOf(src) > -1) {
+      ret = url;
+    }
+  });
+  return ret;
+}
+
 function reloadStyle(src) {
   const elements = document.querySelectorAll('link');
   let loaded = false;
@@ -83,17 +94,6 @@ function reloadStyle(src) {
   return loaded;
 }
 
-function getReloadUrl(href, src) {
-  href = normalizeUrl(href, { stripWWW: false });
-  let ret;
-  src.some(function (url) {
-    if (href.indexOf(src) > -1) {
-      ret = url;
-    }
-  });
-  return ret;
-}
-
 function reloadAll() {
   const elements = document.querySelectorAll('link');
   forEach.call(elements, function (el) {
@@ -103,13 +103,11 @@ function reloadAll() {
 }
 
 module.exports = function (moduleId, options) {
-  let getScriptSrc;
-
   if (noDocument) {
     return noop;
   }
 
-  getScriptSrc = getCurrentScriptUrl(moduleId);
+  const getScriptSrc = getCurrentScriptUrl(moduleId);
 
   function update() {
     const src = getScriptSrc(options.fileMap);
