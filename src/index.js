@@ -397,7 +397,7 @@ class ExtractCssChunks {
     });
   }
 
-  traverseDepthFirst = (root, visit) => {
+  traverseDepthFirst(root, visit) {
     let nodesToVisit = [root];
 
     while (nodesToVisit.length > 0) {
