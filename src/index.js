@@ -9,7 +9,7 @@ const hotLoader = path.resolve(__dirname, './hotLoader.js');
 const { ConcatSource, SourceMapSource, OriginalSource } = sources;
 const { Template, util: { createHash } } = webpack;
 
-const NS = path.dirname(fs.realpathSync(__filename));
+const NS = '_extractCssChunks';
 
 const pluginName = 'extract-css-chunks-webpack-plugin';
 
