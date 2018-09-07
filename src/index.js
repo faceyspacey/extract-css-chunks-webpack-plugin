@@ -397,24 +397,34 @@ class ExtractCssChunks {
     });
   }
 
+  traverseDepthFirst(root, visit) {
+    let nodesToVisit = [root];
+
+    while (nodesToVisit.length > 0) {
+      const currentNode = nodesToVisit.shift();
+
+      if (currentNode !== null && typeof currentNode === 'object') {
+        const children = Object.values(currentNode);
+        nodesToVisit = [...children, ...nodesToVisit];
+      }
+
+      visit(currentNode);
+    }
+  };
+
   updateWebpackConfig(rulez) {
-    let isExtract = null;
     return rulez.reduce((rules, rule) => {
-      if (rule.oneOf) {
-        rule.oneOf = this.updateWebpackConfig(rule.oneOf);
-      }
-
-      if (rule.use && Array.isArray(rule.use)) {
-        isExtract = rule.use.some((l) => {
-          const needle = l.loader || l;
-          return needle.includes(pluginName);
-        });
-
-        if (isExtract) {
-          rule.use.unshift(hotLoader);
+      this.traverseDepthFirst(rule, (node) => {
+        if (node !== null && node.use && Array.isArray(node.use)) {
+          const isMiniCss = node.use.some((l) => {
+            const needle = l.loader || l;
+            return needle.includes(pluginName);
+          });
+          if (isMiniCss) {
+            node.use.unshift(hotLoader);
+          }
         }
-      }
-
+      });
       rules.push(rule);
 
       return rules;
