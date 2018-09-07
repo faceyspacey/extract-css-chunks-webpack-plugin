@@ -53,7 +53,8 @@ class CssDependency extends webpack.Dependency {
 }
 
 class CssDependencyTemplate {
-  apply() {}
+  apply() {
+  }
 }
 
 class CssModule extends webpack.Module {
@@ -83,7 +84,8 @@ class CssModule extends webpack.Module {
   }
 
   nameForCondition() {
-    const resource = this._identifier.split('!').pop();
+    const resource = this._identifier.split('!')
+            .pop();
     const idx = resource.indexOf('?');
     if (idx >= 0) return resource.substring(0, idx);
     return resource;
@@ -187,9 +189,10 @@ class ExtractCssChunks {
       compilation.mainTemplate.hooks.renderManifest.tap(
                 pluginName,
                 (result, { chunk }) => {
-                  const renderedModules = Array.from(chunk.modulesIterable).filter(
-                        module => module.type === NS,
-                    );
+                  const renderedModules = Array.from(chunk.modulesIterable)
+                        .filter(
+                            module => module.type === NS,
+                        );
                   if (renderedModules.length > 0) {
                     result.push({
                       render: () =>
@@ -397,24 +400,34 @@ class ExtractCssChunks {
     });
   }
 
+  traverseDepthFirst(root, visit) {
+    let nodesToVisit = [root];
+
+    while (nodesToVisit.length > 0) {
+      const currentNode = nodesToVisit.shift();
+
+      if (currentNode !== null && typeof currentNode === 'object') {
+        const children = Object.values(currentNode);
+        nodesToVisit = [...children, ...nodesToVisit];
+      }
+
+      visit(currentNode);
+    }
+  }
+
   updateWebpackConfig(rulez) {
-    let isExtract = null;
     return rulez.reduce((rules, rule) => {
-      if (rule.oneOf) {
-        rule.oneOf = this.updateWebpackConfig(rule.oneOf);
-      }
-
-      if (rule.use && Array.isArray(rule.use)) {
-        isExtract = rule.use.some((l) => {
-          const needle = l.loader || l;
-          return needle.includes(pluginName);
-        });
-
-        if (isExtract) {
-          rule.use.unshift(hotLoader);
+      this.traverseDepthFirst(rule, (node) => {
+        if (node !== null && node.use && Array.isArray(node.use)) {
+          const isMiniCss = node.use.some((l) => {
+            const needle = l.loader || l;
+            return needle.includes(pluginName);
+          });
+          if (isMiniCss) {
+            node.use.unshift(hotLoader);
+          }
         }
-      }
-
+      });
       rules.push(rule);
 
       return rules;

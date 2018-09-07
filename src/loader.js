@@ -53,7 +53,7 @@ export function pitch(request) {
   new SingleEntryPlugin(
     this.context,
     `!!${request}`,
-    pluginName
+    pluginName,
   ).apply(childCompiler,
   );
   new LimitChunkCountPlugin({ maxChunks: 1 }).apply(childCompiler);
@@ -91,7 +91,7 @@ export function pitch(request) {
           delete compilation.assets[file]; // eslint-disable-line no-param-reassign
         });
       });
-    }
+    },
   );
 
   const callback = this.async();
@@ -128,7 +128,7 @@ export function pitch(request) {
           };
         });
       }
-      this[NS](text);
+      this._extractCssChunks(text);
     } catch (e) {
       return callback(e);
     }
