@@ -156,7 +156,7 @@ class ExtractCssChunks {
         compiler.options.module.rules = this.updateWebpackConfig(compiler.options.module.rules);
       }
     } catch (e) {
-      console.error('Something went wrong: contact the author', JSON.stringify(e)); // eslint-disable-line no-console
+      throw new Error(`Something went wrong: contact the author: ${JSON.stringify(e)}`);
     }
 
     compiler.hooks.thisCompilation.tap(pluginName, (compilation) => {
@@ -408,7 +408,7 @@ class ExtractCssChunks {
   updateWebpackConfig(rulez) {
     return rulez.reduce((rules, rule) => {
       this.traverseDepthFirst(rule, (node) => {
-        if (node !== null && node.use && Array.isArray(node.use)) {
+        if (node && node.use && Array.isArray(node.use)) {
           const isMiniCss = node.use.some((l) => {
             const needle = l.loader || l;
             return needle.includes(pluginName);
