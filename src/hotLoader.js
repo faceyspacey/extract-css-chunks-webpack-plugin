@@ -3,6 +3,7 @@ const loaderUtils = require('loader-utils');
 
 const defaultOptions = {
   fileMap: '{fileName}',
+  cssModules: true,
 };
 
 module.exports = function (content) {
@@ -13,7 +14,7 @@ module.exports = function (content) {
         loaderUtils.getOptions(this),
     );
 
-  const accept = options.cssModule ? '' : 'module.hot.accept(undefined, cssReload);';
+  const accept = options.cssModules ? '' : 'module.hot.accept(undefined, cssReload);';
   return content + `
     if(module.hot) {
       // ${Date.now()}

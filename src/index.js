@@ -1,4 +1,3 @@
-import fs from 'fs';
 import path from 'path';
 
 import webpack from 'webpack';
@@ -53,8 +52,7 @@ class CssDependency extends webpack.Dependency {
 }
 
 class CssDependencyTemplate {
-  apply() {
-  }
+  apply() {}
 }
 
 class CssModule extends webpack.Module {
@@ -84,8 +82,7 @@ class CssModule extends webpack.Module {
   }
 
   nameForCondition() {
-    const resource = this._identifier.split('!')
-            .pop();
+    const resource = this._identifier.split('!').pop();
     const idx = resource.indexOf('?');
     if (idx >= 0) return resource.substring(0, idx);
     return resource;
@@ -123,28 +120,32 @@ class CssModuleFactory {
 
 class ExtractCssChunks {
   constructor(options) {
-    this.options = Object.assign(
-      {
-        filename: '[name].css',
-      },
-            options,
-        );
+    this.options = Object.assign({ filename: '[name].css' }, options);
+    const { cssModules, reloadAll } = options;
+
     if (!this.options.chunkFilename) {
       const { filename } = this.options;
       const hasName = filename.includes('[name]');
       const hasId = filename.includes('[id]');
       const hasChunkHash = filename.includes('[chunkhash]');
-            // Anything changing depending on chunk is fine
+
+      // Anything changing depending on chunk is fine
       if (hasChunkHash || hasName || hasId) {
         this.options.chunkFilename = filename;
       } else {
-                // Elsewise prefix '[id].' in front of the basename to make it changing
-        this.options.chunkFilename = filename.replace(
-                    /(^|\/)([^/]*(?:\?|$))/,
-                    '$1[id].$2',
-                );
+        // Elsewise prefix '[id].' in front of the basename to make it changing
+        this.options.chunkFilename = filename.replace(/(^|\/)([^/]*(?:\?|$))/, '$1[id].$2');
       }
     }
+
+    this.hotLoaderObject = Object.assign({
+      use: hotLoader,
+      cssModules: false,
+      reloadAll: false,
+    }, {
+      cssModules,
+      reloadAll,
+    });
   }
 
   apply(compiler) {
@@ -158,17 +159,14 @@ class ExtractCssChunks {
       console.error('Something went wrong: contact the author', JSON.stringify(e)); // eslint-disable-line no-console
     }
 
+
     compiler.hooks.thisCompilation.tap(pluginName, (compilation) => {
       compilation.hooks.normalModuleLoader.tap(pluginName, (lc, m) => {
         const loaderContext = lc;
         const module = m;
         loaderContext[NS] = (content) => {
           if (!Array.isArray(content) && content != null) {
-            throw new Error(
-                            `Exported value was not extracted as an array: ${JSON.stringify(
-                                content,
-                            )}`,
-                        );
+            throw new Error(`Exported value was not extracted as an array: ${JSON.stringify(content)}`);
           }
           const identifierCountMap = new Map();
           for (const line of content) {
@@ -189,10 +187,9 @@ class ExtractCssChunks {
       compilation.mainTemplate.hooks.renderManifest.tap(
                 pluginName,
                 (result, { chunk }) => {
-                  const renderedModules = Array.from(chunk.modulesIterable)
-                        .filter(
-                            module => module.type === NS,
-                        );
+                  const renderedModules = Array.from(chunk.modulesIterable).filter(
+                        module => module.type === NS,
+                    );
                   if (renderedModules.length > 0) {
                     result.push({
                       render: () =>
@@ -279,9 +276,7 @@ class ExtractCssChunks {
             '',
             '// object to store loaded CSS chunks',
             'var installedCssChunks = {',
-            Template.indent(
-                            chunk.ids.map(id => `${JSON.stringify(id)}: 0`).join(',\n'),
-                        ),
+            Template.indent(chunk.ids.map(id => `${JSON.stringify(id)}: 0`).join(',\n')),
             '}',
           ]);
         }
@@ -331,14 +326,10 @@ class ExtractCssChunks {
                                                         ].substring(0, length);
                                 }
                               }
-                              return `" + ${JSON.stringify(
-                                                shortContentHashMap,
-                                            )}[chunkId] + "`;
+                              return `" + ${JSON.stringify(shortContentHashMap)}[chunkId] + "`;
                             },
                           },
-                          name: `" + (${JSON.stringify(
-                                        chunkMaps.name,
-                                    )}[chunkId]||chunkId) + "`,
+                          name: `" + (${JSON.stringify(chunkMaps.name)}[chunkId]||chunkId) + "`,
                         },
                         contentHashType: NS,
                       },
@@ -424,7 +415,7 @@ class ExtractCssChunks {
             return needle.includes(pluginName);
           });
           if (isMiniCss) {
-            node.use.unshift(hotLoader);
+            node.use.unshift(this.hotLoaderObject);
           }
         }
       });
@@ -467,9 +458,9 @@ class ExtractCssChunks {
                     .filter(item => item.index !== undefined)
                     .sort((a, b) => b.index - a.index)
                     .map(item => item.module);
-        for (let i = 0; i < sortedModules.length; i++) {
+        for (let i = 0; i < sortedModules.length; i += 1) {
           const set = moduleDependencies.get(sortedModules[i]);
-          for (let j = i + 1; j < sortedModules.length; j++) {
+          for (let j = i + 1; j < sortedModules.length; j += 1) {
             set.add(sortedModules[j]);
           }
         }

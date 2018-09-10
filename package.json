@@ -1,6 +1,6 @@
 {
   "name": "extract-css-chunks-webpack-plugin",
-  "version": "0.0.0-placeholder",
+  "version": "3.1.2-beta.3",
   "author": "James Gillmore <james@faceyspacey.com>",
   "contributors": [
     "Zack Jackson <zack@ScriptedAlchemy.com> (https://github.com/ScriptedAlchemy)"
