@@ -1,6 +1,6 @@
 {
   "name": "extract-css-chunks-webpack-plugin",
-  "version": "3.1.2-beta.4",
+  "version": "0.0.0-placeholder",
   "author": "James Gillmore <james@faceyspacey.com>",
   "contributors": [
     "Zack Jackson <zack@ScriptedAlchemy.com> (https://github.com/ScriptedAlchemy)"
@@ -24,7 +24,9 @@
     "hmr",
     "universal",
     "webpack",
-    "webpack 4"
+    "webpack 4",
+    "css-hot-loader",
+    "extract-css-chunks-webpack-plugin"
   ],
   "license": "MIT",
   "scripts": {
