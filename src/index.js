@@ -139,7 +139,7 @@ class ExtractCssChunks {
     }
 
     this.hotLoaderObject = Object.assign({
-      use: hotLoader,
+      loader: hotLoader,
       cssModules: false,
       reloadAll: false,
     }, {
@@ -158,7 +158,6 @@ class ExtractCssChunks {
     } catch (e) {
       console.error('Something went wrong: contact the author', JSON.stringify(e)); // eslint-disable-line no-console
     }
-
 
     compiler.hooks.thisCompilation.tap(pluginName, (compilation) => {
       compilation.hooks.normalModuleLoader.tap(pluginName, (lc, m) => {
