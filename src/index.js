@@ -121,7 +121,7 @@ class CssModuleFactory {
 class ExtractCssChunks {
   constructor(options) {
     this.options = Object.assign({ filename: '[name].css' }, options);
-    const { cssModules, reloadAll } = options;
+    const { cssModules, reloadAll } = this.options;
 
     if (!this.options.chunkFilename) {
       const { filename } = this.options;
