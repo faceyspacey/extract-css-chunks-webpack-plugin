@@ -140,11 +140,15 @@ class ExtractCssChunks {
 
     this.hotLoaderObject = Object.assign({
       loader: hotLoader,
-      cssModules: false,
-      reloadAll: false,
+      options: {
+        cssModules: false,
+        reloadAll: false,
+      },
     }, {
-      cssModules,
-      reloadAll,
+      options: {
+        cssModules,
+        reloadAll,
+      },
     });
   }
 
