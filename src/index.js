@@ -6,9 +6,12 @@ import sources from 'webpack-sources';
 const hotLoader = path.resolve(__dirname, './hotLoader.js');
 
 const { ConcatSource, SourceMapSource, OriginalSource } = sources;
-const { Template, util: { createHash } } = webpack;
+const {
+    Template,
+    util: { createHash },
+} = webpack;
 
-const NS = '_extractCssChunks';
+const MODULE_TYPE = 'css/extract-chunks';
 
 const pluginName = 'extract-css-chunks-webpack-plugin';
 
@@ -57,7 +60,7 @@ class CssDependencyTemplate {
 
 class CssModule extends webpack.Module {
   constructor(dependency) {
-    super(NS, dependency.context);
+    super(MODULE_TYPE, dependency.context);
     this._identifier = dependency.identifier;
     this._identifierIndex = dependency.identifierIndex;
     this.content = dependency.content;
@@ -113,7 +116,12 @@ class CssModule extends webpack.Module {
 }
 
 class CssModuleFactory {
-  create({ dependencies: [dependency] }, callback) {
+  create(
+    {
+            dependencies: [dependency],
+        },
+    callback,
+    ) {
     callback(null, new CssModule(dependency));
   }
 }
@@ -163,7 +171,7 @@ class ExtractCssChunks {
       compilation.hooks.normalModuleLoader.tap(pluginName, (lc, m) => {
         const loaderContext = lc;
         const module = m;
-        loaderContext[NS] = (content) => {
+        loaderContext[MODULE_TYPE] = (content) => {
           if (!Array.isArray(content) && content != null) {
             throw new Error(`Exported value was not extracted as an array: ${JSON.stringify(content)}`);
           }
@@ -187,7 +195,7 @@ class ExtractCssChunks {
                 pluginName,
                 (result, { chunk }) => {
                   const renderedModules = Array.from(chunk.modulesIterable).filter(
-                        module => module.type === NS,
+                        module => module.type === MODULE_TYPE,
                     );
                   if (renderedModules.length > 0) {
                     result.push({
@@ -201,10 +209,10 @@ class ExtractCssChunks {
                       filenameTemplate: this.options.filename,
                       pathOptions: {
                         chunk,
-                        contentHashType: NS,
+                        contentHashType: MODULE_TYPE,
                       },
                       identifier: `${pluginName}.${chunk.id}`,
-                      hash: chunk.contentHash[NS],
+                      hash: chunk.contentHash[MODULE_TYPE],
                     });
                   }
                 },
@@ -213,7 +221,7 @@ class ExtractCssChunks {
                 pluginName,
                 (result, { chunk }) => {
                   const renderedModules = Array.from(chunk.modulesIterable).filter(
-                        module => module.type === NS,
+                        module => module.type === MODULE_TYPE,
                     );
                   if (renderedModules.length > 0) {
                     result.push({
@@ -227,10 +235,10 @@ class ExtractCssChunks {
                       filenameTemplate: this.options.chunkFilename,
                       pathOptions: {
                         chunk,
-                        contentHashType: NS,
+                        contentHashType: MODULE_TYPE,
                       },
                       identifier: `${pluginName}.${chunk.id}`,
-                      hash: chunk.contentHash[NS],
+                      hash: chunk.contentHash[MODULE_TYPE],
                     });
                   }
                 },
@@ -244,7 +252,7 @@ class ExtractCssChunks {
                   }
                   if (REGEXP_CONTENTHASH.test(chunkFilename)) {
                     hash.update(
-                            JSON.stringify(chunk.getChunkMaps(true).contentHash[NS] || {}),
+                            JSON.stringify(chunk.getChunkMaps(true).contentHash[MODULE_TYPE] || {}),
                         );
                   }
                   if (REGEXP_NAME.test(chunkFilename)) {
@@ -257,12 +265,12 @@ class ExtractCssChunks {
         const { hashFunction, hashDigest, hashDigestLength } = outputOptions;
         const hash = createHash(hashFunction);
         for (const m of chunk.modulesIterable) {
-          if (m.type === NS) {
+          if (m.type === MODULE_TYPE) {
             m.updateHash(hash);
           }
         }
         const { contentHash } = chunk;
-        contentHash[NS] = hash
+        contentHash[MODULE_TYPE] = hash
                     .digest(hashDigest)
                     .substring(0, hashDigestLength);
       });
@@ -310,14 +318,14 @@ class ExtractCssChunks {
                                         )}[chunkId] + "`;
                           },
                           contentHash: {
-                            [NS]: `" + ${JSON.stringify(
-                                            chunkMaps.contentHash[NS],
+                            [MODULE_TYPE]: `" + ${JSON.stringify(
+                                            chunkMaps.contentHash[MODULE_TYPE],
                                         )}[chunkId] + "`,
                           },
                           contentHashWithLength: {
-                            [NS]: (length) => {
+                            [MODULE_TYPE]: (length) => {
                               const shortContentHashMap = {};
-                              const contentHash = chunkMaps.contentHash[NS];
+                              const contentHash = chunkMaps.contentHash[MODULE_TYPE];
                               for (const chunkId of Object.keys(contentHash)) {
                                 if (typeof contentHash[chunkId] === 'string') {
                                   shortContentHashMap[chunkId] = contentHash[
@@ -325,12 +333,16 @@ class ExtractCssChunks {
                                                         ].substring(0, length);
                                 }
                               }
-                              return `" + ${JSON.stringify(shortContentHashMap)}[chunkId] + "`;
+                              return `" + ${JSON.stringify(
+                                                shortContentHashMap,
+                                            )}[chunkId] + "`;
                             },
                           },
-                          name: `" + (${JSON.stringify(chunkMaps.name)}[chunkId]||chunkId) + "`,
+                          name: `" + (${JSON.stringify(
+                                        chunkMaps.name,
+                                    )}[chunkId]||chunkId) + "`,
                         },
-                        contentHashType: NS,
+                        contentHashType: MODULE_TYPE,
                       },
                         );
                     return Template.asString([
@@ -428,7 +440,7 @@ class ExtractCssChunks {
     const obj = {};
     for (const chunk of mainChunk.getAllAsyncChunks()) {
       for (const module of chunk.modulesIterable) {
-        if (module.type === NS) {
+        if (module.type === MODULE_TYPE) {
           obj[chunk.id] = 1;
           break;
         }
@@ -457,9 +469,9 @@ class ExtractCssChunks {
                     .filter(item => item.index !== undefined)
                     .sort((a, b) => b.index - a.index)
                     .map(item => item.module);
-        for (let i = 0; i < sortedModules.length; i += 1) {
+        for (let i = 0; i < sortedModules.length; i++) {
           const set = moduleDependencies.get(sortedModules[i]);
-          for (let j = i + 1; j < sortedModules.length; j += 1) {
+          for (let j = i + 1; j < sortedModules.length; j++) {
             set.add(sortedModules[j]);
           }
         }
@@ -479,17 +491,14 @@ class ExtractCssChunks {
                 // get first module where dependencies are fulfilled
         for (const list of modulesByChunkGroup) {
                     // skip and remove already added modules
-          while (list.length > 0 && usedModules.has(list[list.length - 1])) {
-            list.pop();
-          }
+          while (list.length > 0 && usedModules.has(list[list.length - 1])) { list.pop(); }
 
                     // skip empty lists
           if (list.length !== 0) {
             const module = list[list.length - 1];
             const deps = moduleDependencies.get(module);
                         // determine dependencies that are not yet included
-            const failedDeps = Array.from(deps)
-                            .filter(unusedModulesFilter);
+            const failedDeps = Array.from(deps).filter(unusedModulesFilter);
 
                         // store best match for fallback behavior
             if (!bestMatchDeps || bestMatchDeps.length > failedDeps.length) {
