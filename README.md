@@ -90,7 +90,8 @@ module.exports = {
           // both options are optional
           filename: "[name].css",
           chunkFilename: "[id].css",
-          hot: true // optional as the plugin cannot automatically detect if you are using HOT, not for production use
+          hot: true, // optional as the plugin cannot automatically detect if you are using HOT, not for production use
+          orderWarning: true, // Disable to remove warnings about conflicting order between imports
         }
     ),
   ]
