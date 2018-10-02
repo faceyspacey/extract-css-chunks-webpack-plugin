@@ -1,11 +1,11 @@
 {
   "name": "extract-css-chunks-webpack-plugin",
-  "version": "3.1.2-beta.7",
+  "version": "3.1.2",
   "author": "James Gillmore <james@faceyspacey.com>",
   "contributors": [
     "Zack Jackson <zack@ScriptedAlchemy.com> (https://github.com/ScriptedAlchemy)"
   ],
-  "description": "Extract CSS from chunks into stylesheets + HMR. Supports Webpack 4",
+  "description": "Extract CSS from chunks into stylesheets + HMR. Supports Webpack 4 + SSR",
   "engines": {
     "node": ">= 6.9.0 <7.0.0 || >= 8.9.0"
   },
