@@ -92,6 +92,8 @@ module.exports = {
           chunkFilename: "[id].css",
           hot: true, // optional as the plugin cannot automatically detect if you are using HOT, not for production use
           orderWarning: true, // Disable to remove warnings about conflicting order between imports
+          reloadAll: true, // when desperation kicks in - this is a brute force HMR flag
+          cssModules: true // if you use cssModules, this can help.
         }
     ),
   ]
@@ -195,7 +197,7 @@ module.exports = {
       }
   },
   plugins: [
-    new ExtractCssChunks({hot:true}), //if you want HMR - we try to automatically inject hot reloading but if it's not working, add it to the config
+    new ExtractCssChunks({hot:true, cssModules: true}), //if you want HMR - we try to automatically inject hot reloading but if it's not working, add it to the config
   ]
 };
 ```
