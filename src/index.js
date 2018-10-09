@@ -426,6 +426,9 @@ class ExtractCssChunks {
       this.traverseDepthFirst(rule, (node) => {
         if (node && node.use && Array.isArray(node.use)) {
           const isMiniCss = node.use.some((l) => {
+            if (typeof l === 'function') {
+              return false;
+            }
             const needle = l.loader || l;
             return needle.includes(pluginName);
           });
