@@ -1,4 +1,3 @@
-import fs from 'fs';
 import path from 'path';
 
 import webpack from 'webpack';
@@ -7,9 +6,12 @@ import sources from 'webpack-sources';
 const hotLoader = path.resolve(__dirname, './hotLoader.js');
 
 const { ConcatSource, SourceMapSource, OriginalSource } = sources;
-const { Template, util: { createHash } } = webpack;
+const {
+    Template,
+    util: { createHash },
+} = webpack;
 
-const NS = path.dirname(fs.realpathSync(__filename));
+const MODULE_TYPE = 'css/extract-chunks';
 
 const pluginName = 'extract-css-chunks-webpack-plugin';
 
@@ -58,7 +60,7 @@ class CssDependencyTemplate {
 
 class CssModule extends webpack.Module {
   constructor(dependency) {
-    super(NS, dependency.context);
+    super(MODULE_TYPE, dependency.context);
     this._identifier = dependency.identifier;
     this._identifierIndex = dependency.identifierIndex;
     this.content = dependency.content;
@@ -114,35 +116,48 @@ class CssModule extends webpack.Module {
 }
 
 class CssModuleFactory {
-  create({ dependencies: [dependency] }, callback) {
+  create(
+    {
+            dependencies: [dependency],
+        },
+    callback,
+    ) {
     callback(null, new CssModule(dependency));
   }
 }
 
 class ExtractCssChunks {
   constructor(options) {
-    this.options = Object.assign(
-      {
-        filename: '[name].css',
-      },
-            options,
-        );
+    this.options = Object.assign({ filename: '[name].css', orderWarning: true }, options);
+    const { cssModules, reloadAll } = this.options;
+
     if (!this.options.chunkFilename) {
       const { filename } = this.options;
       const hasName = filename.includes('[name]');
       const hasId = filename.includes('[id]');
       const hasChunkHash = filename.includes('[chunkhash]');
-            // Anything changing depending on chunk is fine
+
+      // Anything changing depending on chunk is fine
       if (hasChunkHash || hasName || hasId) {
         this.options.chunkFilename = filename;
       } else {
-                // Elsewise prefix '[id].' in front of the basename to make it changing
-        this.options.chunkFilename = filename.replace(
-                    /(^|\/)([^/]*(?:\?|$))/,
-                    '$1[id].$2',
-                );
+        // Elsewise prefix '[id].' in front of the basename to make it changing
+        this.options.chunkFilename = filename.replace(/(^|\/)([^/]*(?:\?|$))/, '$1[id].$2');
       }
     }
+
+    this.hotLoaderObject = Object.assign({
+      loader: hotLoader,
+      options: {
+        cssModules: false,
+        reloadAll: false,
+      },
+    }, {
+      options: {
+        cssModules,
+        reloadAll,
+      },
+    });
   }
 
   apply(compiler) {
@@ -153,20 +168,16 @@ class ExtractCssChunks {
         compiler.options.module.rules = this.updateWebpackConfig(compiler.options.module.rules);
       }
     } catch (e) {
-      console.error('Something went wrong: contact the author', JSON.stringify(e)); // eslint-disable-line no-console
+      throw new Error(`Something went wrong: contact the author: ${JSON.stringify(e)}`);
     }
 
     compiler.hooks.thisCompilation.tap(pluginName, (compilation) => {
       compilation.hooks.normalModuleLoader.tap(pluginName, (lc, m) => {
         const loaderContext = lc;
         const module = m;
-        loaderContext[NS] = (content) => {
+        loaderContext[MODULE_TYPE] = (content) => {
           if (!Array.isArray(content) && content != null) {
-            throw new Error(
-                            `Exported value was not extracted as an array: ${JSON.stringify(
-                                content,
-                            )}`,
-                        );
+            throw new Error(`Exported value was not extracted as an array: ${JSON.stringify(content)}`);
           }
           const identifierCountMap = new Map();
           for (const line of content) {
@@ -188,7 +199,7 @@ class ExtractCssChunks {
                 pluginName,
                 (result, { chunk }) => {
                   const renderedModules = Array.from(chunk.modulesIterable).filter(
-                        module => module.type === NS,
+                        module => module.type === MODULE_TYPE,
                     );
                   if (renderedModules.length > 0) {
                     result.push({
@@ -202,10 +213,10 @@ class ExtractCssChunks {
                       filenameTemplate: this.options.filename,
                       pathOptions: {
                         chunk,
-                        contentHashType: NS,
+                        contentHashType: MODULE_TYPE,
                       },
                       identifier: `${pluginName}.${chunk.id}`,
-                      hash: chunk.contentHash[NS],
+                      hash: chunk.contentHash[MODULE_TYPE],
                     });
                   }
                 },
@@ -214,7 +225,7 @@ class ExtractCssChunks {
                 pluginName,
                 (result, { chunk }) => {
                   const renderedModules = Array.from(chunk.modulesIterable).filter(
-                        module => module.type === NS,
+                        module => module.type === MODULE_TYPE,
                     );
                   if (renderedModules.length > 0) {
                     result.push({
@@ -228,10 +239,10 @@ class ExtractCssChunks {
                       filenameTemplate: this.options.chunkFilename,
                       pathOptions: {
                         chunk,
-                        contentHashType: NS,
+                        contentHashType: MODULE_TYPE,
                       },
                       identifier: `${pluginName}.${chunk.id}`,
-                      hash: chunk.contentHash[NS],
+                      hash: chunk.contentHash[MODULE_TYPE],
                     });
                   }
                 },
@@ -245,7 +256,7 @@ class ExtractCssChunks {
                   }
                   if (REGEXP_CONTENTHASH.test(chunkFilename)) {
                     hash.update(
-                            JSON.stringify(chunk.getChunkMaps(true).contentHash[NS] || {}),
+                            JSON.stringify(chunk.getChunkMaps(true).contentHash[MODULE_TYPE] || {}),
                         );
                   }
                   if (REGEXP_NAME.test(chunkFilename)) {
@@ -258,12 +269,12 @@ class ExtractCssChunks {
         const { hashFunction, hashDigest, hashDigestLength } = outputOptions;
         const hash = createHash(hashFunction);
         for (const m of chunk.modulesIterable) {
-          if (m.type === NS) {
+          if (m.type === MODULE_TYPE) {
             m.updateHash(hash);
           }
         }
         const { contentHash } = chunk;
-        contentHash[NS] = hash
+        contentHash[MODULE_TYPE] = hash
                     .digest(hashDigest)
                     .substring(0, hashDigestLength);
       });
@@ -276,9 +287,7 @@ class ExtractCssChunks {
             '',
             '// object to store loaded CSS chunks',
             'var installedCssChunks = {',
-            Template.indent(
-                            chunk.ids.map(id => `${JSON.stringify(id)}: 0`).join(',\n'),
-                        ),
+            Template.indent(chunk.ids.map(id => `${JSON.stringify(id)}: 0`).join(',\n')),
             '}',
           ]);
         }
@@ -313,14 +322,14 @@ class ExtractCssChunks {
                                         )}[chunkId] + "`;
                           },
                           contentHash: {
-                            [NS]: `" + ${JSON.stringify(
-                                            chunkMaps.contentHash[NS],
+                            [MODULE_TYPE]: `" + ${JSON.stringify(
+                                            chunkMaps.contentHash[MODULE_TYPE],
                                         )}[chunkId] + "`,
                           },
                           contentHashWithLength: {
-                            [NS]: (length) => {
+                            [MODULE_TYPE]: (length) => {
                               const shortContentHashMap = {};
-                              const contentHash = chunkMaps.contentHash[NS];
+                              const contentHash = chunkMaps.contentHash[MODULE_TYPE];
                               for (const chunkId of Object.keys(contentHash)) {
                                 if (typeof contentHash[chunkId] === 'string') {
                                   shortContentHashMap[chunkId] = contentHash[
@@ -337,7 +346,7 @@ class ExtractCssChunks {
                                         chunkMaps.name,
                                     )}[chunkId]||chunkId) + "`,
                         },
-                        contentHashType: NS,
+                        contentHashType: MODULE_TYPE,
                       },
                         );
                     return Template.asString([
@@ -397,24 +406,34 @@ class ExtractCssChunks {
     });
   }
 
+  traverseDepthFirst(root, visit) {
+    let nodesToVisit = [root];
+
+    while (nodesToVisit.length > 0) {
+      const currentNode = nodesToVisit.shift();
+
+      if (currentNode !== null && typeof currentNode === 'object') {
+        const children = Object.values(currentNode);
+        nodesToVisit = [...children, ...nodesToVisit];
+      }
+
+      visit(currentNode);
+    }
+  }
+
   updateWebpackConfig(rulez) {
-    let isExtract = null;
     return rulez.reduce((rules, rule) => {
-      if (rule.oneOf) {
-        rule.oneOf = this.updateWebpackConfig(rule.oneOf);
-      }
-
-      if (rule.use && Array.isArray(rule.use)) {
-        isExtract = rule.use.some((l) => {
-          const needle = l.loader || l;
-          return needle.includes(pluginName);
-        });
-
-        if (isExtract) {
-          rule.use.unshift(hotLoader);
+      this.traverseDepthFirst(rule, (node) => {
+        if (node && node.use && Array.isArray(node.use)) {
+          const isMiniCss = node.use.some((l) => {
+            const needle = l.loader || l;
+            return needle.includes(pluginName);
+          });
+          if (isMiniCss) {
+            node.use.unshift(this.hotLoaderObject);
+          }
         }
-      }
-
+      });
       rules.push(rule);
 
       return rules;
@@ -425,7 +444,7 @@ class ExtractCssChunks {
     const obj = {};
     for (const chunk of mainChunk.getAllAsyncChunks()) {
       for (const module of chunk.modulesIterable) {
-        if (module.type === NS) {
+        if (module.type === MODULE_TYPE) {
           obj[chunk.id] = 1;
           break;
         }
@@ -476,17 +495,14 @@ class ExtractCssChunks {
                 // get first module where dependencies are fulfilled
         for (const list of modulesByChunkGroup) {
                     // skip and remove already added modules
-          while (list.length > 0 && usedModules.has(list[list.length - 1])) {
-            list.pop();
-          }
+          while (list.length > 0 && usedModules.has(list[list.length - 1])) { list.pop(); }
 
                     // skip empty lists
           if (list.length !== 0) {
             const module = list[list.length - 1];
             const deps = moduleDependencies.get(module);
                         // determine dependencies that are not yet included
-            const failedDeps = Array.from(deps)
-                            .filter(unusedModulesFilter);
+            const failedDeps = Array.from(deps).filter(unusedModulesFilter);
 
                         // store best match for fallback behavior
             if (!bestMatchDeps || bestMatchDeps.length > failedDeps.length) {
@@ -507,16 +523,18 @@ class ExtractCssChunks {
                     // use list with fewest failed deps
                     // and emit a warning
           const fallbackModule = bestMatch.pop();
-          compilation.warnings.push(
-                        new Error(
-                            `chunk ${chunk.name || chunk.id} [mini-css-extract-plugin]\n` +
-                            'Conflicting order between:\n' +
-                            ` * ${fallbackModule.readableIdentifier(requestShortener)}\n` +
-                            `${bestMatchDeps
-                                .map(m => ` * ${m.readableIdentifier(requestShortener)}`)
-                                .join('\n')}`,
-                        ),
-                    );
+          if (this.options.orderWarning) {
+            compilation.warnings.push(
+              new Error(
+                `chunk ${chunk.name || chunk.id} [mini-css-extract-plugin]\n` +
+                'Conflicting order between:\n' +
+                ` * ${fallbackModule.readableIdentifier(requestShortener)}\n` +
+                `${bestMatchDeps
+                  .map(m => ` * ${m.readableIdentifier(requestShortener)}`)
+                  .join('\n')}`,
+              ),
+            );
+          }
           usedModules.add(fallbackModule);
         }
       }
