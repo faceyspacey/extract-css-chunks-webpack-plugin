@@ -602,5 +602,6 @@ class ExtractCssChunks {
 }
 
 ExtractCssChunks.loader = require.resolve('./loader');
+ExtractCssChunks.hotLoader = require.resolve('./hotLoader');
 
 export default ExtractCssChunks;
