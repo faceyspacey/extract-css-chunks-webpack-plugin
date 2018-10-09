@@ -433,7 +433,17 @@ class ExtractCssChunks {
             node.use.unshift(this.hotLoaderObject);
           }
         }
+        if (node && node.loader && Array.isArray(node.loader)) {
+          const isMiniCss = node.loader.some((l) => {
+            const needle = l.loader || l;
+            return needle.includes(pluginName);
+          });
+          if (isMiniCss) {
+            node.loader.unshift(this.hotLoaderObject);
+          }
+        }
       });
+
       rules.push(rule);
 
       return rules;
