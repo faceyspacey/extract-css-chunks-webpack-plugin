@@ -168,7 +168,7 @@ class ExtractCssChunks {
         compiler.options.module.rules = this.updateWebpackConfig(compiler.options.module.rules);
       }
     } catch (e) {
-      throw new Error(`Something went wrong: contact the author: ${JSON.stringify(e)}`);
+      throw new Error(e);
     }
 
     compiler.hooks.thisCompilation.tap(pluginName, (compilation) => {
@@ -406,34 +406,47 @@ class ExtractCssChunks {
     });
   }
 
-  traverseDepthFirst(root, visit) {
-    let nodesToVisit = [root];
-
-    while (nodesToVisit.length > 0) {
-      const currentNode = nodesToVisit.shift();
-
-      if (currentNode !== null && typeof currentNode === 'object') {
-        const children = Object.values(currentNode);
-        nodesToVisit = [...children, ...nodesToVisit];
-      }
-
-      visit(currentNode);
+  searchObject(node) {
+    if (!node) {
+      return false;
     }
+
+    if (typeof node === 'string' && node === pluginName) {
+      return true;
+    }
+
+    return node.some((l) => {
+      const needle = l.loader || l;
+      if (needle === pluginName) {
+        return true;
+      }
+      return needle.includes(pluginName);
+    });
   }
 
   updateWebpackConfig(rulez) {
+    let isExtract = null;
     return rulez.reduce((rules, rule) => {
-      this.traverseDepthFirst(rule, (node) => {
-        if (node && node.use && Array.isArray(node.use)) {
-          const isMiniCss = node.use.some((l) => {
-            const needle = l.loader || l;
-            return needle.includes(pluginName);
-          });
-          if (isMiniCss) {
-            node.use.unshift(this.hotLoaderObject);
-          }
+      if (rule.oneOf) {
+        rule.oneOf = this.updateWebpackConfig(rule.oneOf);
+      }
+
+      // redundant but works
+      if (rule.loader && Array.isArray(rule.loader)) {
+        isExtract = this.searchObject(rule.loader);
+
+        if (isExtract) {
+          rule.loader.unshift(hotLoader);
         }
-      });
+      }
+
+      if (rule.use && Array.isArray(rule.use)) {
+        isExtract = this.searchObject(rule.use);
+
+        if (isExtract) {
+          rule.use.unshift(hotLoader);
+        }
+      }
       rules.push(rule);
 
       return rules;
@@ -592,5 +605,6 @@ class ExtractCssChunks {
 }
 
 ExtractCssChunks.loader = require.resolve('./loader');
+ExtractCssChunks.hotLoader = require.resolve('./hotLoader');
 
 export default ExtractCssChunks;
