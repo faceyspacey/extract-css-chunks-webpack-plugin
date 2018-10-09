@@ -21,6 +21,7 @@ module.exports = {
         'prefer-destructuring': 0,
         'array-callback-return': 0,
         'prefer-template': 0,
-        'class-methods-use-this': 0
+        'class-methods-use-this': 0,
+        'no-plusplus': 0
     }
 };

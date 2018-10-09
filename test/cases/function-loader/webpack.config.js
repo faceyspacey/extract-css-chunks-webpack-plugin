@@ -1,3 +1,5 @@
+
+
 const Self = require('../../../');
 
 module.exports = {
@@ -7,7 +9,10 @@ module.exports = {
       {
         test: /\.css$/,
         use: [
-          () => ({ loader: 'css-loader' }),
+          () => [
+            Self.loader,
+            'css-loader',
+          ],
         ],
       },
     ],
@@ -15,7 +20,6 @@ module.exports = {
   plugins: [
     new Self({
       filename: '[name].css',
-      hot: true,
     }),
   ],
 };
