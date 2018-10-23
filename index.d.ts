@@ -18,6 +18,8 @@ declare module 'extract-css-chunks-webpack-plugin' {
            * we try to automatically inject hot reloading, but if it's not working, use this config
            */
           hot?: boolean;
+          reloadAll?: boolean;
+          cssModules?: boolean;
       }
   }
 

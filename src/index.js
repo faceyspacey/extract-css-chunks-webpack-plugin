@@ -427,13 +427,29 @@ class ExtractCssChunks {
         if (node && node.use && Array.isArray(node.use)) {
           const isMiniCss = node.use.some((l) => {
             const needle = l.loader || l;
+            if (typeof l === 'function') {
+              return false;
+            }
             return needle.includes(pluginName);
           });
           if (isMiniCss) {
             node.use.unshift(this.hotLoaderObject);
           }
         }
+        if (node && node.loader && Array.isArray(node.loader)) {
+          const isMiniCss = node.loader.some((l) => {
+            const needle = l.loader || l;
+            if (typeof l === 'function') {
+              return false;
+            }
+            return needle.includes(pluginName);
+          });
+          if (isMiniCss) {
+            node.loader.unshift(this.hotLoaderObject);
+          }
+        }
       });
+
       rules.push(rule);
 
       return rules;
@@ -592,5 +608,6 @@ class ExtractCssChunks {
 }
 
 ExtractCssChunks.loader = require.resolve('./loader');
+ExtractCssChunks.hotLoader = require.resolve('./hotLoader');
 
 export default ExtractCssChunks;

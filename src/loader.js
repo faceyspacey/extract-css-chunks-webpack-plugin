@@ -12,7 +12,8 @@ const pluginName = 'extract-css-chunks-webpack-plugin';
 
 const exec = (loaderContext, code, filename) => {
   const module = new NativeModule(filename, loaderContext);
-  module.paths = NativeModule._nodeModulePaths(loaderContext.context); // eslint-disable-line no-underscore-dangle
+  // eslint-disable-line no-underscore-dangle
+  module.paths = NativeModule._nodeModulePaths(loaderContext.context);
   module.filename = filename;
   module._compile(code, filename); // eslint-disable-line no-underscore-dangle
   return module.exports;
