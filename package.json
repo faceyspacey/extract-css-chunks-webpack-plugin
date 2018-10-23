@@ -31,7 +31,7 @@
   "license": "MIT",
   "scripts": {
     "start": "npm run build -- -w",
-    "build": "cross-env NODE_ENV=production babel src -d dist --ignore 'src/**/*.test.js' --copy-files",
+    "build": "cross-env NODE_ENV=production babel src -d dist --ignore 'src/**/*.test.js' --ignore 'src/hotModuleReplacement.js' --copy-files && cross-env NODE_ENV=production babel --no-babelrc src/hotModuleReplacement.js --out-file dist/hotModuleReplacement.js --presets=env",
     "clean": "del-cli dist",
     "lint": "eslint --cache --fix src",
     "prebuild": "npm run clean",
