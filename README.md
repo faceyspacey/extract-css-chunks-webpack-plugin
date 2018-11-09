@@ -144,9 +144,14 @@ With **webpack.optimize.CommonsChunkPlugin** plugin no longer part of Webpack 4,
 
 > There are more aggressive ways to code split, thanks to webpack 4. Check out the RUC Readme if you are looking for a more aggressive code split optimization configuration. These are just examples, you should be able to configure them as you see fit
 
+- `splitChunks`: Adding this to your `dev-webpack` will help with HMR when changing file names (or moving the files) which are dynamically imported. If you dont add this to your dev-webpack you might get this error: `Runtime TypeError: Cannot read property 'call' of undefined at __webpack_require__`. Could be related to this webpack issue: https://github.com/webpack/webpack/issues/6094. Adding it to your `prod-webpack` could unfortunately increase your total file size about 15% (in my test project), this is because you are changing webpacks defualt `chunks: async` to `chunks: 'initial'`
+- `runtimeChunk`: removed a hmr warning in chrome dev console, which got printed when starting the dev server. What it does and why it is needed together with `bootstrap` would be nice if someone else could make a PR for.
+- `minimizer: { UglifyJSPlugin`: Override the default UglifyjsWebpackPlugin minimizer with custom settings. These settings are probably default by now. They didnt do anything to the bundle size in my test project. Install instructions: https://webpack.js.org/plugins/uglifyjs-webpack-plugin/
+
 *webpack.config.js:*
 ```js
 const ExtractCssChunks = require("extract-css-chunks-webpack-plugin")
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
   module: {
@@ -169,7 +174,7 @@ module.exports = {
   optimization: {
       // FOR PRODUCTION
       minimizer: [
-          new UglifyJSPlugin({
+          new UglifyJsPlugin({
               uglifyOptions: {
                   output: {
                       comments: false,
