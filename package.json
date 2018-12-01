@@ -89,6 +89,7 @@
     "pre-commit": "^1.2.2",
     "prettier": "^1.11.1",
     "standard-version": "^4.4.0",
+    "semantic-release": "^6.3.2",
     "webpack": "4.8.3",
     "webpack-cli": "^2.0.13",
     "webpack-dev-server": "^3.1.1"
