@@ -5,7 +5,7 @@ node_js:
 script:
   - echo success
 after_success:
-  - yarn run semantic-release
+  - npx semantic-release
 branches:
   except:
     - /^v\d+\.\d+\.\d+$/
