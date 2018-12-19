@@ -380,6 +380,7 @@ class ExtractCssChunks {
                           'var linkTag = document.createElement("link");',
                           'linkTag.rel = "stylesheet";',
                           'linkTag.type = "text/css";',
+                          ...this.linkAttributeTemplate(),
                           'linkTag.onload = resolve;',
                           'linkTag.onerror = function(event) {',
                           Template.indent([
@@ -404,6 +405,14 @@ class ExtractCssChunks {
                 },
             );
     });
+  }
+
+  linkAttributeTemplate() {
+    const attrs = this.options.linkAttributes;
+    if (!attrs) {
+      return [];
+    }
+    return Object.keys(attrs).map(key => `linkTag.setAttribute(${JSON.stringify(key)}, ${JSON.stringify(attrs[key])});`);
   }
 
   traverseDepthFirst(root, visit) {

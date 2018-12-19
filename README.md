@@ -94,6 +94,9 @@ module.exports = {
           orderWarning: true, // Disable to remove warnings about conflicting order between imports
           reloadAll: true, // when desperation kicks in - this is a brute force HMR flag
           cssModules: true // if you use cssModules, this can help.
+          linkAttributes: { // allows to add custom attributes to the DOM element
+            "data-source": "extract-css-chunks",
+          },
         }
     ),
   ]
