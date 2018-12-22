@@ -172,7 +172,15 @@ class ExtractCssChunks {
     }
 
     compiler.hooks.thisCompilation.tap(pluginName, (compilation) => {
-      compilation.hooks.normalModuleLoader.tap(pluginName, (lc, m) => {
+      let { normalModuleLoader } = compilation.hooks; // Webpack 4
+      if (!normalModuleLoader) {
+        // Webpack 5+
+        // eslint-disable-next-line global-require
+        const NormalModule = require('webpack/lib/NormalModule');
+        normalModuleLoader = NormalModule.getCompilationHooks(compilation).loader;
+      }
+
+      normalModuleLoader.tap(pluginName, (lc, m) => {
         const loaderContext = lc;
         const module = m;
         loaderContext[MODULE_TYPE] = (content) => {
