@@ -46,7 +46,7 @@
     "ci:coverage": "npm run test:coverage -- --runInBand",
     "build:example": "npm run build && webpack-dev-server test/manual/src/index.js --open --config test/manual/webpack.config.js",
     "cm": "git-cz",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post",
+    "semantic-release": "npx semantic-release pre && npm publish && npx semantic-release post",
     "travis": "npm run ci:coverage",
     "defaults": "webpack-defaults"
   },

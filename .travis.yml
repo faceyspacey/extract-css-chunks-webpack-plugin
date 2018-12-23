@@ -5,7 +5,7 @@ node_js:
 script:
   - echo success
 after_success:
-  - npx semantic-release
+  - npm run semantic-release
 branches:
   except:
     - /^v\d+\.\d+\.\d+$/
