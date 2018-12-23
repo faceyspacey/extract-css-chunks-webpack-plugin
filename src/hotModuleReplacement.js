@@ -6,121 +6,128 @@ const debounce = require('lodash/debounce');
 const noDocument = typeof document === 'undefined';
 const forEach = Array.prototype.forEach;
 
-const noop = function () {};
+const noop = function() {};
 
-const getCurrentScriptUrl = function (moduleId) {
-  let src = srcByModuleId[moduleId];
+const getCurrentScriptUrl = function(moduleId) {
+    let src = srcByModuleId[moduleId];
 
-  if (!src) {
-    if (document.currentScript) {
-      src = document.currentScript.src;
-    } else {
-      const scripts = document.getElementsByTagName('script');
-      const lastScriptTag = scripts[scripts.length - 1];
+    if (!src) {
+        if (document.currentScript) {
+            src = document.currentScript.src;
+        } else {
+            const scripts = document.getElementsByTagName('script');
+            const lastScriptTag = scripts[scripts.length - 1];
 
-      if (lastScriptTag) {
-        src = lastScriptTag.src;
-      }
+            if (lastScriptTag) {
+                src = lastScriptTag.src;
+            }
+        }
+        srcByModuleId[moduleId] = src;
     }
-    srcByModuleId[moduleId] = src;
-  }
 
-  return function (fileMap) {
-    const splitResult = /([^\\/]+)\.js$/.exec(src);
-    const filename = splitResult && splitResult[1];
-    if (!filename) {
-      return [src.replace('.js', '.css')];
-    }
-    return fileMap.split(',').map(function (mapRule) {
-      const reg = new RegExp(filename + '\\.js$', 'g');
-      return normalizeUrl(src.replace(reg, mapRule.replace(/{fileName}/g, filename) + '.css'), { stripWWW: false });
-    });
-  };
+    return function(fileMap) {
+        const splitResult = /([^\\/]+)\.js$/.exec(src);
+        const filename = splitResult && splitResult[1];
+        if (!filename) {
+            return [src.replace('.js', '.css')];
+        }
+        return fileMap.split(',').map((mapRule) => {
+            const reg = new RegExp(`${filename}\\.js$`, 'g');
+            return normalizeUrl(
+                src.replace(
+                    reg,
+                    `${mapRule.replace(/{fileName}/g, filename)}.css`
+                ),
+                { stripWWW: false }
+            );
+        });
+    };
 };
 
 function updateCss(el, url) {
-  if (!url) {
-    url = el.href.split('?')[0];
-  }
-  if (el.isLoaded === false) {
+    if (!url) {
+        url = el.href.split('?')[0];
+    }
+    if (el.isLoaded === false) {
         // We seem to be about to replace a css link that hasn't loaded yet.
         // We're probably changing the same file more than once.
-    return;
-  }
-  if (!url || !(url.indexOf('.css') > -1)) return;
+        return;
+    }
+    if (!url || !(url.indexOf('.css') > -1)) return;
 
-  el.visited = true;
-  const newEl = el.cloneNode();
+    el.visited = true;
+    const newEl = el.cloneNode();
 
-  newEl.isLoaded = false;
+    newEl.isLoaded = false;
 
-  newEl.addEventListener('load', function () {
-    newEl.isLoaded = true;
-    el.parentNode.removeChild(el);
-  });
+    newEl.addEventListener('load', () => {
+        newEl.isLoaded = true;
+        el.parentNode.removeChild(el);
+    });
 
-  newEl.addEventListener('error', function () {
-    newEl.isLoaded = true;
-    el.parentNode.removeChild(el);
-  });
+    newEl.addEventListener('error', () => {
+        newEl.isLoaded = true;
+        el.parentNode.removeChild(el);
+    });
 
-  newEl.href = url + '?' + Date.now();
-  el.parentNode.appendChild(newEl);
+    newEl.href = `${url}?${Date.now()}`;
+    el.parentNode.appendChild(newEl);
 }
 
 function getReloadUrl(href, src) {
-  href = normalizeUrl(href, { stripWWW: false });
-  let ret;
-  src.some(function (url) {
-    if (href.indexOf(src) > -1) {
-      ret = url;
-    }
-  });
-  return ret;
+    href = normalizeUrl(href, { stripWWW: false });
+    let ret;
+    // eslint-disable-next-line array-callback-return
+    src.some((url) => {
+        if (href.indexOf(src) > -1) {
+            ret = url;
+        }
+    });
+    return ret;
 }
 
 function reloadStyle(src) {
-  const elements = document.querySelectorAll('link');
-  let loaded = false;
+    const elements = document.querySelectorAll('link');
+    let loaded = false;
 
-  forEach.call(elements, function (el) {
-    if (el.visited === true) return;
+    forEach.call(elements, (el) => {
+        if (el.visited === true) return;
 
-    const url = getReloadUrl(el.href, src);
-    if (url) {
-      updateCss(el, url);
-      loaded = true;
-    }
-  });
+        const url = getReloadUrl(el.href, src);
+        if (url) {
+            updateCss(el, url);
+            loaded = true;
+        }
+    });
 
-  return loaded;
+    return loaded;
 }
 
 function reloadAll() {
-  const elements = document.querySelectorAll('link');
-  forEach.call(elements, function (el) {
-    if (el.visited === true) return;
-    updateCss(el);
-  });
+    const elements = document.querySelectorAll('link');
+    forEach.call(elements, (el) => {
+        if (el.visited === true) return;
+        updateCss(el);
+    });
 }
 
-module.exports = function (moduleId, options) {
-  if (noDocument) {
-    return noop;
-  }
-
-  const getScriptSrc = getCurrentScriptUrl(moduleId);
-
-  function update() {
-    const src = getScriptSrc(options.fileMap);
-    const reloaded = reloadStyle(src);
-    if (reloaded && !options.reloadAll) {
-      console.log('[HMR] css reload %s', src.join(' '));
-    } else {
-      console.log('[HMR] Reload all css');
-      reloadAll();
+module.exports = function(moduleId, options) {
+    if (noDocument) {
+        return noop;
     }
-  }
 
-  return debounce(update, 10);
+    const getScriptSrc = getCurrentScriptUrl(moduleId);
+
+    function update() {
+        const src = getScriptSrc(options.fileMap);
+        const reloaded = reloadStyle(src);
+        if (reloaded && !options.reloadAll) {
+            console.log('[HMR] css reload %s', src.join(' '));
+        } else {
+            console.log('[HMR] Reload all css');
+            reloadAll();
+        }
+    }
+
+    return debounce(update, 10);
 };
