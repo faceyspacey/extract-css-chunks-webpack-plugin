@@ -1,21 +1,18 @@
 const Self = require('../../');
-const webpack = require('webpack');
 
-const config = {
+module.exports = {
   mode: 'development',
   output: {
-    chunkFilename: '[contenthash].js',
+    chunkFilename: "[contenthash].js",
     publicPath: '/dist/',
+    crossOriginLoading: 'anonymous',
   },
   module: {
     rules: [
       {
         test: /\.css$/,
-
         use: [
-          {
-            loader: Self.loader,
-          },
+          Self.loader,
           'css-loader',
         ],
       },
@@ -24,17 +21,13 @@ const config = {
   plugins: [
     new Self({
       filename: '[name].css',
-      chunkFilename: '[contenthash].css',
-      hot: false
+      chunkFilename: "[contenthash].css",
     }),
-
-    new webpack.NamedModulesPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
   ],
   devServer: {
     contentBase: __dirname,
-    hot: true,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+    }
   },
 };
-
-module.exports = config;

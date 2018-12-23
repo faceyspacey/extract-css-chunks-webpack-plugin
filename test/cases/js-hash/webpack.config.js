@@ -18,19 +18,19 @@ module.exports = [1, 2].map(n => ({
             loader: './loader',
             ident: 'my-loader',
             options: {
-              number: n,
-            },
-          },
+              number: n
+            }
+          }
         ],
       },
     ],
   },
   output: {
-    filename: '[name].[contenthash].js',
+    filename: `[name].[contenthash].js`
   },
   plugins: [
     new Self({
-      filename: '[name].[contenthash].[chunkhash].css',
+      filename: `[name].[contenthash].[chunkhash].css`,
     }),
   ],
 }));

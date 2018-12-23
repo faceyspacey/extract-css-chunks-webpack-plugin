@@ -19,10 +19,10 @@ module.exports = {
       cacheGroups: {
         vendors: {
           test: /node_modules/,
-          enforce: true,
-        },
-      },
-    },
+          enforce: true
+        }
+      }
+    }
   },
   plugins: [
     new Self({

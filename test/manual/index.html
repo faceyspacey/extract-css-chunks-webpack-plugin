@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>extract-css-chunks-webpack-plugin testcase</title>
+  <title>mini-css-extract-plugin testcase</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" href="/dist/preloaded1.css" />
   <style>
@@ -34,13 +34,22 @@
     <p>But turn orange, when <button class="lazy-button2">pressing this button</button>. Additional clicks have no effect.</p>
     <p>Refresh and press buttons in reverse order: This should turn green instead.</p>
   </div>
+  <div class="test lazy-failure-css">
+    <p>Lazy CSS: Turn off the network and <button class="lazy-failure-button">press this button</button>.</p>
+    <p>An error should have appeared.</p>
+    <p>Now if you turn the network back on and click it again, it should turn aqua.</p>
+  </div>
   <div class="test preloaded-css1">
     <p>Preloaded CSS: Must be green.</p>
-    <p><button class="preloaded-button1">Pressing this button</button> displays an alert but has no styling effect.</p>
+    <p><button class="preloaded-button1">Pressing this button</button> displays an alert and should turn red.</p>
   </div>
   <div class="test preloaded-css2">
     <p>Preloaded inlined CSS: Must be green.</p>
-    <p><button class="preloaded-button2">Pressing this button</button> displays an alert but has no styling effect.</p>
+    <p><button class="preloaded-button2">Pressing this button</button> displays an alert and should turn red.</p>
+  </div>
+  <div class="test crossorigin">
+    <p>CrossOriginLoading Option: Must be red.</p>
+    <p><button>Pressing this button</button> loads chunks with crossorigin attribute and should turn green.</p>
   </div>
   <div class="errors"></div>
   <script async defer src="/dist/main.js"></script>

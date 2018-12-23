@@ -14,12 +14,12 @@ module.exports = [1, 2].map(n => ({
     ],
   },
   output: {
-    filename: `${n}.[name].js`,
+    filename: `${n}.[name].js`
   },
   resolve: {
     alias: {
-      './style.css': `./style${n}.css`,
-    },
+      './style.css': `./style${n}.css`
+    }
   },
   plugins: [
     new Self({

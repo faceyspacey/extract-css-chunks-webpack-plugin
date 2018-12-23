@@ -11,9 +11,9 @@ module.exports = {
           {
             loader: 'css-loader',
             options: {
-              localIdentName: '[local]',
-            },
-          },
+              localIdentName: '[local]'
+            }
+          }
         ],
       },
     ],
@@ -25,10 +25,10 @@ module.exports = {
           test: /\.css$/,
           chunks: 'all',
           minChunks: 2,
-          enforce: true,
-        },
-      },
-    },
+          enforce: true
+        }
+      }
+    }
   },
   plugins: [
     new Self({
