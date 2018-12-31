@@ -5,8 +5,7 @@
             {
                 "useBuiltIns": true,
                 "targets": {
-                    "node": "6.9.0",
-                    "browsers": "cover 99.5%"
+                    "node": "6.9.0"
                 },
                 "exclude": [
                     "transform-async-to-generator",
@@ -21,7 +20,10 @@
             {
                 "useBuiltIns": true
             }
-        ]
+        ],
+        "transform-es2015-block-scoping",
+        "transform-es2015-arrow-functions",
+        "transform-es2015-template-literals"
     ],
     "env": {
         "test": {
@@ -29,7 +31,10 @@
                 "env"
             ],
             "plugins": [
-                "transform-object-rest-spread"
+                "transform-object-rest-spread",
+                "transform-es2015-block-scoping",
+                "transform-es2015-arrow-functions",
+                "transform-es2015-template-literals"
             ]
         }
     }
