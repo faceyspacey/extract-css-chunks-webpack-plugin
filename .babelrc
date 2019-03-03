@@ -1,41 +1,35 @@
 {
-    "presets": [
-        [
-            "env",
-            {
-                "useBuiltIns": true,
-                "targets": {
-                    "node": "6.9.0"
-                },
-                "exclude": [
-                    "transform-async-to-generator",
-                    "transform-regenerator"
-                ]
-            }
+  "presets": [
+    [
+      "env",
+      {
+        "useBuiltIns": true,
+        "targets": {
+          "node": "6.9.0"
+        },
+        "exclude": [
+          "transform-async-to-generator",
+          "transform-regenerator"
         ]
-    ],
-    "plugins": [
-        [
-            "transform-object-rest-spread",
-            {
-                "useBuiltIns": true
-            }
-        ],
-        "transform-es2015-block-scoping",
-        "transform-es2015-arrow-functions",
-        "transform-es2015-template-literals"
-    ],
-    "env": {
-        "test": {
-            "presets": [
-                "env"
-            ],
-            "plugins": [
-                "transform-object-rest-spread",
-                "transform-es2015-block-scoping",
-                "transform-es2015-arrow-functions",
-                "transform-es2015-template-literals"
-            ]
-        }
+      }
+    ]
+  ],
+  "plugins": [
+    [
+      "transform-object-rest-spread",
+      {
+        "useBuiltIns": true
+      }
+    ]
+  ],
+  "env": {
+    "test": {
+      "presets": [
+        "env"
+      ],
+      "plugins": [
+        "transform-object-rest-spread"
+      ]
     }
+  }
 }

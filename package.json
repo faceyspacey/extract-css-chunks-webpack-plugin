@@ -1,62 +1,50 @@
 {
-  "name": "extract-css-chunks-webpack-plugin",
-  "version": "3.2.1",
-  "author": "James Gillmore <james@faceyspacey.com>",
-  "contributors": [
-    "Zack Jackson <zack@ScriptedAlchemy.com> (https://github.com/ScriptedAlchemy)"
-  ],
-  "description": "Extract CSS from chunks into stylesheets + HMR. Supports Webpack 4 + SSR",
+  "name": "mini-css-extract-plugin",
+  "version": "0.5.0",
+  "description": "extracts CSS into separate files",
+  "license": "MIT",
+  "repository": "webpack-contrib/mini-css-extract-plugin",
+  "author": "Tobias Koppers @sokra",
+  "homepage": "https://github.com/webpack-contrib/mini-css-extract-plugin",
+  "bugs": "https://github.com/webpack-contrib/mini-css-extract-plugin/issues",
+  "bin": "",
+  "main": "dist/cjs.js",
   "engines": {
     "node": ">= 6.9.0 <7.0.0 || >= 8.9.0"
   },
-  "main": "dist/cjs.js",
-  "types": "index.d.ts",
-  "files": [
-    "dist",
-    "index.d.ts"
-  ],
-  "keywords": [
-    "css",
-    "chunks",
-    "code splitting",
-    "mini-css",
-    "hot",
-    "hmr",
-    "universal",
-    "webpack",
-    "webpack 4",
-    "css-hot-loader",
-    "extract-css-chunks-webpack-plugin"
-  ],
-  "license": "MIT",
   "scripts": {
     "start": "npm run build -- -w",
     "build": "cross-env NODE_ENV=production babel src -d dist --ignore 'src/**/*.test.js' --copy-files",
     "clean": "del-cli dist",
-    "lint": "eslint --cache --fix src",
+    "commitlint": "commitlint",
+    "commitmsg": "commitlint -e $GIT_PARAMS",
+    "lint": "eslint --cache src test",
+    "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
+    "lint-staged": "lint-staged",
     "prebuild": "npm run clean",
-    "prepublishOnly": "npm run build",
-    "security": "nsp check",
+    "prepublish": "npm run build",
+    "release": "standard-version",
+    "release:ci": "conventional-github-releaser -p angular",
+    "release:validate": "commitlint --from=$(git describe --tags --abbrev=0) --to=$(git rev-parse HEAD)",
+    "security": "npm audit",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --collectCoverageFrom='src/**/*.js' --coverage",
-    "test:example": "npm run build && webpack-dev-server test/manual/src/index.js --config test/manual/webpack.config.js",
+    "test:manual": "webpack-dev-server test/manual/src/index.js --open --config test/manual/webpack.config.js",
     "ci:lint": "npm run lint && npm run security",
     "ci:test": "npm run test -- --runInBand",
     "ci:coverage": "npm run test:coverage -- --runInBand",
-    "build:example": "npm run build && webpack-dev-server test/manual/src/index.js --open --config test/manual/webpack.config.js",
-    "cm": "git-cz",
-    "semantic-release": "npx semantic-release",
-    "travis": "npm run ci:coverage",
     "defaults": "webpack-defaults"
   },
+  "files": [
+    "dist"
+  ],
   "peerDependencies": {
     "webpack": "^4.4.0"
   },
   "dependencies": {
     "loader-utils": "^1.1.0",
-    "lodash": "^4.17.11",
-    "normalize-url": "^4.1.0",
+    "normalize-url": "^3.0.0",
     "schema-utils": "^1.0.0",
     "webpack-sources": "^1.1.0"
   },
@@ -66,9 +54,6 @@
     "@webpack-contrib/eslint-config-webpack": "^2.0.4",
     "babel-cli": "^6.26.0",
     "babel-jest": "^22.2.2",
-    "babel-plugin-transform-es2015-arrow-functions": "^6.22.0",
-    "babel-plugin-transform-es2015-block-scoping": "^6.26.0",
-    "babel-plugin-transform-es2015-template-literals": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.6.1",
@@ -77,6 +62,7 @@
     "css-loader": "^0.28.10",
     "del": "^3.0.0",
     "del-cli": "^1.1.0",
+    "es-check": "^5.0.0",
     "eslint": "^4.17.0",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-prettier": "^2.6.0",
@@ -87,20 +73,20 @@
     "memory-fs": "^0.4.1",
     "pre-commit": "^1.2.2",
     "prettier": "^1.11.1",
-    "semantic-release": "^15.13.1",
-    "webpack": "^4.14.0",
+    "standard-version": "^4.3.0",
+    "webpack": "^4.28.0",
     "webpack-cli": "^2.0.13",
     "webpack-defaults": "^2.3.0",
-    "webpack-dev-server": "^3.1.1"
+    "webpack-dev-server": "^3.1.14"
   },
-  "homepage": "http://github.com/faceyspacey/extract-css-chunks-webpack-plugin",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/faceyspacey/extract-css-chunks-webpack-plugin.git"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
+  "keywords": [
+    "webpack"
+  ],
+  "pre-commit": "lint-staged",
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
   }
 }
