@@ -9,8 +9,8 @@ import LibraryTemplatePlugin from 'webpack/lib/LibraryTemplatePlugin';
 import SingleEntryPlugin from 'webpack/lib/SingleEntryPlugin';
 import LimitChunkCountPlugin from 'webpack/lib/optimize/LimitChunkCountPlugin';
 
-const MODULE_TYPE = 'css/mini-extract';
-const pluginName = 'mini-css-extract-plugin';
+const MODULE_TYPE = 'css/extract-css-chunks';
+const pluginName = 'extract-css-chunks-webpack-plugin';
 
 function hotLoader(content, context) {
   const accept = context.modules

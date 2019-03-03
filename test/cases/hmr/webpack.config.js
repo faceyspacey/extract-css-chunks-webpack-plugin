@@ -10,7 +10,7 @@ module.exports = {
           {
             loader: Self.loader,
             options: {
-              hmr: true,
+              hot: true,
               modules: true,
               reloadAll: true
             },

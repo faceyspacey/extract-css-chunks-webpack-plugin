@@ -7,7 +7,7 @@ const {
   util: { createHash },
 } = webpack;
 
-const MODULE_TYPE = 'css/mini-extract';
+const MODULE_TYPE = 'css/extract-css-chunks';
 
 const pluginName = 'extract-css-chunks-webpack-plugin';
 
@@ -108,7 +108,7 @@ class CssModuleFactory {
   }
 }
 
-class MiniCssExtractPlugin {
+class ExtractCssChunksPlugin {
   constructor(options) {
     this.options = Object.assign(
       {
@@ -562,6 +562,6 @@ class MiniCssExtractPlugin {
   }
 }
 
-MiniCssExtractPlugin.loader = require.resolve('./loader');
+ExtractCssChunksPlugin.loader = require.resolve('./loader');
 
-export default MiniCssExtractPlugin;
+export default ExtractCssChunksPlugin;
