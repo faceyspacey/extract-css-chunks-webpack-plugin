@@ -352,7 +352,7 @@ For example, when running the build using some form of npm script:
 
 ### What about Glamorous, Styled Components, Styled-Jsx, Aphrodite, etc?
 
-If you effectively use code-splitting, **Extract Css Chunks** can be a far better option than using emerging solutions like *Glamorous*, *Styled Components*, and slightly older tools like *Aphrodite*, *Glamor*, etc. We aren't fans of either rounds of tools because of several issues, but particularly because they all have a runtime overhead. Every time your React component is rendered with those, CSS is generated and updated within the DOM. On the server, you're going to also see unnecessary cycles for flushing the CSS along the critical render path. *Next.js's* `styled-jsx`, by the way, doesn't even work on the server--*not so good when it comes to flash of unstyled content (FOUC).*
+If you effectively use code-splitting, **Extract Css Chunks** can be a far better option than using emerging solutions like *Glamorous*, *Styled Components*, and slightly older tools like *Aphrodite*, *Glamor*, etc. We aren't fans of either rounds of tools because of several issues, but particularly because they all have a runtime overhead. Every time your React component is rendered with those, CSS is generated and updated within the DOM. On the server, you're going to also see unnecessary cycles for flushing the CSS along the critical render path.
 
 The reason **Extract CSS Chunk** can be a better option is because **we also generate multiple sets of CSS based on what is actually "used",** ***but without the runtime overhead***. The difference is our definition of "used" is modules determined *statically* (which may not in fact be rendered) vs. what is in the "critical render path" (as is the case with the other tools). 
 

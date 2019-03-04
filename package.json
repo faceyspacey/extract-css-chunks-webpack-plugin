@@ -67,6 +67,7 @@
   "dependencies": {
     "loader-utils": "^1.1.0",
     "normalize-url": "^3.0.0",
+    "lodash": "^4.17.11",
     "schema-utils": "^1.0.0",
     "webpack-sources": "^1.1.0"
   },
