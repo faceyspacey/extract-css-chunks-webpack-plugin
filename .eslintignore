@@ -1,1 +1,5 @@
-test/js/**/*.js
+/node_modules
+/dist
+/test/cases
+/test/js
+/test/manual

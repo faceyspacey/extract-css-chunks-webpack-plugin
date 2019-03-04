@@ -77,7 +77,15 @@ module.exports = {
       {
         test: /\.css$/,
         use: [
-           ExtractCssChunks.loader,
+           {
+             loader:ExtractCssChunks.loader,
+             options: {
+               hot: true, // if you want HMR - we try to automatically inject hot reloading but if it's not working, add it to the config
+               modules: true, // if you use cssModules, this can help.
+               reloadAll: true, // when desperation kicks in - this is a brute force HMR flag
+
+             }
+           },
            "css-loader"
          ]
       }
@@ -90,10 +98,7 @@ module.exports = {
           // both options are optional
           filename: "[name].css",
           chunkFilename: "[id].css",
-          hot: true, // if you want HMR - we try to automatically inject hot reloading but if it's not working, add it to the config
           orderWarning: true, // Disable to remove warnings about conflicting order between imports
-          reloadAll: true, // when desperation kicks in - this is a brute force HMR flag
-          cssModules: true // if you use cssModules, this can help.
         }
     ),
   ]
@@ -116,7 +121,7 @@ This is a breaking change. The entire loader has been fundamentally rewritten sp
 
 There have been some challenges along the way since the release of webpack 4. Ultimately the only remaining hurdle is code split, async style loading. 
 
-If you do need Webpack 3, make sure to stick with the latest `v2.x.x` release. `v3.x.x` is only intended for users with Webpack 4
+If you do need Webpack 3, make sure to stick with the latest `v2.x.x` release. `> v3.x.x` is only intended for users with Webpack 4
 
 
 
@@ -151,7 +156,7 @@ With **webpack.optimize.CommonsChunkPlugin** plugin no longer part of Webpack 4,
 *webpack.config.js:*
 ```js
 const ExtractCssChunks = require("extract-css-chunks-webpack-plugin")
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin'); // or Terser plugin
 
 module.exports = {
   module: {
@@ -159,7 +164,14 @@ module.exports = {
       {
         test: /\.css$/,
         use: [
-          ExtractCssChunks.loader,
+          {
+            loader:ExtractCssChunks.loader,
+            options: {
+              hot: true,
+              modules: true,
+              reloadAll: true
+            },
+          },
           {
             loader: 'css-loader',
             options: {
@@ -202,7 +214,9 @@ module.exports = {
       }
   },
   plugins: [
-    new ExtractCssChunks({hot:true, cssModules: true}), //if you want HMR - we try to automatically inject hot reloading but if it's not working, add it to the config
+    new ExtractCssChunks({
+      filename: '[name].css',
+    }),
   ]
 };
 ```
