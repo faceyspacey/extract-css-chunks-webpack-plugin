@@ -45,8 +45,6 @@
     "lint-staged": "lint-staged",
     "prebuild": "npm run clean",
     "prepublish": "npm run build",
-    "release": "standard-version",
-    "release:ci": "conventional-github-releaser -p angular",
     "release:validate": "commitlint --from=$(git describe --tags --abbrev=0) --to=$(git rev-parse HEAD)",
     "security": "npm audit",
     "test": "jest",
@@ -56,7 +54,9 @@
     "ci:lint": "npm run lint && npm run security",
     "ci:test": "npm run test -- --runInBand",
     "ci:coverage": "npm run test:coverage -- --runInBand",
-    "defaults": "webpack-defaults"
+    "defaults": "webpack-defaults",
+    "semantic-release": "npx semantic-release",
+    "travis": "npm run ci:coverage"
   },
   "files": [
     "dist"
