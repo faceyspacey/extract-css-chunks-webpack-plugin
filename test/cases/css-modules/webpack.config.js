@@ -7,12 +7,7 @@ module.exports = {
       {
         test: /\.css$/,
         use: [
-          {
-            loader: Self.loader,
-            options: {
-              modules: true,
-            },
-          },
+          Self.loader,
           {
             loader: 'css-loader',
             options: {
