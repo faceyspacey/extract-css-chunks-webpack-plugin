@@ -13,7 +13,7 @@ const MODULE_TYPE = 'css/extract-css-chunks';
 const pluginName = 'extract-css-chunks-webpack-plugin';
 
 function hotLoader(content, context) {
-  const accept = context.modules
+  const accept = context.locals
     ? ''
     : 'module.hot.accept(undefined, cssReload);';
   const result = `${content}
@@ -155,7 +155,7 @@ export function pitch(request) {
       : '';
 
     resultSource += query.hot
-      ? hotLoader(result, { context: this.context, query })
+      ? hotLoader(result, { context: this.context, query, locals })
       : result;
 
     return callback(null, resultSource);
