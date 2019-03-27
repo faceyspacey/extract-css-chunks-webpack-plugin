@@ -93,8 +93,8 @@ describe('HMR', () => {
       'npx es-check es5 src/hmr/hotModuleReplacement.js'
     );
 
-    expect(stderr.indexOf('there were no ES version matching errors') > 1).toBe(
-      true
-    );
+    expect(
+      stderr.indexOf('there were no ES version matching errors') > -1
+    ).toBe(true);
   });
 });

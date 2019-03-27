@@ -47,7 +47,7 @@
     "prepublish": "npm run build",
     "release:validate": "commitlint --from=$(git describe --tags --abbrev=0) --to=$(git rev-parse HEAD)",
     "security": "npm audit",
-    "test": "jest --updateSnapshot",
+    "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --collectCoverageFrom='src/**/*.js' --coverage",
     "test:manual": "webpack-dev-server test/manual/src/index.js --open --config test/manual/webpack.config.js",
@@ -67,7 +67,7 @@
   "dependencies": {
     "loader-utils": "^1.1.0",
     "lodash": "^4.17.11",
-    "normalize-url": "^3.0.0",
+    "normalize-url": "^2.0.1",
     "schema-utils": "^1.0.0",
     "webpack-sources": "^1.1.0"
   },
