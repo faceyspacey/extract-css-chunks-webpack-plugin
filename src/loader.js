@@ -12,8 +12,10 @@ import LimitChunkCountPlugin from 'webpack/lib/optimize/LimitChunkCountPlugin';
 const MODULE_TYPE = 'css/extract-css-chunks';
 const pluginName = 'extract-css-chunks-webpack-plugin';
 
-function hotLoader(content, context, modules) {
-  const accept = modules ? '' : 'module.hot.accept(undefined, cssReload);';
+function hotLoader(content, context) {
+  const accept = context.locals
+    ? ''
+    : 'module.hot.accept(undefined, cssReload);';
   const result = `${content}
     if(module.hot) {
       // ${Date.now()}
