@@ -510,8 +510,8 @@ class ExtractCssChunksPlugin {
                     .join('\n')}`
               )
             );
-            usedModules.add(fallbackModule);
           }
+          usedModules.add(fallbackModule);
         }
       }
     } else {
