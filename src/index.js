@@ -484,8 +484,7 @@ class ExtractCssChunksPlugin {
           if (this.options.orderWarning) {
             compilation.warnings.push(
               new Error(
-                `chunk ${chunk.name ||
-                  chunk.id} [extract-css-chunks-webpack-plugin]\n` +
+                `chunk ${chunk.name || chunk.id} [${pluginName}]\n` +
                   'Conflicting order between:\n' +
                   ` * ${fallbackModule.readableIdentifier(
                     requestShortener
