@@ -82,7 +82,6 @@ module.exports = {
              options: {
                hot: true, // if you want HMR - we try to automatically inject hot reloading but if it's not working, add it to the config
                reloadAll: true, // when desperation kicks in - this is a brute force HMR flag
-
              }
            },
            "css-loader"
@@ -298,29 +297,6 @@ new ExtractCssChunk({
 
 >Keep in mind, by default `[name].css` is used when `process.env.NODE_ENV === 'development'` and `[name].[contenthash].css` during production, so you can likely forget about having to pass anything.
 
-### HMR Troubleshooting
-**Blank array in HMR script?**
-
-If you have issues with HMR, but enabled the loader, plugin, and already tried `hot: true, reloadAll:true`, then your webpack config might be more abstract than my simple lookup functions. In this case, Ive exported out the actual hot loader, you can add this manually and as long as you've got the plugin and loader -- it'll work 
-
-```js
- rules: [
-      {
-        test: /\.css$/,
-        use: [
-          ExtractCssChunks.hotLoader, // for those who want to manually force hotLoading
-          ExtractCssChunks.loader,
-          {
-            loader: 'css-loader',
-            options: {
-              modules: true,
-              localIdentName: '[name]__[local]--[hash:base64:5]',
-            },
-          },
-        ],
-      },
-    ]
-```
 
 ### HMR Pitfall
 
