@@ -1,11 +1,17 @@
 /* global document, window */
-/* eslint func-names: 0 */
-/* eslint no-var: 0 */
-/* eslint vars-on-top: 0 */
-/* eslint prefer-arrow-func: 0 */
-/* eslint prefer-rest-params: 0 */
-/* eslint prefer-arrow-callback: 0 */
-/* eslint prefer-template: 0 */
+/*
+  eslint-disable
+  func-names,
+  no-var,
+  vars-on-top,
+  prefer-arrow-func,
+  prefer-rest-params,
+  prefer-arrow-callback,
+  prefer-template,
+  prefer-destructuring,
+  no-param-reassign,
+  no-console
+*/
 
 var normalizeUrl = require('normalize-url');
 
@@ -56,16 +62,21 @@ function getCurrentScriptUrl(moduleId) {
     if (!src) {
       return null;
     }
+
     var splitResult = src.split(/([^\\/]+)\.js$/);
     var filename = splitResult && splitResult[1];
+
     if (!filename) {
       return [src.replace('.js', '.css')];
     }
+
     if (!fileMap) {
       return [src.replace('.js', '.css')];
     }
+
     return fileMap.split(',').map(function(mapRule) {
       var reg = new RegExp(filename + '\\.js$', 'g');
+
       return normalizeUrl(
         src.replace(reg, mapRule.replace(/{fileName}/g, filename) + '.css'),
         { stripWWW: false }
@@ -78,14 +89,23 @@ function updateCss(el, url) {
   if (!url) {
     url = el.href.split('?')[0];
   }
+
+  if (!isUrlRequest(url)) {
+    return;
+  }
+
   if (el.isLoaded === false) {
     // We seem to be about to replace a css link that hasn't loaded yet.
     // We're probably changing the same file more than once.
     return;
   }
-  if (!url || !(url.indexOf('.css') > -1)) return;
+
+  if (!url || !(url.indexOf('.css') > -1)) {
+    return;
+  }
 
   el.visited = true;
+
   var newEl = el.cloneNode(); // eslint-disable-line vars-on-top
 
   newEl.isLoaded = false;
@@ -101,18 +121,22 @@ function updateCss(el, url) {
   });
 
   newEl.href = url + '?' + Date.now();
+
   el.parentNode.appendChild(newEl);
 }
 
 function getReloadUrl(href, src) {
   var ret;
+
   href = normalizeUrl(href, { stripWWW: false });
+
   // eslint-disable-next-line array-callback-return
   src.some(function(url) {
     if (href.indexOf(src) > -1) {
       ret = url;
     }
   });
+
   return ret;
 }
 
@@ -123,7 +147,13 @@ function reloadStyle(src) {
   forEach.call(elements, function(el) {
     var url = getReloadUrl(el.href, src);
 
-    if (el.visited === true) return;
+    if (!isUrlRequest(url)) {
+      return;
+    }
+
+    if (el.visited === true) {
+      return;
+    }
 
     if (url) {
       updateCss(el, url);
@@ -136,10 +166,35 @@ function reloadStyle(src) {
 
 function reloadAll() {
   var elements = document.querySelectorAll('link');
+
   forEach.call(elements, function(el) {
-    if (el.visited === true) return;
+    if (el.visited === true) {
+      return;
+    }
+
     updateCss(el);
   });
+}
+
+function isUrlRequest(url) {
+  // An URL is not an request if
+
+  // 1. It's an absolute url
+  if (/^[a-z][a-z0-9+.-]*:/i.test(url)) {
+    return false;
+  }
+
+  // 2. It's a protocol-relative
+  if (/^\/\//.test(url)) {
+    return false;
+  }
+
+  // 3. Its a `#` link
+  if (/^#/.test(url)) {
+    return false;
+  }
+
+  return true;
 }
 
 module.exports = function(moduleId, options) {
@@ -153,6 +208,7 @@ module.exports = function(moduleId, options) {
 
   function update() {
     var src = getScriptSrc(options.filename);
+
     var reloaded = reloadStyle(src);
 
     if (options.locals) {
