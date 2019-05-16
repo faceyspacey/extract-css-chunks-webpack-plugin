@@ -218,6 +218,45 @@ module.exports = {
 };
 ```
 
+#### `publicPath` function example
+
+**webpack.config.js**
+
+```js
+const ExtractCSSChunksPlugin = require('extract-css-chunks-webpack-plugin');
+module.exports = {
+  plugins: [
+    new ExtractCSSChunksPlugin({
+      // Options similar to the same options in webpackOptions.output
+      // both options are optional
+      filename: '[name].css',
+      chunkFilename: '[id].css',
+    }),
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [
+          {
+            loader: ExtractCSSChunksPlugin.loader,
+            options: {
+              publicPath: (resourcePath, context) => {
+                // publicPath is the relative path of the resource to the context
+                // e.g. for ./css/admin/main.css the publicPath will be ../../
+                // while for ./css/main.css the publicPath will be ../
+                return path.relative(path.dirname(resourcePath), context) + '/';
+              },
+            },
+          },
+          'css-loader',
+        ],
+      },
+    ],
+  },
+};
+```
+
 ## Desired Output
 Here's the sort of CSS you can expect to serve:
 
