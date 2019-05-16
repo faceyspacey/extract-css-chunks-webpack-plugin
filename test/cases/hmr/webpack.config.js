@@ -1,4 +1,4 @@
-const Self = require('../../../');
+import Self from '../../../src';
 
 module.exports = {
   entry: './index.css',
@@ -10,9 +10,7 @@ module.exports = {
           {
             loader: Self.loader,
             options: {
-              hot: true,
-              modules: true,
-              reloadAll: true
+              hmr: true,
             },
           },
           'css-loader',
