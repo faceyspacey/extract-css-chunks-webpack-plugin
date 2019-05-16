@@ -11,7 +11,7 @@ module.exports = [1, 2].map((n) => {
             {
               loader: Self.loader,
               options: {
-                hmr: false,
+                hot: false,
               },
             },
             {

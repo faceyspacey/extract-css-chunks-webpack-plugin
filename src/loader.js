@@ -186,7 +186,7 @@ export function pitch(request) {
       ? `\nmodule.exports = ${JSON.stringify(locals)};`
       : '';
 
-    resultSource += options.hmr
+    resultSource += options.hot
       ? hotLoader(result, { context: this.context, options, locals })
       : result;
 
