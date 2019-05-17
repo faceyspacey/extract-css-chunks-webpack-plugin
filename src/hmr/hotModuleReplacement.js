@@ -116,7 +116,7 @@ function updateCss(el, url) {
 
   newEl.href = `${url}?${Date.now()}`;
 
-  el.parentNode.appendChild(newEl);
+  el.parentNode.insertBefore(newEl, el);
 }
 
 function getReloadUrl(href, src) {
