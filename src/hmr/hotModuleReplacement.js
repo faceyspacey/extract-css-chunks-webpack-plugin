@@ -174,17 +174,12 @@ function reloadAll() {
 function isUrlRequest(url) {
   // An URL is not an request if
 
-  // 1. It's an absolute url
-  if (/^[a-z][a-z0-9+.-]*:/i.test(url)) {
-    return false;
-  }
-
-  // 2. It's a protocol-relative
+  // 1. It's a protocol-relative
   if (/^\/\//.test(url)) {
     return false;
   }
 
-  // 3. Its a `#` link
+  // 2. Its a `#` link
   if (/^#/.test(url)) {
     return false;
   }
