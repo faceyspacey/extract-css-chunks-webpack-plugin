@@ -79,6 +79,10 @@ function getCurrentScriptUrl(moduleId) {
 
 function updateCss(el, url) {
   if (!url) {
+    if (!el.href) {
+      return;
+    }
+
     // eslint-disable-next-line
     url = el.href.split('?')[0];
   }
@@ -116,7 +120,11 @@ function updateCss(el, url) {
 
   newEl.href = `${url}?${Date.now()}`;
 
-  el.parentNode.insertBefore(newEl, el);
+  if (el.nextSibling) {
+    el.parentNode.insertBefore(newEl, el.nextSibling);
+  } else {
+    el.parentNode.appendChild(newEl);
+  }
 }
 
 function getReloadUrl(href, src) {
@@ -140,6 +148,10 @@ function reloadStyle(src) {
   let loaded = false;
 
   forEach.call(elements, (el) => {
+    if (!el.href) {
+      return;
+    }
+
     const url = getReloadUrl(el.href, src);
 
     if (!isUrlRequest(url)) {
@@ -152,6 +164,7 @@ function reloadStyle(src) {
 
     if (url) {
       updateCss(el, url);
+
       loaded = true;
     }
   });
@@ -174,13 +187,8 @@ function reloadAll() {
 function isUrlRequest(url) {
   // An URL is not an request if
 
-  // 1. It's a protocol-relative
-  if (/^\/\//.test(url)) {
-    return false;
-  }
-
-  // 2. Its a `#` link
-  if (/^#/.test(url)) {
+  // It is not http or https
+  if (!/^https?:/i.test(url)) {
     return false;
   }
 
