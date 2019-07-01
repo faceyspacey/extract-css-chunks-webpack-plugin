@@ -69,7 +69,7 @@
     "loader-utils": "^1.1.0",
     "normalize-url": "1.9.1",
     "schema-utils": "^1.0.0",
-    "webpack-external-import": "^0.0.1-beta.15",
+    "webpack-external-import": "^0.0.1-beta.16",
     "webpack-sources": "^1.1.0"
   },
   "devDependencies": {
