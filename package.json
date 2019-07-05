@@ -57,7 +57,9 @@
     "ci:coverage": "npm run test:coverage -- --runInBand",
     "defaults": "webpack-defaults",
     "semantic-release": "npx semantic-release",
-    "travis": "npm run ci:coverage"
+    "travis": "npm run ci:coverage",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "files": [
     "dist"
@@ -70,7 +72,8 @@
     "normalize-url": "1.9.1",
     "schema-utils": "^1.0.0",
     "webpack-external-import": "^0.0.1-beta.16",
-    "webpack-sources": "^1.1.0"
+    "webpack-sources": "^1.1.0",
+    "snyk": "^1.189.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.4",
@@ -110,5 +113,6 @@
       "eslint --fix",
       "git add"
     ]
-  }
+  },
+  "snyk": true
 }
