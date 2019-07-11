@@ -72,8 +72,7 @@
     "normalize-url": "1.9.1",
     "schema-utils": "^1.0.0",
     "webpack-external-import": "^0.0.1-beta.16",
-    "webpack-sources": "^1.1.0",
-    "snyk": "^1.189.0"
+    "webpack-sources": "^1.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.4",
@@ -102,6 +101,7 @@
     "lint-staged": "^8.1.6",
     "memory-fs": "^0.4.1",
     "prettier": "^1.17.0",
+    "snyk": "^1.189.0",
     "standard-version": "^6.0.1",
     "webpack": "^4.31.0",
     "webpack-cli": "^3.3.2",
