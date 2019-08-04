@@ -69,38 +69,37 @@ yarn add --dev extract-css-chunks-webpack-plugin
 
 *webpack.config.js:*
 ```js
-const ExtractCssChunks = require("extract-css-chunks-webpack-plugin")
-
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 module.exports = {
+  plugins: [
+    new MiniCssExtractPlugin({
+      // Options similar to the same options in webpackOptions.output
+      // all options are optional
+      filename: '[name].css',
+      chunkFilename: '[id].css',
+      ignoreOrder: false, // Enable to remove warnings about conflicting order
+    }),
+  ],
   module: {
     rules: [
       {
         test: /\.css$/,
         use: [
-           {
-             loader:ExtractCssChunks.loader,
-             options: {
-               hot: true, // if you want HMR
-               reloadAll: true, // when desperation kicks in - this is a brute force HMR flag
-             }
-           },
-           "css-loader"
-         ]
-      }
-    ]
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              // you can specify a publicPath here
+              // by default it uses publicPath in webpackOptions.output
+              publicPath: '../',
+              hot: process.env.NODE_ENV === 'development',
+            },
+          },
+          'css-loader',
+        ],
+      },
+    ],
   },
-  plugins: [
-    new ExtractCssChunks(
-        {
-          // Options similar to the same options in webpackOptions.output
-          // both options are optional
-          filename: "[name].css",
-          chunkFilename: "[id].css",
-          orderWarning: true, // Disable to remove warnings about conflicting order between imports
-        }
-    ),
-  ]
-}
+};
 ```
 
 *webpack.server.config.js*
@@ -111,6 +110,161 @@ The server needs to be handled differently, we still want one chunk. Luckily web
 new webpack.optimize.LimitChunkCountPlugin({
     maxChunks: 1
 })
+```
+
+#### `publicPath` function example
+
+**webpack.config.js**
+
+```js
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+module.exports = {
+  plugins: [
+    new MiniCssExtractPlugin({
+      // Options similar to the same options in webpackOptions.output
+      // both options are optional
+      filename: '[name].css',
+      chunkFilename: '[id].css',
+    }),
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              publicPath: (resourcePath, context) => {
+                // publicPath is the relative path of the resource to the context
+                // e.g. for ./css/admin/main.css the publicPath will be ../../
+                // while for ./css/main.css the publicPath will be ../
+                return path.relative(path.dirname(resourcePath), context) + '/';
+              },
+            },
+          },
+          'css-loader',
+        ],
+      },
+    ],
+  },
+};
+```
+
+#### Advanced configuration example
+
+This plugin should be used only on `production` builds without `style-loader` in the loaders chain, especially if you want to have HMR in `development`.
+
+Here is an example to have both HMR in `development` and your styles extracted in a file for `production` builds.
+
+(Loaders options left out for clarity, adapt accordingly to your needs.)
+
+**webpack.config.js**
+
+```js
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const devMode = process.env.NODE_ENV !== 'production';
+
+module.exports = {
+  plugins: [
+    new MiniCssExtractPlugin({
+      // Options similar to the same options in webpackOptions.output
+      // both options are optional
+      filename: devMode ? '[name].css' : '[name].[hash].css',
+      chunkFilename: devMode ? '[id].css' : '[id].[hash].css',
+    }),
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.(sa|sc|c)ss$/,
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              hot: process.env.NODE_ENV === 'development',
+            },
+          },
+          'css-loader',
+          'postcss-loader',
+          'sass-loader',
+        ],
+      },
+    ],
+  },
+};
+```
+
+#### Hot Module Reloading (HMR)
+
+extract-mini-css-plugin supports hot reloading of actual css files in development. Some options are provided to enable HMR of both standard stylesheets and locally scoped CSS or CSS modules. Below is an example configuration of mini-css for HMR use with CSS modules.
+
+While we attempt to hmr css-modules. It is not easy to perform when code-splitting with custom chunk names. `reloadAll` is an option that should only be enabled if HMR isn't working correctly. The core challenge with css-modules is that when code-split, the chunk ids can and do end up different compared to the filename.
+
+**webpack.config.js**
+
+```js
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+module.exports = {
+  plugins: [
+    new MiniCssExtractPlugin({
+      // Options similar to the same options in webpackOptions.output
+      // both options are optional
+      filename: '[name].css',
+      chunkFilename: '[id].css',
+    }),
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              // only enable hot in development
+              hot: process.env.NODE_ENV === 'development',
+              // if hmr does not work, this is a forceful method.
+              reloadAll: true,
+            },
+          },
+          'css-loader',
+        ],
+      },
+    ],
+  },
+};
+```
+
+### Minimizing For Production
+
+To minify the output, use a plugin like [optimize-css-assets-webpack-plugin](https://github.com/NMFR/optimize-css-assets-webpack-plugin). Setting `optimization.minimizer` overrides the defaults provided by webpack, so make sure to also specify a JS minimizer:
+
+**webpack.config.js**
+
+```js
+const TerserJSPlugin = require('terser-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+module.exports = {
+  optimization: {
+    minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
+  },
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: '[name].css',
+      chunkFilename: '[id].css',
+    }),
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+      },
+    ],
+  },
+};
 ```
 
 

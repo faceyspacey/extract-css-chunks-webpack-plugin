@@ -88,7 +88,7 @@
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// extracted by extract-css-chunks-webpack-plugin
+// extracted by mini-css-extract-plugin
 module.exports = {"a-module":"index-a-module","b-module":"index-b-module"};
 
 /***/ })

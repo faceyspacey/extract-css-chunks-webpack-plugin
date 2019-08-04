@@ -125,6 +125,7 @@ class ExtractCssChunksPlugin {
       {
         filename: DEFAULT_FILENAME,
         moduleFilename: () => this.options.filename || DEFAULT_FILENAME,
+        ignoreOrder: false,
       },
       options
     );
@@ -530,7 +531,7 @@ class ExtractCssChunksPlugin {
           // use list with fewest failed deps
           // and emit a warning
           const fallbackModule = bestMatch.pop();
-          if (this.options.orderWarning) {
+          if (!this.options.ignoreOrder) {
             compilation.warnings.push(
               new Error(
                 `chunk ${chunk.name || chunk.id} [${pluginName}]\n` +
@@ -544,6 +545,7 @@ class ExtractCssChunksPlugin {
               )
             );
           }
+
           usedModules.add(fallbackModule);
         }
       }
