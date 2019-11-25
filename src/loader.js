@@ -182,8 +182,11 @@ export function pitch(request) {
     }
 
     let resultSource = `// extracted by ${pluginName}`;
+    const json = JSON.stringify(locals);
+    const stringified = JSON.stringify(json);
+    
     const result = locals
-      ? `\nmodule.exports = ${JSON.stringify(locals)};`
+      ? `\nmodule.exports = JSON.parse(${stringified});`
       : '';
 
     resultSource += options.hot
