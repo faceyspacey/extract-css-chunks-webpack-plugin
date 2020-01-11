@@ -45,7 +45,6 @@
     "lint:js": "eslint --cache src test",
     "lint": "npm-run-all -l -p \"lint:**\"",
     "prepare": "npm run build",
-    "release": "standard-version",
     "security": "npm audit",
     "test:only": "cross-env NODE_ENV=test jest",
     "test:watch": "cross-env NODE_ENV=test jest --watch",
@@ -101,11 +100,5 @@
     "webpack": "^4.41.4",
     "webpack-cli": "^3.3.6",
     "webpack-dev-server": "^3.7.2"
-  },
-  "keywords": [
-    "webpack",
-    "css",
-    "extract",
-    "hmr"
-  ]
+  }
 }
