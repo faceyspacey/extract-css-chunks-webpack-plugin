@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>mini-css-extract-plugin testcase</title>
+  <title>extract-css-chunks-webpack-plugin testcase</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" href="/dist/preloaded1.css" />
   <style>
@@ -28,6 +28,18 @@
 <body>
   <div class="test initial-css">
     Initial CSS: Must be green
+  </div>
+  <div class="hot-reload">
+    <p>Hot Module Replacement</p>
+    <div class="r">RED</div>
+    <div class="g">GREEN</div>
+    <div class="b">BLUE</div>
+  </div>
+  <div class="hot-reload">
+    <p>Hot Module Replacement + CSS modules</p>
+    <div class="rr">RED</div>
+    <div class="gg">GREEN</div>
+    <div class="bb">BLUE</div>
   </div>
   <div class="test lazy-css">
     <p>Lazy CSS: Must be red, but turn green when <button class="lazy-button">pressing this button</button>.</p>

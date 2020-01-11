@@ -11,8 +11,9 @@ module.exports = {
           {
             loader: 'css-loader',
             options: {
-              modules: true,
-              localIdentName: '[local]',
+              modules: {
+                localIdentName: '[local]',
+              },
             },
           },
         ],
@@ -24,6 +25,7 @@ module.exports = {
       cacheGroups: {
         cssDedupe: {
           test: /\.css$/,
+          name: 'dedupe',
           chunks: 'all',
           minChunks: 2,
           enforce: true,

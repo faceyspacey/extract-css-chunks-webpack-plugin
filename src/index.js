@@ -16,7 +16,7 @@ const {
 
 const MODULE_TYPE = 'css/extract-css-chunks';
 
-const pluginName = 'extract-css-chunks-plugin';
+const pluginName = 'extract-css-chunks-webpack-plugin';
 
 const REGEXP_CHUNKHASH = /\[chunkhash(?::(\d+))?\]/i;
 const REGEXP_CONTENTHASH = /\[contenthash(?::(\d+))?\]/i;
@@ -98,7 +98,7 @@ class CssModuleFactory {
   }
 }
 
-class MiniCssExtractPlugin {
+class ExtractCssChunks {
   constructor(options = {}) {
     validateOptions(schema, options, 'Mini CSS Extract Plugin');
 
@@ -282,7 +282,7 @@ class MiniCssExtractPlugin {
                       if (typeof chunkMaps.hash[chunkId] === 'string') {
                         shortChunkHashMap[chunkId] = chunkMaps.hash[
                           chunkId
-                          ].substring(0, length);
+                        ].substring(0, length);
                       }
                     }
 
@@ -304,7 +304,7 @@ class MiniCssExtractPlugin {
                         if (typeof contentHash[chunkId] === 'string') {
                           shortContentHashMap[chunkId] = contentHash[
                             chunkId
-                            ].substring(0, length);
+                          ].substring(0, length);
                         }
                       }
 
@@ -367,17 +367,17 @@ class MiniCssExtractPlugin {
                   'linkTag.href = fullhref;',
                   crossOriginLoading
                     ? Template.asString([
-                      `if (linkTag.href.indexOf(window.location.origin + '/') !== 0) {`,
-                      Template.indent(
-                        `linkTag.crossOrigin = ${JSON.stringify(
-                          crossOriginLoading
-                        )};`
-                      ),
-                      '}',
-                    ])
+                        `if (linkTag.href.indexOf(window.location.origin + '/') !== 0) {`,
+                        Template.indent(
+                          `linkTag.crossOrigin = ${JSON.stringify(
+                            crossOriginLoading
+                          )};`
+                        ),
+                        '}',
+                      ])
                     : '',
-                  'var body = document.getElementsByTagName("body")[0];',
-                  'body.appendChild(linkTag);',
+                  'var head = document.getElementsByTagName("head")[0];',
+                  'head.appendChild(linkTag);',
                 ]),
                 '}).then(function() {',
                 Template.indent(['installedCssChunks[chunkId] = 0;']),
@@ -521,7 +521,7 @@ class MiniCssExtractPlugin {
                       ` * ${m.readableIdentifier(requestShortener)}`,
                       `   - couldn't fulfill desired order of chunk group(s) ${failedChunkGroups}`,
                       goodChunkGroups &&
-                      `   - while fulfilling desired order of chunk group(s) ${goodChunkGroups}`,
+                        `   - while fulfilling desired order of chunk group(s) ${goodChunkGroups}`,
                     ]
                       .filter(Boolean)
                       .join('\n');
@@ -594,6 +594,6 @@ class MiniCssExtractPlugin {
   }
 }
 
-MiniCssExtractPlugin.loader = require.resolve('./loader');
+ExtractCssChunks.loader = require.resolve('./loader');
 
-export default MiniCssExtractPlugin;
+export default ExtractCssChunks;

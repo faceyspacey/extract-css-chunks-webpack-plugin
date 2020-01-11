@@ -43,10 +43,11 @@
     "commitlint": "commitlint --from=master",
     "lint:prettier": "prettier \"{**/*,*}.{js,json,md,yml,css}\" --list-different",
     "lint:js": "eslint --cache src test",
-    "lint": "npm-run-all -l -p \"lint:**\"",
+    "lint": "npm-run-all -l -p \"lint:js\" \"lint:prettier\"",
     "prepare": "npm run build",
+    "release": "standard-version",
     "security": "npm audit",
-    "test:only": "cross-env NODE_ENV=test jest",
+    "test:only": "cross-env NODE_ENV=test jest --updateSnapshot",
     "test:watch": "cross-env NODE_ENV=test jest --watch",
     "test:coverage": "cross-env NODE_ENV=test jest --collectCoverageFrom=\"src/**/*.js\" --coverage",
     "test:manual": "npm run build && webpack-dev-server test/manual/src/index.js --open --config test/manual/webpack.config.js",
@@ -66,8 +67,8 @@
     "loader-utils": "^1.1.0",
     "normalize-url": "1.9.1",
     "schema-utils": "^1.0.0",
-    "webpack-sources": "^1.1.0",
-    "webpack-external-import": "^1.1.0-beta.3"
+    "webpack-external-import": "^1.1.0-beta.3",
+    "webpack-sources": "^1.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.5",
@@ -88,6 +89,7 @@
     "eslint": "^6.7.2",
     "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-prettier": "^3.1.2",
     "file-loader": "^4.0.0",
     "husky": "^3.0.0",
     "jest": "^24.8.0",
