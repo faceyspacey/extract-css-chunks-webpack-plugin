@@ -1,57 +1,58 @@
-<div align="center">
-  <img width="200" height="200" src="https://cdn.worldvectorlogo.com/logos/javascript.svg">
-  <a href="https://webpack.js.org/">
-    <img width="200" height="200" vspace="" hspace="25" src="https://cdn.rawgit.com/webpack/media/e7485eb2/logo/icon-square-big.svg">
-  </a>
-  <h1>extract-css-chunks-webpack-plugin</h1>
-</div>
-
-[![npm][npm]][npm-url]
-[![node][node]][node-url]
-[![deps][deps]][deps-url]
-[![tests][tests]][tests-url]
-[![coverage][cover]][cover-url]
-[![chat][chat]][chat-url]
-[![size][size]][size-url]
+If you like our work, check out our Redux-based router <a href="https://github.com/faceyspacey/redux-first-router" target="_blank">redux-first-router</a> or its sucessor which, <a href="https://github.com/respond-framework/rudy" target="_blank">Rudy<a>
 
 # extract-css-chunks-webpack-plugin
 
-This plugin extracts CSS into separate files. It creates a CSS file per JS file which contains CSS. It supports On-Demand-Loading of CSS and SourceMaps.
+<p align="center">
+  <a href="https://www.npmjs.com/package/extract-css-chunks-webpack-plugin">
+    <img src="https://img.shields.io/npm/v/extract-css-chunks-webpack-plugin.svg" alt="Version" />
+  </a>
 
-It builds on top of a new webpack v4 feature (module types) and requires webpack 4 to work.
+  <a href="https://travis-ci.org/faceyspacey/extract-css-chunks-webpack-plugin">
+    <img src="https://travis-ci.org/faceyspacey/extract-css-chunks-webpack-plugin.svg?branch=master" alt="Build Status" />
+  </a>
 
-Compared to the extract-text-webpack-plugin:
+  <a href="https://www.npmjs.com/package/extract-css-chunks-webpack-plugin">
+    <img src="https://img.shields.io/npm/dt/extract-css-chunks-webpack-plugin.svg" alt="Downloads" />
+  </a>
 
+  <a href="https://www.npmjs.com/package/extract-css-chunks-webpack-plugin">
+    <img src="https://img.shields.io/npm/dm/extract-css-chunks-webpack-plugin.svg" alt="License" />
+  </a>
+  
+  <a href="https://www.npmjs.com/package/extract-css-chunks-webpack-plugin">
+    <img src="https://img.shields.io/npm/l/extract-css-chunks-webpack-plugin.svg" alt="License" />
+  </a>
+</p>
+
+<h2 align="center">🍾🍾🍾It's our absolute pleasure to announce Webpack 4 Support 🚀🚀🚀</h2>
+
+> **HEADLINES (May 2018): Now Independently supports Webpack 4:**
+> Yep that's right. The universal family is now fully Webpack 4. Thank you to all our users for your loyalty and patience! If you love Universal, then you are gonna fall head over heels when we bring out the main course!
+
+So... why did we rebuild `extract-css-chunks`? What does it offer?
+
+It's got all the goodness of `mini-css-extract-plugin` but with 2 gleaming, sought after benefits.
+
+Compared to the existing loaders, we are offering a single solution as opposed to needing to depend on multiple loaders to cater for different features:
+
+## Perks
+
+- **HMR:** It also has first-class support for **Hot Module Replacement** across ALL those css files/chunks!!!
+- cacheable stylesheets
+- smallest total bytes sent compared to "render-path" css-in-js solutions that include your CSS definitions in JS
+- Faster than the V2!
 - Async loading
 - No duplicate compilation (performance)
 - Easier to use
 - Specific to CSS
+- SSR Friendly development build, focused on frontend DX
+- Works seamlessly with the Universal family
+- Works fantastically as a standalone style loader (You can use it for any webpack project! with no extra dependencies!)
+- Async styles do not render block webkit browsers, if you use the `insert` option
 
-## Getting Started
+Additionally, if you are already a user of the universal family -- we will be waving goodbye to the mandatory `window.__CSS_CHUNKS__`.
 
-To begin, you'll need to install `extract-css-chunks-webpack-plugin`:
-
-```bash
-npm install --save-dev extract-css-chunks-webpack-plugin
-```
-
-It's recommended to combine `extract-css-chunks-webpack-plugin` with the [`css-loader`](https://github.com/webpack-contrib/css-loader)
-
-Then add the loader and the plugin to your `webpack` config. For example:
-
-**style.css**
-
-```css
-body {
-  background: green;
-}
-```
-
-**component.js**
-
-```js
-import './style.css';
-```
+The functionality is still available to you via chunk flushing, and it can come in super handy when needing to easily resolve style assets as urls that might need to be passed to a third party.
 
 **webpack.config.js**
 
@@ -63,6 +64,7 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.css$/i,
         test: /\.css$/i,
         use: [ExtractCssChunks.loader, 'css-loader'],
       },
@@ -317,7 +319,7 @@ module.exports = {
 
 The `extract-css-chunks-webpack-plugin` supports hot reloading of actual css files in development.
 Some options are provided to enable HMR of both standard stylesheets and locally scoped CSS or CSS modules.
-Below is an example configuration of mini-css for HMR use with CSS modules.
+Below is an example configuration of `extract-css-chunks` for HMR use with CSS modules.
 
 While we attempt to hmr css-modules. It is not easy to perform when code-splitting with custom chunk names.
 `reloadAll` is an option that should only be enabled if HMR isn't working correctly.
@@ -583,7 +585,7 @@ module.exports = {
 Type: `String|Function`
 Default: `head`
 
-By default, the `mini-css-extract-plugin` appends styles (`<link>` elements) to `document.head` of the current `window`.
+By default, the `extract-css-chunks-plugin` appends styles (`<link>` elements) to `document.head` of the current `window`.
 
 However in some circumstances it might be necessary to have finer control over the append target or even delay `link` elements instertion. For example this is the case when you asynchronously load styles for an application that runs inside of an iframe. In such cases `insert` can be configured to be a function or a custom selector.
 
@@ -594,7 +596,7 @@ If you target an [iframe](https://developer.mozilla.org/en-US/docs/Web/API/HTMLI
 Allows to configure a [CSS selector](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector) that will be used to find the element where to append the styles (`link` elements).
 
 ```js
-new MiniCssExtractPlugin({
+new ExtractCssChunksPlugin({
   insert: '#my-container',
 });
 ```
@@ -610,7 +612,7 @@ Allows to override default behavior and insert styles at any position.
 > ⚠ The `insert` function is serialized to string and passed to the plugin. This means that it won't have access to the scope of the webpack configuration module.
 
 ```js
-new MiniCssExtractPlugin({
+new ExtractCssChunksPlugin({
   insert: function insert(linkTag) {
     const reference = document.querySelector('#some-element');
     if (reference) {
