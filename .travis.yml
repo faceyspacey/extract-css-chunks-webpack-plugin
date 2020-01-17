@@ -3,7 +3,8 @@ language: node_js
 node_js:
   - stable
 script:
-  - echo success
+  - yarn lint
+  - yarn test
 after_success:
   - npm run semantic-release
 branches:
