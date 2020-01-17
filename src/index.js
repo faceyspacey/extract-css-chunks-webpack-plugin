@@ -382,7 +382,7 @@ class ExtractCssChunksPlugin {
                         '}',
                       ])
                     : '',
-                  `var insert = ${insert}; console.log('insert',insert)`,
+                  `var insert = ${insert};`,
                   `if (typeof insert === 'function') { insert(linkTag); }`,
                   `else { var target = document.querySelector(${insert}); target && insert === 'body' ? target && target.insertBefore(linkTag,target.firstChild) : target.appendChild(linkTag); } `,
                 ]),
