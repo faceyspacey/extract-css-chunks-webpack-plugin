@@ -1,7 +1,7 @@
 sudo: false
 language: node_js
 node_js:
-  - v8
+  - v10
 script:
   - yarn lint
   - yarn test
