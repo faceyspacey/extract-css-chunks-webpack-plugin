@@ -1,9 +1,21 @@
 const Self = require('../../');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const https = require('https');
+
+const ENABLE_HMR =
+  typeof process.env.ENABLE_HMR !== 'undefined'
+    ? Boolean(process.env.ENABLE_HMR)
+    : false;
+
+const ENABLE_ES_MODULE =
+  typeof process.env.ES_MODULE !== 'undefined'
+    ? Boolean(process.env.ES_MODULE)
+    : false;
 
 module.exports = {
   mode: 'development',
   output: {
-    chunkFilename: "[contenthash].js",
+    chunkFilename: '[contenthash].js',
     publicPath: '/dist/',
     crossOriginLoading: 'anonymous',
   },
@@ -11,9 +23,38 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
+        exclude: [/\.module\.css$/i],
         use: [
-          Self.loader,
-          'css-loader',
+          {
+            loader: Self.loader,
+            options: {
+              hmr: ENABLE_HMR,
+            },
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              esModule: ENABLE_ES_MODULE,
+            },
+          },
+        ],
+      },
+      {
+        test: /\.module\.css$/i,
+        use: [
+          {
+            loader: Self.loader,
+            options: {
+              hmr: ENABLE_HMR,
+            },
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              modules: true,
+              esModule: ENABLE_ES_MODULE,
+            },
+          },
         ],
       },
     ],
@@ -21,13 +62,14 @@ module.exports = {
   plugins: [
     new Self({
       filename: '[name].css',
-      chunkFilename: "[contenthash].css",
+      chunkFilename: '[contenthash].css',
+      insert: 'body',
     }),
   ],
   devServer: {
     contentBase: __dirname,
     headers: {
-      "Access-Control-Allow-Origin": "*",
-    }
+      'Access-Control-Allow-Origin': '*',
+    },
   },
 };
