@@ -1,7 +1,8 @@
 sudo: false
 language: node_js
-node_js:
-  - v10
+before_script:
+  - nvm use v8
+  - yarn --ignore-engines
 script:
   - yarn lint
   - yarn test
