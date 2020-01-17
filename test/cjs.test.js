@@ -1,8 +1,8 @@
-import ExtractCssChunks from '../src';
-import CJSExtractCssChunks from '../src/cjs';
+import MiniCssExtractPlugin from '../src';
+import CJSMiniCssExtractPlugin from '../src/cjs';
 
 describe('CJS', () => {
   it('should exported plugin', () => {
-    expect(CJSExtractCssChunks).toEqual(ExtractCssChunks);
+    expect(CJSMiniCssExtractPlugin).toEqual(MiniCssExtractPlugin);
   });
 });

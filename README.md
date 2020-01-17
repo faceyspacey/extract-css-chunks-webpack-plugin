@@ -578,34 +578,53 @@ module.exports = {
 };
 ```
 
+### insert
+
+Type: `String|Function`
+Default: `head`
+
+By default, the `mini-css-extract-plugin` appends styles (`<link>` elements) to `document.head` of the current `window`.
+
+However in some circumstances it might be necessary to have finer control over the append target or even delay `link` elements instertion. For example this is the case when you asynchronously load styles for an application that runs inside of an iframe. In such cases `insert` can be configured to be a function or a custom selector.
+
+If you target an [iframe](https://developer.mozilla.org/en-US/docs/Web/API/HTMLIFrameElement) make sure that the parent document has sufficient access rights to reach into the frame document and append elements to it.
+
+#### `insert` as a string
+
+Allows to configure a [CSS selector](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector) that will be used to find the element where to append the styles (`link` elements).
+
+```js
+new MiniCssExtractPlugin({
+  insert: '#my-container',
+});
+```
+
+A new `<link>` element will be appended to the `#my-container` element.
+
+#### `insert` as a function
+
+Allows to override default behavior and insert styles at any position.
+
+> ⚠ Do not forget that this code will run in the browser alongside your application. Since not all browsers support latest ECMA features like `let`, `const`, `arrow function expression` and etc we recommend you to use only ECMA 5 features and syntax.
+
+> ⚠ The `insert` function is serialized to string and passed to the plugin. This means that it won't have access to the scope of the webpack configuration module.
+
+```js
+new MiniCssExtractPlugin({
+  insert: function insert(linkTag) {
+    const reference = document.querySelector('#some-element');
+    if (reference) {
+      reference.parentNode.insertBefore(linkTag, reference);
+    }
+  },
+});
+```
+
+A new `<link>` element will be inserted before the element with id `some-element`.
+
 ### Media Query Plugin
 
 If you'd like to extract the media queries from the extracted CSS (so mobile users don't need to load desktop or tablet specific CSS anymore) you should use one of the following plugins:
 
 - [Media Query Plugin](https://github.com/SassNinja/media-query-plugin)
 - [Media Query Splitting Plugin](https://github.com/mike-diamond/media-query-splitting-plugin)
-
-## Contributing
-
-Please take a moment to read our contributing guidelines if you haven't yet done so.
-
-[CONTRIBUTING](./.github/CONTRIBUTING.md)
-
-## License
-
-[MIT](./LICENSE)
-
-[npm]: https://img.shields.io/npm/v/extract-css-chunks-webpack-plugin.svg
-[npm-url]: https://npmjs.com/package/extract-css-chunks-webpack-plugin
-[node]: https://img.shields.io/node/v/extract-css-chunks-webpack-plugin.svg
-[node-url]: https://nodejs.org
-[deps]: https://david-dm.org/webpack-contrib/extract-css-chunks-webpack-plugin.svg
-[deps-url]: https://david-dm.org/webpack-contrib/extract-css-chunks-webpack-plugin
-[tests]: https://dev.azure.com/webpack-contrib/extract-css-chunks-webpack-plugin/_apis/build/status/webpack-contrib.extract-css-chunks-webpack-plugin?branchName=master
-[tests-url]: https://dev.azure.com/webpack-contrib/extract-css-chunks-webpack-plugin/_build/latest?definitionId=6&branchName=master
-[cover]: https://codecov.io/gh/webpack-contrib/extract-css-chunks-webpack-plugin/branch/master/graph/badge.svg
-[cover-url]: https://codecov.io/gh/webpack-contrib/extract-css-chunks-webpack-plugin
-[chat]: https://img.shields.io/badge/gitter-webpack%2Fwebpack-brightgreen.svg
-[chat-url]: https://gitter.im/webpack/webpack
-[size]: https://packagephobia.now.sh/badge?p=extract-css-chunks-webpack-plugin
-[size-url]: https://packagephobia.now.sh/result?p=extract-css-chunks-webpack-plugin

@@ -18,6 +18,7 @@ describe('validate options', () => {
       success: [true, false],
       failure: [1],
     },
+    inject: { success: [true, true] },
     unknown: {
       success: [],
       // TODO failed in next release

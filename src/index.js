@@ -1,5 +1,3 @@
-/* eslint-disable class-methods-use-this */
-
 import webpack from 'webpack';
 import sources from 'webpack-sources';
 
@@ -25,7 +23,7 @@ const REGEXP_PLACEHOLDERS = /\[(name|id|chunkhash)\]/g;
 const DEFAULT_FILENAME = '[name].css';
 
 class CssDependencyTemplate {
-  apply() {}
+  apply() {} // eslint-disable-line class-methods-use-this
 }
 
 class CssModule extends webpack.Module {
@@ -73,6 +71,7 @@ class CssModule extends webpack.Module {
     this.sourceMap = module.sourceMap;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   needRebuild() {
     return true;
   }
@@ -93,22 +92,29 @@ class CssModule extends webpack.Module {
 }
 
 class CssModuleFactory {
+  // eslint-disable-next-line class-methods-use-this
   create({ dependencies: [dependency] }, callback) {
     callback(null, new CssModule(dependency));
   }
 }
 
-class ExtractCssChunks {
+class ExtractCssChunksPlugin {
   constructor(options = {}) {
     validateOptions(schema, options, 'Mini CSS Extract Plugin');
-
+    const insert =
+      typeof options.insert === 'undefined'
+        ? '"head"'
+        : typeof options.insert === 'string'
+        ? JSON.stringify(options.insert)
+        : options.insert.toString();
     this.options = Object.assign(
       {
         filename: DEFAULT_FILENAME,
         moduleFilename: () => this.options.filename || DEFAULT_FILENAME,
         ignoreOrder: false,
       },
-      options
+      options,
+      { insert }
     );
 
     if (!this.options.chunkFilename) {
@@ -320,7 +326,7 @@ class ExtractCssChunks {
                 contentHashType: MODULE_TYPE,
               }
             );
-
+            const { insert } = this.options;
             return Template.asString([
               source,
               '',
@@ -376,8 +382,9 @@ class ExtractCssChunks {
                         '}',
                       ])
                     : '',
-                  'var head = document.getElementsByTagName("head")[0];',
-                  'head.appendChild(linkTag);',
+                  `var insert = ${insert}; console.log('insert',insert)`,
+                  `if (typeof insert === 'function') { insert(linkTag); }`,
+                  `else { var target = document.querySelector(${insert}); target && insert === 'body' ? target && target.insertBefore(linkTag,target.firstChild) : target.appendChild(linkTag); } `,
                 ]),
                 '}).then(function() {',
                 Template.indent(['installedCssChunks[chunkId] = 0;']),
@@ -392,7 +399,7 @@ class ExtractCssChunks {
       );
     });
   }
-
+  // eslint-disable-next-line class-methods-use-this
   getCssChunkObject(mainChunk) {
     const obj = {};
 
@@ -594,6 +601,6 @@ class ExtractCssChunks {
   }
 }
 
-ExtractCssChunks.loader = require.resolve('./loader');
+ExtractCssChunksPlugin.loader = require.resolve('./loader');
 
-export default ExtractCssChunks;
+export default ExtractCssChunksPlugin;
