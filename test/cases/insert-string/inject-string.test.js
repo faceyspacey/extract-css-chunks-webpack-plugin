@@ -36,6 +36,6 @@ describe('insert-string', () => {
   });
 
   afterAll(() => {
-    childProcess('kill $(lsof -t -i:3000)');
+    childProcess('kill $(lsof -t -i:5000)');
   });
 });

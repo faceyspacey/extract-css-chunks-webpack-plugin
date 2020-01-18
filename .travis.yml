@@ -1,9 +1,13 @@
 sudo: false
 language: node_js
 node_js:
-  - stable
+  - v10
+before_script:
+  - nvm use v8
+  - yarn --ignore-engines
 script:
-  - echo success
+  - yarn lint
+  - yarn test
 after_success:
   - npm run semantic-release
 branches:
