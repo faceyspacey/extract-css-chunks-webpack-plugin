@@ -1,3 +1,5 @@
+/* global document */
+
 const path = require('path');
 
 const Self = require('../../../');
@@ -64,12 +66,17 @@ module.exports = {
     new Self({
       filename: '[name].css',
       chunkFilename: '[contenthash].css',
-      insert: 'body',
+      insert: function insert(linkTag) {
+        const reference = document.querySelector('.hot-reload');
+        if (reference) {
+          reference.parentNode.insertBefore(linkTag, reference);
+        }
+      },
     }),
   ],
   devServer: {
-    contentBase: __dirname,
-    port: 5000,
+    contentBase: `${__dirname}`,
+    port: 3001,
     headers: {
       'Access-Control-Allow-Origin': '*',
     },
