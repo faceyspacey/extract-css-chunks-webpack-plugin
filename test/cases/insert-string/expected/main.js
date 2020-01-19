@@ -48,7 +48,7 @@
 /******/
 /******/ 	// script path function
 /******/ 	function jsonpScriptSrc(chunkId) {
-/******/ 		return __webpack_require__.p + "" + {"1":"26572b08b02e3c023d0d"}[chunkId] + ".js"
+/******/ 		return __webpack_require__.p + "" + ({}[chunkId]||chunkId) + ".js"
 /******/ 	}
 /******/
 /******/ 	// The require function
@@ -81,12 +81,12 @@
 /******/ 		var promises = [];
 /******/
 /******/
-/******/ 		// extract-css-chunks-webpack-plugin CSS loading
+/******/ 		// mini-css-extract-plugin CSS loading
 /******/ 		var cssChunks = {"1":1};
 /******/ 		if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);
 /******/ 		else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {
 /******/ 			promises.push(installedCssChunks[chunkId] = new Promise(function(resolve, reject) {
-/******/ 				var href = "" + {"1":"c4d90d38e7a606ae4d4c"}[chunkId] + ".css";
+/******/ 				var href = "" + chunkId + ".css";
 /******/ 				var fullhref = __webpack_require__.p + href;
 /******/ 				var existingLinkTags = document.getElementsByTagName("link");
 /******/ 				for(var i = 0; i < existingLinkTags.length; i++) {
@@ -114,10 +114,8 @@
 /******/ 					reject(err);
 /******/ 				};
 /******/ 				linkTag.href = fullhref;
-/******/ 				if (linkTag.href.indexOf(window.location.origin + '/') !== 0) {
-/******/ 					linkTag.crossOrigin = "anonymous";
-/******/ 				}
-/******/ 				var insert = "body"; console.log('insert',insert)
+/******/
+/******/ 				var insert = "body";
 /******/ 				if (typeof insert === 'function') { insert(linkTag); }
 /******/ 				else { var target = document.querySelector("body"); target && insert === 'body' ? target && target.insertBefore(linkTag,target.firstChild) : target.appendChild(linkTag); }
 /******/ 			}).then(function() {
@@ -150,9 +148,7 @@
 /******/ 					script.setAttribute("nonce", __webpack_require__.nc);
 /******/ 				}
 /******/ 				script.src = jsonpScriptSrc(chunkId);
-/******/ 				if (script.src.indexOf(window.location.origin + '/') !== 0) {
-/******/ 					script.crossOrigin = "anonymous";
-/******/ 				}
+/******/
 /******/ 				// create error before stack unwound to get useful stacktrace later
 /******/ 				var error = new Error();
 /******/ 				onScriptComplete = function (event) {
@@ -233,7 +229,7 @@
 /******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
 /******/
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "/";
+/******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// on error function for async loading
 /******/ 	__webpack_require__.oe = function(err) { console.error(err); throw err; };

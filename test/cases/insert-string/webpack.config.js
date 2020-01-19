@@ -1,5 +1,3 @@
-const path = require('path');
-
 const Self = require('../../../');
 
 const ENABLE_HMR =
@@ -13,13 +11,6 @@ const ENABLE_ES_MODULE =
     : false;
 
 module.exports = {
-  mode: 'development',
-  output: {
-    path: path.resolve(__dirname, 'expected'),
-    chunkFilename: '[contenthash].js',
-    publicPath: '/',
-    crossOriginLoading: 'anonymous',
-  },
   module: {
     rules: [
       {
@@ -63,15 +54,8 @@ module.exports = {
   plugins: [
     new Self({
       filename: '[name].css',
-      chunkFilename: '[contenthash].css',
+      chunkFilename: '[id].css',
       insert: 'body',
     }),
   ],
-  devServer: {
-    contentBase: __dirname,
-    port: 5000,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-    },
-  },
 };
