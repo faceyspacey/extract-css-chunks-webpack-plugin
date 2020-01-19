@@ -1,4 +1,4 @@
-/* global document */
+const path = require('path');
 
 const Self = require('../../../');
 
@@ -13,6 +13,13 @@ const ENABLE_ES_MODULE =
     : false;
 
 module.exports = {
+  mode: 'development',
+  output: {
+    path: path.resolve(__dirname, 'expected'),
+    chunkFilename: '[contenthash].js',
+    publicPath: '/',
+    crossOriginLoading: 'anonymous',
+  },
   module: {
     rules: [
       {
@@ -57,12 +64,14 @@ module.exports = {
     new Self({
       filename: '[name].css',
       chunkFilename: '[id].css',
-      insert: function insert(linkTag) {
-        const reference = document.querySelector('.hot-reload');
-        if (reference) {
-          reference.parentNode.insertBefore(linkTag, reference);
-        }
-      },
+      insert: 'body',
     }),
   ],
+  devServer: {
+    contentBase: __dirname,
+    port: 3001,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
+  },
 };

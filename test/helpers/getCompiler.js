@@ -3,7 +3,7 @@ import path from 'path';
 import webpack from 'webpack';
 import { createFsFromVolume, Volume } from 'memfs';
 
-import ExtractCssChunks from '../../src';
+import MiniCssExtractPlugin from '../../src';
 
 export default (fixture, loaderOptions = {}, config = {}) => {
   const fullConfig = {
@@ -22,7 +22,7 @@ export default (fixture, loaderOptions = {}, config = {}) => {
           test: /\.css$/i,
           rules: [
             {
-              loader: ExtractCssChunks.loader,
+              loader: MiniCssExtractPlugin.loader,
               options: loaderOptions || {},
             },
             {
@@ -33,7 +33,7 @@ export default (fixture, loaderOptions = {}, config = {}) => {
       ],
     },
     plugins: [
-      new ExtractCssChunks({
+      new MiniCssExtractPlugin({
         // Options similar to the same options in webpackOptions.output
         // both options are optional
         filename: '[name].css',
