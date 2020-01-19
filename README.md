@@ -31,7 +31,7 @@ If you like our work, check out our Redux-based router <a href="https://github.c
 
 So... why did we rebuild `extract-css-chunks`? What does it offer?
 
-It's got all the goodness of `mini-css-extract-plugin` but with 2 gleaming, sought after benefits.
+It's got all the goodness of `extract-css-chunks-webpack-plugin` but with 2 gleaming, sought after benefits.
 
 Compared to the existing loaders, we are offering a single solution as opposed to needing to depend on multiple loaders to cater for different features:
 

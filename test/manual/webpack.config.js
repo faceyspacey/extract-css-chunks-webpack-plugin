@@ -1,6 +1,4 @@
 const Self = require('../../');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const https = require('https');
 
 const ENABLE_HMR =
   typeof process.env.ENABLE_HMR !== 'undefined'
@@ -63,7 +61,6 @@ module.exports = {
     new Self({
       filename: '[name].css',
       chunkFilename: '[contenthash].css',
-      insert: 'body',
     }),
   ],
   devServer: {

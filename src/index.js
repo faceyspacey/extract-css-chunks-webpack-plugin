@@ -73,7 +73,6 @@ class CssModule extends webpack.Module {
     this.sourceMap = module.sourceMap;
   }
 
-  // eslint-disable-next-line class-methods-use-this
   needRebuild() {
     return true;
   }
@@ -94,7 +93,6 @@ class CssModule extends webpack.Module {
 }
 
 class CssModuleFactory {
-  // eslint-disable-next-line class-methods-use-this
   create({ dependencies: [dependency] }, callback) {
     callback(null, new CssModule(dependency));
   }
@@ -401,7 +399,7 @@ class ExtractCssChunksPlugin {
       );
     });
   }
-  // eslint-disable-next-line class-methods-use-this
+
   getCssChunkObject(mainChunk) {
     const obj = {};
 

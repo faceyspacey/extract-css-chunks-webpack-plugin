@@ -1,7 +1,6 @@
 /**
  * @jest-environment jsdom
  */
-
 /* eslint-env browser */
 /* eslint-disable no-console */
 

@@ -81,7 +81,7 @@
 /******/ 		var promises = [];
 /******/
 /******/
-/******/ 		// mini-css-extract-plugin CSS loading
+/******/ 		// extract-css-chunks-webpack-plugin CSS loading
 /******/ 		var cssChunks = {"1":1};
 /******/ 		if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);
 /******/ 		else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {
