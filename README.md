@@ -29,9 +29,9 @@ If you like our work, check out our Redux-based router <a href="https://github.c
 > **HEADLINES (May 2018): Now Independently supports Webpack 4:**
 > Yep that's right. The universal family is now fully Webpack 4. Thank you to all our users for your loyalty and patience! If you love Universal, then you are gonna fall head over heels when we bring out the main course!
 
-So... why did we rebuild `extract-css-chunks`? What does it offer?
+So... why did we rebuild `extract-css-chunks-webpack-plugin`? What does it offer?
 
-It's got all the goodness of `extract-css-chunks-webpack-plugin` but with 2 gleaming, sought after benefits.
+It's got all the goodness of `mini-css-extract-plugin` but with 2 gleaming, sought after benefits.
 
 Compared to the existing loaders, we are offering a single solution as opposed to needing to depend on multiple loaders to cater for different features:
 
