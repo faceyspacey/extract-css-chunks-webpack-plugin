@@ -1,3 +1,5 @@
+/* eslint-disable class-methods-use-this */
+
 import webpack from 'webpack';
 import sources from 'webpack-sources';
 
@@ -23,7 +25,7 @@ const REGEXP_PLACEHOLDERS = /\[(name|id|chunkhash)\]/g;
 const DEFAULT_FILENAME = '[name].css';
 
 class CssDependencyTemplate {
-  apply() {} // eslint-disable-line class-methods-use-this
+  apply() {}
 }
 
 class CssModule extends webpack.Module {
