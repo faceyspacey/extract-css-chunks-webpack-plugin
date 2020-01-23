@@ -1,3 +1,31 @@
 {
-  "extends": ["config:base"]
+  extends: [
+      ":combinePatchMinorReleases",
+      ":ignoreUnstable",
+      ":prImmediately",
+      ":semanticPrefixFixDepsChoreOthers",
+      ":updateNotScheduled",
+      ":automergeDisabled",
+      ":ignoreModulesAndTests",
+      ":maintainLockFilesDisabled",
+      ":autodetectPinVersions",
+      ":prHourlyLimit5",
+      ":prConcurrentLimit2",
+      "group:monorepos",
+      "group:recommended",
+      "helpers:disableTypesNodeMajor",
+      ":pinAllExceptPeerDependencies",
+      ":pinOnlyDevDependencies"
+  ],
+  "packageRules": [
+        {
+            "packageNames": ["normalize-url"],
+            "allowedVersions": "1.9.1"
+        },
+        {
+            "packageNames": ["schema-utils"],
+            "allowedVersions": "^1"
+        },
+        {"updateTypes": ["minor", "patch","pin", "digest"]}
+    ]
 }
