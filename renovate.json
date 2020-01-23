@@ -9,7 +9,7 @@
       ":ignoreModulesAndTests",
       ":maintainLockFilesDisabled",
       ":autodetectPinVersions",
-      ":prHourlyLimit5",
+      ":prHourlyLimit4",
       ":prConcurrentLimit2",
       "group:monorepos",
       "group:recommended",
