@@ -10,7 +10,7 @@
       ":maintainLockFilesDisabled",
       ":autodetectPinVersions",
       ":prHourlyLimit4",
-      ":prConcurrentLimit2",
+      ":prConcurrentLimit20",
       "group:monorepos",
       "group:recommended",
       "helpers:disableTypesNodeMajor",
