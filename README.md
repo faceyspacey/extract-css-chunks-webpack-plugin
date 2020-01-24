@@ -65,7 +65,6 @@ module.exports = {
     rules: [
       {
         test: /\.css$/i,
-        test: /\.css$/i,
         use: [ExtractCssChunks.loader, 'css-loader'],
       },
     ],
