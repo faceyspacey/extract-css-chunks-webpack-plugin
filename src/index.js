@@ -101,12 +101,8 @@ class CssModuleFactory {
 class ExtractCssChunksPlugin {
   constructor(options = {}) {
     validateOptions(schema, options, 'Mini CSS Extract Plugin');
-    const insert =
-      typeof options.insert === 'undefined'
-        ? '"head"'
-        : typeof options.insert === 'string'
-        ? JSON.stringify(options.insert)
-        : options.insert.toString();
+
+    const insert = options.insert ? options.insert.toString() : null;
     this.options = Object.assign(
       {
         filename: DEFAULT_FILENAME,
@@ -382,9 +378,9 @@ class ExtractCssChunksPlugin {
                         '}',
                       ])
                     : '',
-                  `var insert = ${insert};`,
-                  `if (typeof insert === 'function') { insert(linkTag); }`,
-                  `else { var target = document.querySelector(${insert}); target && insert === 'body' ? target && target.insertBefore(linkTag,target.firstChild) : target.appendChild(linkTag); } `,
+                  insert
+                    ? 'insert(linkTag);'
+                    : 'var head = document.getElementsByTagName("head")[0]; head.appendChild(linkTag)',
                 ]),
                 '}).then(function() {',
                 Template.indent(['installedCssChunks[chunkId] = 0;']),

@@ -581,7 +581,7 @@ module.exports = {
 
 ### insert
 
-Type: `String|Function`
+Type: `Function`
 Default: `head`
 
 By default, the `extract-css-chunks-plugin` appends styles (`<link>` elements) to `document.head` of the current `window`.
@@ -589,18 +589,6 @@ By default, the `extract-css-chunks-plugin` appends styles (`<link>` elements) t
 However in some circumstances it might be necessary to have finer control over the append target or even delay `link` elements instertion. For example this is the case when you asynchronously load styles for an application that runs inside of an iframe. In such cases `insert` can be configured to be a function or a custom selector.
 
 If you target an [iframe](https://developer.mozilla.org/en-US/docs/Web/API/HTMLIFrameElement) make sure that the parent document has sufficient access rights to reach into the frame document and append elements to it.
-
-#### `insert` as a string
-
-Allows to configure a [CSS selector](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector) that will be used to find the element where to append the styles (`link` elements).
-
-```js
-new ExtractCssChunksPlugin({
-  insert: '#my-container',
-});
-```
-
-A new `<link>` element will be appended to the `#my-container` element.
 
 #### `insert` as a function
 
