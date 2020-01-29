@@ -86,7 +86,7 @@
     "cross-env": "7.0.0",
     "css-loader": "3.4.2",
     "cz-conventional-changelog": "3.1.0",
-    "del": "4.1.1",
+    "del": "5.1.0",
     "del-cli": "1.1.0",
     "es-check": "5.1.0",
     "eslint": "6.8.0",
