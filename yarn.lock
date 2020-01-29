@@ -1523,10 +1523,10 @@
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
 
-"@webpack-contrib/defaults@5.1.1":
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/@webpack-contrib/defaults/-/defaults-5.1.1.tgz#6857148bb91e6a8929ca607032c7b9eec0539c95"
-  integrity sha512-UvWJSpCBVzDpCASLhBuiSw/S5i57Z3FqO5X2cRqkvDR6TlhaPp0cXLr7R83xyRs2+eZ5pyl9UnP8HtSJx1s7Fw==
+"@webpack-contrib/defaults@6.3.0":
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/@webpack-contrib/defaults/-/defaults-6.3.0.tgz#a234c1b197b7d9f09e34d9455db67fbd6a9c1cba"
+  integrity sha512-B5oYSmvwWbDILf2mgmJFkQe/BdWoiRm3+KbUkVAl/UdowvWKDDFd5w77WpGES3BTY+bgd4+GYf4cBXNQdbEv4Q==
   dependencies:
     chalk "^2.3.0"
     git-username "^1.0.0"
