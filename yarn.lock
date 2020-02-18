@@ -4368,11 +4368,6 @@ fast-diff@^1.1.2:
   resolved "https://registry.yarnpkg.com/fast-diff/-/fast-diff-1.2.0.tgz#73ee11982d86caaf7959828d519cfe927fac5f03"
   integrity sha512-xJuoT5+L99XlZ8twedaRf6Ax2TgQVxvgZOYoPKqZufmJib0tL2tegPBOZb1pVNgIhlqDlA0eO0c3wBvQcmzx4w==
 
-fast-extend@1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/fast-extend/-/fast-extend-1.0.2.tgz#3b8a5b09cbc8ff3d6d47eaf397398c0a643e441b"
-  integrity sha512-XXA9RmlPatkFKUzqVZAFth18R4Wo+Xug/S+C7YlYA3xrXwfPlW3dqNwOb4hvQo7wZJ2cNDYhrYuPzVOfHy5/uQ==
-
 fast-glob@^3.0.3:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/fast-glob/-/fast-glob-3.1.1.tgz#87ee30e9e9f3eb40d6f254a7997655da753d7c82"
@@ -4714,10 +4709,10 @@ fs-extra@^7.0.0:
     jsonfile "^4.0.0"
     universalify "^0.1.0"
 
-fs-monkey@0.3.3:
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/fs-monkey/-/fs-monkey-0.3.3.tgz#7960bb2b1fa2653731b9d0e2e84812a7e8b3664a"
-  integrity sha512-FNUvuTAJ3CqCQb5ELn+qCbGR/Zllhf2HtwsdAtBi59s1WeCjKMT81fHcSu7dwIskqGVK+MmOrb7VOBlq3/SItw==
+fs-monkey@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/fs-monkey/-/fs-monkey-1.0.0.tgz#b1fe36b2d8a78463fd0b8fd1463b355952743bd0"
+  integrity sha512-nxkkzQ5Ga+ETriXxIof4TncyMSzrV9jFIF+kGN16nw5CiAdWAnG/2FgM7CHhRenW1EBiDx+r1tf/P78HGKCgnA==
 
 fs-readdir-recursive@^1.1.0:
   version "1.1.0"
@@ -6955,13 +6950,12 @@ mem@^4.0.0:
     mimic-fn "^2.0.0"
     p-is-promise "^2.0.0"
 
-memfs@3.0.4:
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/memfs/-/memfs-3.0.4.tgz#17997ec34d67d0a4756f6a34f2fefd13a8dbab08"
-  integrity sha512-OcZEzwX9E5AoY8SXjuAvw0DbIAYwUzV/I236I8Pqvrlv7sL/Y0E9aRCon05DhaV8pg1b32uxj76RgW0s5xjHBA==
+memfs@3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/memfs/-/memfs-3.1.1.tgz#3a23799a783102d40b13595cb25a7b39605bbcd0"
+  integrity sha512-A6QWLLH6HolvLeACaEc6WAAxU7c7iAvVgeyp1iDwzSIbwfGUjR4x9bAFUVq3YtSVFCYQAx4Nw2o4TEYAfH+lAg==
   dependencies:
-    fast-extend "1.0.2"
-    fs-monkey "0.3.3"
+    fs-monkey "1.0.0"
 
 memory-fs@^0.4.0, memory-fs@^0.4.1:
   version "0.4.1"
