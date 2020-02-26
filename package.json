@@ -79,7 +79,7 @@
     "@commitlint/config-conventional": "8.3.4",
     "@webpack-contrib/defaults": "6.3.0",
     "@webpack-contrib/eslint-config-webpack": "3.0.0",
-    "babel-eslint": "10.0.3",
+    "babel-eslint": "10.1.0",
     "babel-jest": "25.1.0",
     "commitizen": "4.0.3",
     "commitlint-azure-pipelines-cli": "1.0.3",
