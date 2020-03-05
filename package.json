@@ -107,7 +107,7 @@
     "puppeteer": "2.1.1",
     "serve": "11.3.0",
     "standard-version": "7.1.0",
-    "webpack": "4.41.6",
+    "webpack": "^5.0.0-beta.13",
     "webpack-cli": "3.3.11",
     "webpack-dev-server": "3.10.3"
   }

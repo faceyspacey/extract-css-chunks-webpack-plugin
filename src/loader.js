@@ -91,30 +91,31 @@ export function pitch(request) {
     childCompiler
   );
   new LimitChunkCountPlugin({ maxChunks: 1 }).apply(childCompiler);
-
-  childCompiler.hooks.thisCompilation.tap(
-    `${pluginName} loader`,
-    (compilation) => {
-      compilation.hooks.normalModuleLoader.tap(
-        `${pluginName} loader`,
-        (loaderContext, module) => {
-          // eslint-disable-next-line no-param-reassign
-          loaderContext.emitFile = this.emitFile;
-
-          if (module.request === request) {
-            // eslint-disable-next-line no-param-reassign
-            module.loaders = loaders.map((loader) => {
-              return {
-                loader: loader.path,
-                options: loader.options,
-                ident: loader.ident,
-              };
-            });
-          }
-        }
-      );
+  childCompiler.hooks.thisCompilation.tap(`${pluginName} loader`, (compilation) => {
+    let { normalModuleLoader } = compilation.hooks; // Webpack 4
+    if (!normalModuleLoader) {
+      // Webpack 5+
+      // eslint-disable-next-line global-require
+      const NormalModule = require('webpack/lib/NormalModule');
+      normalModuleLoader = NormalModule.getCompilationHooks(compilation).loader;
     }
-  );
+
+    normalModuleLoader.tap(`${pluginName} loader`, (loaderContext, module) => {
+      // eslint-disable-next-line no-param-reassign
+      loaderContext.emitFile = this.emitFile;
+
+      if (module.request === request) {
+        // eslint-disable-next-line no-param-reassign
+        module.loaders = loaders.map((loader) => {
+          return {
+            loader: loader.path,
+            options: loader.options,
+            ident: loader.ident,
+          };
+        });
+      }
+    });
+  });
 
   let source;
 
