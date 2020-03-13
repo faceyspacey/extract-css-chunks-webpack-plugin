@@ -83,7 +83,7 @@
     "babel-jest": "25.1.0",
     "commitizen": "4.0.3",
     "commitlint-azure-pipelines-cli": "1.0.3",
-    "cross-env": "7.0.0",
+    "cross-env": "7.0.2",
     "css-loader": "3.4.2",
     "cz-conventional-changelog": "3.1.0",
     "del": "5.1.0",
