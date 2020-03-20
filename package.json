@@ -93,7 +93,7 @@
     "eslint-config-prettier": "6.10.0",
     "eslint-plugin-import": "2.20.1",
     "eslint-plugin-prettier": "3.1.2",
-    "file-loader": "5.1.0",
+    "file-loader": "6.0.0",
     "husky": "4.2.3",
     "jest": "25.1.0",
     "jest-dev-server": "4.4.0",
