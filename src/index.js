@@ -284,7 +284,7 @@ class ExtractCssChunksPlugin {
                       if (typeof chunkMaps.hash[chunkId] === 'string') {
                         shortChunkHashMap[chunkId] = chunkMaps.hash[
                           chunkId
-                        ].substring(0, length);
+                          ].substring(0, length);
                       }
                     }
 
@@ -306,7 +306,7 @@ class ExtractCssChunksPlugin {
                         if (typeof contentHash[chunkId] === 'string') {
                           shortContentHashMap[chunkId] = contentHash[
                             chunkId
-                          ].substring(0, length);
+                            ].substring(0, length);
                         }
                       }
 
@@ -369,14 +369,14 @@ class ExtractCssChunksPlugin {
                   'linkTag.href = fullhref;',
                   crossOriginLoading
                     ? Template.asString([
-                        `if (linkTag.href.indexOf(window.location.origin + '/') !== 0) {`,
-                        Template.indent(
-                          `linkTag.crossOrigin = ${JSON.stringify(
-                            crossOriginLoading
-                          )};`
-                        ),
-                        '}',
-                      ])
+                      `if (linkTag.href.indexOf(window.location.origin + '/') !== 0) {`,
+                      Template.indent(
+                        `linkTag.crossOrigin = ${JSON.stringify(
+                          crossOriginLoading
+                        )};`
+                      ),
+                      '}',
+                    ])
                     : '',
                   insert
                     ? 'insert(linkTag);'
@@ -524,7 +524,7 @@ class ExtractCssChunksPlugin {
                       ` * ${m.readableIdentifier(requestShortener)}`,
                       `   - couldn't fulfill desired order of chunk group(s) ${failedChunkGroups}`,
                       goodChunkGroups &&
-                        `   - while fulfilling desired order of chunk group(s) ${goodChunkGroups}`,
+                      `   - while fulfilling desired order of chunk group(s) ${goodChunkGroups}`,
                     ]
                       .filter(Boolean)
                       .join('\n');

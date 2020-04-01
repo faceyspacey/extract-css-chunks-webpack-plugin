@@ -25,9 +25,9 @@ function hotLoader(content, context) {
     if(module.hot) {
       // ${Date.now()}
       var cssReload = require(${loaderUtils.stringifyRequest(
-        context.context,
-        path.join(__dirname, 'hmr/hotModuleReplacement.js')
-      )})(module.id, ${JSON.stringify({
+    context.context,
+    path.join(__dirname, 'hmr/hotModuleReplacement.js')
+  )})(module.id, ${JSON.stringify({
     ...context.options,
     locals: !!context.locals,
   })});
@@ -70,8 +70,8 @@ export function pitch(request) {
   const publicPath =
     typeof options.publicPath === 'string'
       ? options.publicPath === '' || options.publicPath.endsWith('/')
-        ? options.publicPath
-        : `${options.publicPath}/`
+      ? options.publicPath
+      : `${options.publicPath}/`
       : typeof options.publicPath === 'function'
       ? options.publicPath(this.resourcePath, this.rootContext)
       : this._compilation.outputOptions.publicPath;
@@ -207,8 +207,8 @@ export function pitch(request) {
       typeof options.esModule !== 'undefined' ? options.esModule : false;
     const result = locals
       ? `\n${esModule ? 'export default' : 'module.exports ='} ${JSON.stringify(
-          locals
-        )};`
+        locals
+      )};`
       : '';
 
     let resultSource = `// extracted by ${pluginName}`;
