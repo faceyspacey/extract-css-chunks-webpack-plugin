@@ -6,7 +6,7 @@ If you like our work, check out our Redux-based router <a href="https://github.c
   <a href="https://www.npmjs.com/package/extract-css-chunks-webpack-plugin">
     <img src="https://img.shields.io/npm/v/extract-css-chunks-webpack-plugin.svg" alt="Version" />
   </a>
-
+<img src="https://ssl.google-analytics.com/collect?v=1&t=event&ec=email&ea=open&t=event&tid=UA-120967034-1&z=1589684734&cid=9befe819-70e1-278b-50fc-859e6d1970cb&dt=ExtractCssChunks&dp=/email/ExtractCssChunks">
   <a href="https://travis-ci.org/faceyspacey/extract-css-chunks-webpack-plugin">
     <img src="https://travis-ci.org/faceyspacey/extract-css-chunks-webpack-plugin.svg?branch=master" alt="Build Status" />
   </a>
