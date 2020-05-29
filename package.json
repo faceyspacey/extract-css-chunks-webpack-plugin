@@ -94,7 +94,7 @@
     "eslint-plugin-import": "2.20.2",
     "eslint-plugin-prettier": "3.1.2",
     "file-loader": "6.0.0",
-    "husky": "4.2.3",
+    "husky": "4.2.5",
     "jest": "25.1.0",
     "jest-dev-server": "4.4.0",
     "jest-junit": "10.0.0",
