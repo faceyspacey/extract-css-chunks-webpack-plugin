@@ -379,7 +379,7 @@ class ExtractCssChunksPlugin {
                       ])
                     : '',
                   insert
-                    ? 'insert(linkTag);'
+                    ? `var insert = ${insert};\ninsert(linkTag);`
                     : 'var head = document.getElementsByTagName("head")[0]; head.appendChild(linkTag)',
                 ]),
                 '}).then(function() {',
