@@ -31,6 +31,7 @@
     "extract-css-chunks-webpack-plugin"
   ],
   "main": "dist/cjs.js",
+  "types": "index.d.ts",
   "engines": {
     "node": ">= 6.9.0"
   },
@@ -59,7 +60,8 @@
     "travis": "npm run ci:coverage"
   },
   "files": [
-    "dist"
+    "dist",
+    "index.d.ts"
   ],
   "peerDependencies": {
     "webpack": "^4.4.0 || ^5.0.0"
