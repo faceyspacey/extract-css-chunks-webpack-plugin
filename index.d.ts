@@ -1,8 +1,8 @@
 declare module 'extract-css-chunks-webpack-plugin' {
-  import { ChunkData, Loader, Plugin } from 'webpack';
+  import { ChunkData, Plugin } from 'webpack';
 
   class ExtractCssChunksPlugin extends Plugin {
-    static loader: Loader;
+    static loader: string;
 
     constructor(options?: ExtractCssChunksPlugin.PluginOptions);
   }
