@@ -13,14 +13,14 @@ describe('insert-options', () => {
       });
       await page.goto('http://localhost:5000/');
     });
-    it('stylesheet was injected into body', async () => {
-      await page.waitFor(3000);
-      const bodyHTML = await page.evaluate(() => document.body.innerHTML);
-
-      await expect(bodyHTML.indexOf('type="text/css"') > 0).toBe(true);
+    it('style preload was injected into body', async () => {
+      // preloaded1 + main + inject
+      await expect(await page.$$eval('[type="text/css"]', links => links.length)).toEqual(3);
+      // inject
+      await expect(await page.$$eval('[rel="preload"]', preloads => preloads.length)).toEqual(1);
     });
 
-    it('body background style set correctly', async () => {
+    it('body background style was not set', async () => {
       const bodyStyle = await page.evaluate(() =>
         getComputedStyle(document.body).getPropertyValue('background-color')
       );
@@ -38,13 +38,14 @@ describe('insert-options', () => {
       });
       await page.goto('http://localhost:3001/');
     });
-    it('stylesheet was injected into body', async () => {
-      const bodyHTML = await page.evaluate(() => document.body.innerHTML);
-
-      await expect(bodyHTML.indexOf('type="text/css"') > 0).toBe(true);
+    it('style preload was injected into body', async () => {
+      // preloaded1 + main + inject
+      await expect(await page.$$eval('[type="text/css"]', links => links.length)).toEqual(3);
+      // inject
+      await expect(await page.$$eval('[rel="preload"]', preloads => preloads.length)).toEqual(1);
     });
 
-    it('body background style set correctly', async () => {
+    it('body background style was not set', async () => {
       await page.waitFor(4000);
       const bodyStyle = await page.evaluate(() =>
         getComputedStyle(document.body).getPropertyValue('background-color')
@@ -55,6 +56,7 @@ describe('insert-options', () => {
   });
 
   afterAll(() => {
+    // eslint-disable-next-line
     const childProcess = require('child_process').exec;
     childProcess(`kill $(lsof -t -i:3001)`);
     childProcess(`kill $(lsof -t -i:5000)`);
