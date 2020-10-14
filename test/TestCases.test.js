@@ -78,14 +78,14 @@ describe('TestCases', () => {
           done();
 
           // eslint-disable-next-line no-console
-          // console.log(
-          //   stats.toString({
-          //     context: path.resolve(__dirname, '..'),
-          //     chunks: true,
-          //     chunkModules: true,
-          //     modules: false,
-          //   })
-          // );
+          console.log(
+            stats.toString({
+              context: path.resolve(__dirname, '..'),
+              chunks: true,
+              chunkModules: true,
+              modules: false,
+            })
+          );
 
           if (stats.hasErrors()) {
             done(
