@@ -64,7 +64,9 @@ module.exports = {
     new Self({
       filename: '[name].css',
       chunkFilename: '[id].css',
-      insert: 'body',
+      insert: (linkTag) => {
+        document.head.appendChild(linkTag)
+      },
     }),
   ],
   devServer: {
