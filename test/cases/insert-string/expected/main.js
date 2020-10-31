@@ -82,6 +82,7 @@
 /******/
 /******/
 /******/ 		// extract-css-chunks-webpack-plugin CSS loading
+/******/ 		var supportsPreload = (function() { try { return document.createElement("link").relList.supports("preload"); } catch(e) { return false; }}());
 /******/ 		var cssChunks = {"1":1};
 /******/ 		if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);
 /******/ 		else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {
@@ -92,7 +93,7 @@
 /******/ 				for(var i = 0; i < existingLinkTags.length; i++) {
 /******/ 					var tag = existingLinkTags[i];
 /******/ 					var dataHref = tag.getAttribute("data-href") || tag.getAttribute("href");
-/******/ 					if(tag.rel === "stylesheet" && (dataHref === href || dataHref === fullhref)) return resolve();
+/******/ 					if((tag.rel === "stylesheet" || tag.rel === "preload") && (dataHref === href || dataHref === fullhref)) return resolve();
 /******/ 				}
 /******/ 				var existingStyleTags = document.getElementsByTagName("style");
 /******/ 				for(var i = 0; i < existingStyleTags.length; i++) {
@@ -101,8 +102,8 @@
 /******/ 					if(dataHref === href || dataHref === fullhref) return resolve();
 /******/ 				}
 /******/ 				var linkTag = document.createElement("link");
-/******/ 				linkTag.rel = "stylesheet";
-/******/ 				linkTag.type = "text/css";
+/******/ 				linkTag.rel = supportsPreload ? "preload": "stylesheet";
+/******/ 				supportsPreload ? linkTag.as = "style" : linkTag.type = "text/css";
 /******/ 				linkTag.onload = resolve;
 /******/ 				linkTag.onerror = function(event) {
 /******/ 					var request = event && event.target && event.target.src || fullhref;
@@ -115,11 +116,17 @@
 /******/ 				};
 /******/ 				linkTag.href = fullhref;
 /******/
-/******/ 				var insert = "body";
-/******/ 				if (typeof insert === 'function') { insert(linkTag); }
-/******/ 				else { var target = document.querySelector("body"); target && insert === 'body' ? target && target.insertBefore(linkTag,target.firstChild) : target.appendChild(linkTag); }
+/******/ 				var insert = body;
+/******/ 				insert(linkTag);
 /******/ 			}).then(function() {
 /******/ 				installedCssChunks[chunkId] = 0;
+/******/ 				if(supportsPreload) {
+/******/ 					var execLinkTag = document.createElement("link");
+/******/ 					execLinkTag.href =  __webpack_require__.p + "" + chunkId + ".css";
+/******/ 					execLinkTag.rel = "stylesheet";
+/******/ 					execLinkTag.type = "text/css";
+/******/ 					document.body.appendChild(execLinkTag);
+/******/ 				}
 /******/ 			}));
 /******/ 		}
 /******/

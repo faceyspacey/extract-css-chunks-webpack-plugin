@@ -31,6 +31,7 @@
     "extract-css-chunks-webpack-plugin"
   ],
   "main": "dist/cjs.js",
+  "types": "index.d.ts",
   "engines": {
     "node": ">= 6.9.0"
   },
@@ -59,7 +60,8 @@
     "travis": "npm run ci:coverage"
   },
   "files": [
-    "dist"
+    "dist",
+    "index.d.ts"
   ],
   "peerDependencies": {
     "webpack": "^4.4.0 || ^5.0.0"
@@ -68,34 +70,34 @@
     "loader-utils": "^2.0.0",
     "normalize-url": "1.9.1",
     "schema-utils": "^1.0.0",
-    "webpack-external-import": "^2.0.0",
+    "webpack-external-import": "^2.2.4",
     "webpack-sources": "^1.1.0"
   },
   "devDependencies": {
     "@babel/cli": "7.8.4",
     "@babel/core": "7.9.0",
-    "@babel/preset-env": "7.9.0",
+    "@babel/preset-env": "7.9.5",
     "@commitlint/cli": "8.3.5",
     "@commitlint/config-conventional": "8.3.4",
     "@webpack-contrib/defaults": "6.3.0",
     "@webpack-contrib/eslint-config-webpack": "3.0.0",
     "babel-eslint": "10.1.0",
-    "babel-jest": "25.1.0",
-    "commitizen": "4.0.3",
+    "babel-jest": "25.5.1",
+    "commitizen": "4.0.4",
     "commitlint-azure-pipelines-cli": "1.0.3",
     "cross-env": "7.0.2",
-    "css-loader": "3.4.2",
+    "css-loader": "3.5.2",
     "cz-conventional-changelog": "3.1.0",
     "del": "5.1.0",
     "del-cli": "3.0.0",
     "es-check": "5.1.0",
     "eslint": "6.8.0",
     "eslint-config-prettier": "6.10.1",
-    "eslint-plugin-import": "2.20.1",
+    "eslint-plugin-import": "2.20.2",
     "eslint-plugin-prettier": "3.1.2",
     "file-loader": "6.0.0",
     "husky": "4.2.3",
-    "jest": "25.1.0",
+    "jest": "25.5.4",
     "jest-dev-server": "4.4.0",
     "jest-junit": "10.0.0",
     "jest-puppeteer": "4.4.0",
@@ -106,8 +108,8 @@
     "prettier": "1.19.1",
     "puppeteer": "2.1.1",
     "serve": "11.3.0",
-    "standard-version": "7.1.0",
-    "webpack": "4.42.0",
+    "standard-version": "8.0.1",
+    "webpack": "4.43.0",
     "webpack-cli": "3.3.11",
     "webpack-dev-server": "3.10.3"
   }
