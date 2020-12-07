@@ -511,6 +511,7 @@ class ExtractCssChunksPlugin {
           // no module found => there is a conflict
           // use list with fewest failed deps
           // and emit a warning
+          if (!bestMatch) break;
           const fallbackModule = bestMatch.pop();
 
           if (!this.options.ignoreOrder) {
