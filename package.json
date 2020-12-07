@@ -1,6 +1,6 @@
 {
   "name": "extract-css-chunks-webpack-plugin",
-  "version": "0.0.0-development",
+  "version": "4.7.5",
   "description": "Extract CSS from chunks into stylesheets + HMR. Supports Webpack 4 + SSR",
   "license": "MIT",
   "author": "James Gillmore <james@faceyspacey.com>",
@@ -70,7 +70,7 @@
     "loader-utils": "^2.0.0",
     "normalize-url": "1.9.1",
     "schema-utils": "^1.0.0",
-    "webpack-external-import": "^2.2.4",
+    "webpack-federated-stats-plugin": "^2.0.0-beta.1",
     "webpack-sources": "^1.1.0"
   },
   "devDependencies": {
