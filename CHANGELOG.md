@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.9.0](https://github.com/faceyspacey/extract-css-chunks-webpack-plugin/compare/v4.8.0...v4.9.0) (2020-12-07)
+
+
+### Features
+
+* adding federated stats ([#303](https://github.com/faceyspacey/extract-css-chunks-webpack-plugin/issues/303)) ([c17d755](https://github.com/faceyspacey/extract-css-chunks-webpack-plugin/commit/c17d75547a5efb5971d03555163ea4d685080706))
+* adding federated stats ([#304](https://github.com/faceyspacey/extract-css-chunks-webpack-plugin/issues/304)) ([1eab2d0](https://github.com/faceyspacey/extract-css-chunks-webpack-plugin/commit/1eab2d0b8868837de8f89f68c1ad14be741f3e78))
+
+
+### Bug Fixes
+
+* Check if bestMatch exists before pop() ([#294](https://github.com/faceyspacey/extract-css-chunks-webpack-plugin/issues/294)) ([ef82da9](https://github.com/faceyspacey/extract-css-chunks-webpack-plugin/commit/ef82da9068bd699344774d39f61b7ead8cf682cb))
+
 ### [0.9.0](https://github.com/webpack-contrib/extract-css-chunks-webpack-plugin/compare/v0.8.2...v0.9.0) (2019-12-20)
 
 
