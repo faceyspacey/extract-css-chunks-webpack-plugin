@@ -56,7 +56,7 @@
     "pretest": "npm run lint",
     "test": "cross-env NODE_ENV=test npm run test:coverage",
     "defaults": "webpack-defaults",
-    "semantic-release": "npx semantic-release --no-ci",
+    "semantic-release": "npx semantic-release",
     "travis": "npm run ci:coverage"
   },
   "files": [
