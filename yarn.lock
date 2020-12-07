@@ -10727,11 +10727,6 @@ webpack-dev-server@3.10.3:
     ws "^6.2.1"
     yargs "12.0.5"
 
-webpack-federated-stats-plugin@^2.0.0-beta.1:
-  version "2.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/webpack-federated-stats-plugin/-/webpack-federated-stats-plugin-2.0.0-beta.1.tgz#7ab647228e8e3049232b5b0207a4da4e3a1595df"
-  integrity sha512-h0QCY7ZhcLTZcv0YlRtbmbMMXR3QP+CN0c4Jj7oRFmet9nK8jjb7zX/tqp1j5bFgZkictNu1xVh1ocGxX10u6A==
-
 webpack-log@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/webpack-log/-/webpack-log-2.0.0.tgz#5b7928e0637593f119d32f6227c1e0ac31e1b47f"
