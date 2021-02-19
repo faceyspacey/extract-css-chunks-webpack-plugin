@@ -330,6 +330,7 @@ class ExtractCssChunksPlugin {
               '',
               `// ${pluginName} CSS loading`,
               `var supportsPreload = ${supportsPreload}`,
+              `if (typeof document === "undefined") { return; }`,
               `var cssChunks = ${JSON.stringify(chunkMap)};`,
               'if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);',
               'else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {',
