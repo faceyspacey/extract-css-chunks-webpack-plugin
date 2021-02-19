@@ -83,6 +83,7 @@
 /******/
 /******/ 		// extract-css-chunks-webpack-plugin CSS loading
 /******/ 		var supportsPreload = (function() { try { return document.createElement("link").relList.supports("preload"); } catch(e) { return false; }}());
+/******/ 		if (typeof document === "undefined") { return; }
 /******/ 		var cssChunks = {"1":1};
 /******/ 		if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);
 /******/ 		else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {

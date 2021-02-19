@@ -1,3 +1,4 @@
+/* eslint-env browser */
 const path = require('path');
 
 const Self = require('../../../');
@@ -65,7 +66,7 @@ module.exports = {
       filename: '[name].css',
       chunkFilename: '[id].css',
       insert: (linkTag) => {
-        document.head.appendChild(linkTag)
+        document.head.appendChild(linkTag);
       },
     }),
   ],
