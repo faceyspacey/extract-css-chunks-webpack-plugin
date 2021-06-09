@@ -68,7 +68,7 @@
   },
   "dependencies": {
     "loader-utils": "^2.0.0",
-    "normalize-url": "1.9.1",
+    "normalize-url": "4.5.1",
     "schema-utils": "^1.0.0",
     "webpack-sources": "^1.1.0"
   },
