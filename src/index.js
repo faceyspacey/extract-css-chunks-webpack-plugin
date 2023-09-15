@@ -330,6 +330,7 @@ class ExtractCssChunksPlugin {
               '',
               `// ${pluginName} CSS loading`,
               `var supportsPreload = ${supportsPreload}`,
+              `var linkExists = false`,
               `var cssChunks = ${JSON.stringify(chunkMap)};`,
               'if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);',
               'else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {',
@@ -343,7 +344,13 @@ class ExtractCssChunksPlugin {
                   Template.indent([
                     'var tag = existingLinkTags[i];',
                     'var dataHref = tag.getAttribute("data-href") || tag.getAttribute("href");',
-                    'if((tag.rel === "stylesheet" || tag.rel === "preload") && (dataHref === href || dataHref === fullhref)) return resolve();',                  ]),
+                    'if((tag.rel === "stylesheet" || tag.rel === "preload") && (dataHref === href || dataHref === fullhref)) {',
+                    Template.indent([
+                      'linkExists = true',
+                      'return resolve();',
+                    ]),
+                    '}',
+                  ]),
                   '}',
                   'var existingStyleTags = document.getElementsByTagName("style");',
                   'for(var i = 0; i < existingStyleTags.length; i++) {',
@@ -387,7 +394,7 @@ class ExtractCssChunksPlugin {
                 '}).then(function() {',
                 Template.indent([
                   'installedCssChunks[chunkId] = 0;',
-                  'if(supportsPreload) {',
+                  'if(!linkExists && supportsPreload) {',
                   Template.indent([
                     'var execLinkTag = document.createElement("link");',
                     `execLinkTag.href =  ${mainTemplate.requireFn}.p + ${linkHrefPath};`,
